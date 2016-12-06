@@ -3,8 +3,10 @@
 #include <iostream>
 #include <iomanip>
 #include <stdio.h>
-
 #include <string>
+
+#include "Server.h"
+#include "Client.h"
 
 
 namespace network
@@ -360,7 +362,7 @@ void OldTcpServFirstRun(unsigned short port)
 void OldrunTcpServer(unsigned short port)
 {
     if(TcpFirstRun)
-        TcpServFirstRun(port);
+        OldTcpServFirstRun(port);
 
 
 
@@ -458,8 +460,8 @@ void OldTcpCliFirstRun(unsigned short port)
 void OldrunTcpClient(unsigned short port)
 {
 
-    if(TcpCliFirstRun)
-        TcpCliFirstRun(port);
+    if(OldTcpCliFirstRun)
+        OldTcpCliFirstRun(port);
 
 
         std::cout << "Waiting on Message! \n";
