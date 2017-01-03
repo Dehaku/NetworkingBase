@@ -329,6 +329,10 @@ void OldDealPackets()
 
 }
 
+void TcpServFirstRun(unsigned short port)
+{
+
+}
 
 void OldTcpServFirstRun(unsigned short port)
 {
@@ -356,6 +360,13 @@ void OldTcpServFirstRun(unsigned short port)
     clients.push_back(client);
     */
 
+
+}
+
+
+
+void runTcpServer(unsigned short port)
+{
 
 }
 
@@ -440,6 +451,11 @@ void OldrunTcpServer(unsigned short port)
 }
 
 
+void TcpCliFirstRun(unsigned short port)
+{
+
+}
+
 void OldTcpCliFirstRun(unsigned short port)
 {
     TcpClientFirstRun = false;
@@ -455,6 +471,11 @@ void OldTcpCliFirstRun(unsigned short port)
     sf::Packet packy;
     packy << ident.connection << network::name;
     cliSocket.send(packy);
+}
+
+void runTcpClient(unsigned short port)
+{
+
 }
 
 void OldrunTcpClient(unsigned short port)
@@ -570,6 +591,11 @@ void OldrunTcpClient(unsigned short port)
 
     }
     network::cliWait = false;
+}
+
+void tcpSendtoAll(sf::Packet pack)
+{
+
 }
 
 void OldtcpSendtoAll(sf::Packet pack)

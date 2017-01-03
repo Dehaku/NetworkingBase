@@ -3,7 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include "globalvars.h"
 #include "defs.h"
-#include "Networking.h"
+//#include "Networking.h"
 #include "InputState.h"
 #include "util.h"
 
@@ -11,8 +11,6 @@
 #include "Shapes.h"
 
 sf::RenderWindow window(sf::VideoMode(960, 720), "Networking the Networth");
-sf::Thread TcpServerThread(&runTcpServer, network::mainPort);
-sf::Thread TcpClientThread(&runTcpClient, network::mainPort+23);
 
 
 class GameInfo
@@ -63,34 +61,6 @@ void GameInfo::moveSquare()
         toggle(isRotating);
 
 
-
-    if(network::client)
-    {
-        static int timer = 5000;
-        if(timer <= 0)
-        {
-            timer = 5000;
-            sf::Packet packy;
-            packy << ident.textMessage << network::name + ": Hello!";
-            std::cout << "Sending heartbeat! \n";
-            cliSocket.send(packy);
-        }
-        timer--;
-    }
-    if(network::server)
-    {
-        DealPackets();
-        static int timer = 5000;
-        if(timer <= 0)
-        {
-            timer = 5000;
-            sf::Packet packy;
-            packy << ident.textMessage << "Salutations from the server.";
-            std::cout << "Sending mass message! \n";
-            tcpSendtoAll(packy);
-        }
-        timer--;
-    }
 
 }
 
@@ -176,7 +146,9 @@ void handleEvents()
         }
         if (event.type == sf::Event::TextEntered)
         {
-            if (event.text.unicode < 128 && network::chatting == true)
+            /*
+
+            if (event.text.unicode < 128 && network::chatting == true) //
             {
                 if(event.text.unicode != 8 && event.text.unicode != 13) // 8 = backspace 13 = enter, Thanks to http://www.fileformat.info
                 {
@@ -263,52 +235,18 @@ void handleEvents()
             {
                 network::chatting = true;
             }
+
+            */
+
         }
 
     }
 }
 
-void Server()
-{
-    if(!network::servWait)
-    {
-        network::servWait = true;
-        TcpServerThread.launch();
-    }
-}
-
-void Client()
-{
-    if(!network::cliWait)
-    {
-        network::cliWait = true;
-        TcpClientThread.launch();
-    }
-}
 
 
 
-void testServerStuffs()
-{
-    gameInfo.moveSquare();
 
-    if(inputState.key[Key::Home].time == 1)
-    {
-        std::cout << "Starting Server! \n";
-        network::server = true;
-    }
-
-    if(inputState.key[Key::End].time == 1)
-    {
-        std::cout << "Starting Client! \n";
-        network::client = true;
-    }
-
-    if(network::server)
-        Server();
-    if(network::client)
-        Client();
-}
 
 
 
@@ -337,7 +275,6 @@ int main()
         inputState.update();
 
         // Program Specific Components
-        testServerStuffs();
 
         shapes.createCircle(0,0,30,sf::Color::Blue);
 

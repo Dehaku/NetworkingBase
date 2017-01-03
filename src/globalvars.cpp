@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include "InputState.h"
-#include "Networking.h"
+//#include "Networking.h"
 
 fpsTracker fpsKeeper;
 

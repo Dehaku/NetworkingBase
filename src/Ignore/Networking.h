@@ -40,7 +40,7 @@ extern bool TcpFirstRun;
 
 class Identity
 {
-    public: // You could say this is redundent, But I don't care for Enums, And this prevents idiotic programming errors.
+    public:
     std::string wrongVersion;
     std::string connection;
     std::string connectionSuccessful;
