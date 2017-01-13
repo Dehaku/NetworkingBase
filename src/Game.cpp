@@ -1,28 +1,32 @@
 #include "Game.h"
 
-std::vector<std::vector<worldtile>> WorldTiles;
 
-void resizeWorld(int x, int y)
-{
-    WorldTiles.resize(x);
-
-    for(int i = 0; i != x; i++)
-    {
-        WorldTiles.at(i).resize(y);
-    }
-}
-
-void worldTilesSetup()
-{
-    resizeWorld(10,10);
-}
 
 void gameSetup()
 {
     worldTilesSetup();
+    worldPopulationSetup();
+}
+
+void displayCritters()
+{
+    //for(auto &i : Organisms)
+    {
+        std::cout << "Success? \n";
+    }
 }
 
 void runGame()
 {
-    std::cout << "World Size: " << WorldTiles.size() << std::endl;
+    static int globalCycle = 0;
+    globalCycle++;
+
+    displayCritters();
+
+    if((globalCycle % 60) == 0)
+    {
+        std::cout << "World Size: " << WorldTiles.size() << std::endl;
+        std::cout << "World Population: " << Organisms.size() << std::endl;
+    }
+
 }

@@ -3,9 +3,16 @@
 
 #include <vector>
 #include <iostream>
-#include "Tiles.h"
+#include <list>
 
-extern std::vector<std::vector<worldtile>> WorldTiles;
+
+#include "math.h"
+#include "Tiles.h"
+#include "Organism.h"
+#include "util.h"
+
+
+void displayCritters();
 
 void gameSetup();
 

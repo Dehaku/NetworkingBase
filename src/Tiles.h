@@ -1,22 +1,16 @@
 #ifndef TILES_H_INCLUDED
 #define TILES_H_INCLUDED
 
-class worldtile
-{
-public:
-    //sf::Color color;
+#include <vector>
+#include <iostream>
 
-    bool isWater;
-    float moveSpeedModifier;
-    float temperature;
+class worldtile;
 
-    worldtile()
-    {
-        isWater = false;
-        moveSpeedModifier = 0;
-        temperature = 50;
-    }
-};
+extern std::vector<std::vector<worldtile>> WorldTiles;
+
+
+
+void worldTilesSetup();
 
 
 #endif // TILES_H_INCLUDED
