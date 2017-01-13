@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 
 #include <SFML/Graphics.hpp>
 #include "globalvars.h"
@@ -10,8 +11,12 @@
 #include "math.h"
 #include "Shapes.h"
 
+#include "Tiles.h"
+#include "Game.h"
+
 sf::RenderWindow window(sf::VideoMode(960, 720), "Networking the Networth");
 
+// https://github.com/SFML/SFML/wiki/Source:-Network-Chat-Example
 
 class GameInfo
 {
@@ -260,6 +265,8 @@ void setup()
     gvars::view1.setSize(1000, 1000);
     window.setView(gvars::view1);
 
+    gameSetup();
+
 }
 
 int main()
@@ -275,6 +282,7 @@ int main()
         inputState.update();
 
         // Program Specific Components
+        runGame();
 
         shapes.createCircle(0,0,30,sf::Color::Blue);
 
