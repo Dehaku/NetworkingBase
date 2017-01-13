@@ -8,13 +8,7 @@ void gameSetup()
     worldPopulationSetup();
 }
 
-void displayCritters()
-{
-    //for(auto &i : Organisms)
-    {
-        std::cout << "Success? \n";
-    }
-}
+
 
 void runGame()
 {

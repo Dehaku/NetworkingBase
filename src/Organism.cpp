@@ -19,7 +19,7 @@ public:
 
     organism()
     {
-        size = random(1,10);
+        size = random(1,100) * 0.1;
         baseSpeed = random(1,10);
 
         health = getHealthMax();
@@ -29,7 +29,7 @@ public:
 
     float getHealthMax()
     {
-        return size * 2;
+        return std::max(size * 2,1.f);
     }
 
     float getSpeed()
@@ -39,12 +39,12 @@ public:
 
     float getNutritionMax()
     {
-        return size / 2;
+        return std::max(size / 2,1.f);
     }
 
     float getHydrationMax()
     {
-        return size;
+        return std::max(size,1.f);
     }
 
 
@@ -57,5 +57,18 @@ void worldPopulationSetup()
     {
         organism Critter;
         Organisms.push_back(Critter);
+    }
+}
+
+void displayCritters()
+{
+    int yOffset = 1;
+    for(auto &crit : Organisms)
+    {
+        std::string descString = "Critter; (" + std::to_string(int(crit.health)) +
+            "), " + std::to_string(int(crit.nutrition)) + ":" + std::to_string(int(crit.hydration));
+
+        shapes.createText(5,10*yOffset,10,sf::Color::Cyan, descString);
+        yOffset++;
     }
 }
