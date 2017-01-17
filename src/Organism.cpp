@@ -166,6 +166,8 @@ void displayCrittersInfo()
 
     int yOffset = 3;
 
+
+    /*
     sfe::RichText text(gvars::defaultFont);
 
     text.setFont(gvars::defaultFont);
@@ -180,6 +182,7 @@ void displayCrittersInfo()
     //text.setOrigin(text.getGlobalBounds().width / 2.f, text.getGlobalBounds().height / 2.f);
 
     window.draw(text);
+    */
 
 
 
@@ -196,9 +199,50 @@ void displayCrittersInfo()
         //shapes.shapes.back().isRichText = true;
 
 
-    shapes.createText(5,10*1,10,sf::Color::White, "FPS/UPS:" + std::to_string(int(fpsKeeper.framesPerSecond))
+    sfe::RichText fpsText(gvars::defaultFont);
+    fpsText.setPosition(5,10*1);
+    fpsText.setCharacterSize(10);
+    fpsText << sf::Text::Bold << sf::Color::White << "FPS/UPS:" ;
+
+    if(fpsKeeper.framesPerSecond < 60)
+        fpsText << sf::Color::Red << std::to_string(int(fpsKeeper.framesPerSecond));
+    else
+        fpsText << sf::Color::White << std::to_string(int(fpsKeeper.framesPerSecond));
+
+    fpsText << sf::Color::White << "/";
+
+    if(fpsKeeper.updatesPerSecond > 10000)
+        fpsText << sf::Color::Red << std::to_string(int(fpsKeeper.updatesPerSecond));
+    else
+        fpsText << sf::Color::White << std::to_string(int(fpsKeeper.updatesPerSecond));
+
+
+
+    //<< std::to_string(int(fpsKeeper.framesPerSecond))
+
+
+    //<< "/" + std::to_string(int(fpsKeeper.updatesPerSecond))
+
+
+
+
+    shapes.createRichText(fpsText);
+
+
+    if(true == false)
+    {
+        shapes.createText(5,10*1,10,sf::Color::White, "FPS/UPS:" + std::to_string(int(fpsKeeper.framesPerSecond))
                       + "/" + std::to_string(int(fpsKeeper.updatesPerSecond))
                       );
+    }
+
+
+
+
+
+
+
+
     shapes.createText(5,10*2,10,sf::Color::White, "World Pop:" + std::to_string(Organisms.size()));
     //for(int i = 0; i != Organisms.size(); i++)
     int limitCounter = 0;
