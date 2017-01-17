@@ -68,6 +68,7 @@ void Orb::drawOrb(int totalOrbs = 1)
 
 Shape::Shape()
 {
+    isRichText = false;
     offscreenRender = false;
     layer = 1000;
     shape = Circle;
@@ -430,9 +431,18 @@ bool Shapes::shapeHovered(int id)
 Shapes shapes;
 
 
+void drawRichTextShape(Shape &shape)
+{
+
+}
+
 
 void Shapes::drawShapes()
 {
+
+    sf::CircleShape circle;
+    sf::RectangleShape rectangle;
+    sf::Text shapeText;
 
     if(inputState.key[Key::LShift] && inputState.key[Key::Z])
     {
@@ -479,7 +489,7 @@ void Shapes::drawShapes()
 
         if(shape.shape == shape.Square)
         {
-            sf::RectangleShape rectangle;
+            //sf::RectangleShape rectangle;
             rectangle.setSize( shape.startPos - shape.endPos);
             rectangle.setFillColor(shape.maincolor);
             rectangle.setOutlineColor(shape.seccolor);
@@ -503,7 +513,7 @@ void Shapes::drawShapes()
         }
         else if(shape.shape == shape.Circle)
         {
-            sf::CircleShape circle;
+            //sf::CircleShape circle;
             circle.setRadius(shape.size);
             circle.setFillColor(shape.maincolor);
             circle.setOutlineThickness(shape.outline);
@@ -564,18 +574,27 @@ void Shapes::drawShapes()
                 shape.seccolor.a = shape.maincolor.a;
             }
 
-            sf::Text shapeText;
-            shapeText.setCharacterSize(shape.size);
-            shapeText.setColor(shape.maincolor);
-            shapeText.setFont(gvars::defaultFont);
-            shapeText.setPosition(shape.startPos);
-            shapeText.setStyle(shapeText.Bold);
-            //shapeText.setOrigin(halfPos)
-            shapeText.setRotation(shape.rotation);
-            //shapeText.setScale()
-            shapeText.setString(shape.text);
 
-            window.draw(shapeText);
+            if(shape.isRichText)
+            {
+                drawRichTextShape(shape);
+            }
+            else
+            {
+                //sf::Text shapeText;
+                shapeText.setCharacterSize(shape.size);
+                shapeText.setColor(shape.maincolor);
+                shapeText.setFont(gvars::defaultFont);
+                shapeText.setPosition(shape.startPos);
+                shapeText.setStyle(shapeText.Bold);
+                //shapeText.setOrigin(halfPos)
+                shapeText.setRotation(shape.rotation);
+                //shapeText.setScale()
+                shapeText.setString(shape.text);
+
+                window.draw(shapeText);
+            }
+
         }
         else if(shape.shape == shape.Button)
         {
@@ -671,6 +690,16 @@ void purtyOrbitals()
         shapes.createCircle(Pos.x,Pos.y,3,sf::Color::White,1,sf::Color::Blue);
     }
 }
+
+
+
+Drawable::Drawable()
+{
+    shape = nullptr;
+    toDelete = false;
+}
+
+std::vector<Drawable> drawables;
 
 
 

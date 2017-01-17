@@ -17,6 +17,8 @@
 sf::RenderWindow window(sf::VideoMode(960, 720), "Networking the Networth");
 
 // https://github.com/SFML/SFML/wiki/Source:-Network-Chat-Example
+// https://forums.tigsource.com/index.php?topic=25048.0
+// https://github.com/SFML/SFML/tree/master/examples/sockets
 
 class GameInfo
 {
@@ -342,15 +344,19 @@ int main()
         // Networking
 
 
+        std::cout << "Sizes: \n";
+        std::cout << sizeof(Shape) << std::endl;
+        std::cout << sizeof(sfe::RichText) << std::endl;
+
 
 
         // Graphics
         renderGame();
 
-        window.clear();
         shapes.drawShapes();
         AnyDeletes(shapes.shapes);
         window.display();
+        window.clear();
     }
 
     return EXIT_SUCCESS;

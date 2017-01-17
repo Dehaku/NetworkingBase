@@ -166,6 +166,28 @@ void displayCrittersInfo()
 
     int yOffset = 3;
 
+    sfe::RichText text(gvars::defaultFont);
+
+    text.setFont(gvars::defaultFont);
+    text.setPosition(100,100);
+    text << sf::Text::Bold       << sf::Color::Cyan  << "This "
+         << sf::Text::Italic     << sf::Color::White << "is\ncool\n"
+         << sf::Text::Regular    << sf::Color::Green << "mate"
+         << sf::Color::White     << ".\n"
+         << sf::Text::Underlined << "I wish I could lick it!";
+
+    text.setCharacterSize(25);
+    //text.setOrigin(text.getGlobalBounds().width / 2.f, text.getGlobalBounds().height / 2.f);
+
+    window.draw(text);
+
+
+
+    shapes.createText(200,200,15,sf::Color::White, "Hello World! \n Goodbye World!");
+    if(inputState.key[Key::Space])
+        shapes.shapes.back().isRichText = true;
+
+
     shapes.createText(5,10*1,10,sf::Color::White, "FPS/UPS:" + std::to_string(int(fpsKeeper.framesPerSecond))
                       + "/" + std::to_string(int(fpsKeeper.updatesPerSecond))
                       );
@@ -192,7 +214,7 @@ void drawCritters()
     static bool draw = true;
     static bool drawSquareInstead = false;
     static sf::Color background(150,150,10);
-    shapes.createSquare(0,0,1000,1000,background);
+
 
 
     if(inputState.key[Key::Tab].time == 1)
@@ -202,6 +224,8 @@ void drawCritters()
 
     if(!draw)
         return;
+
+    shapes.createSquare(0,0,1000,1000,background);
 
     for(auto &plant : Flora)
     {

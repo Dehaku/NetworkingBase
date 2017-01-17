@@ -5,7 +5,8 @@
 #include "math.h"
 #include "InputState.h"
 #include "globalvars.h"
-#include "Shapes.h"
+#include "RichText.hpp"
+
 
 class Shape
 {
@@ -24,7 +25,10 @@ public:
 
     int shape;
     const sf::Texture * texture;
+
+    //sfe::RichText richText;
     std::string text;
+    bool isRichText;
     bool offscreenRender;
 
     sf::Vector2f startPos;
@@ -132,5 +136,26 @@ void drawStoredEffects();
 extern std::vector<EffectStorer> effectsStorage;
 
 void purtyOrbitals();
+
+
+
+class Drawable
+{
+public: // TODO: Separate Rich Text from Shapes, and setup a 'drawables' function to insert various things into for layering and sorting, with minimal memory impact.
+    Shape * shape;
+    bool toDelete;
+    Drawable();
+};
+
+
+extern std::vector<Drawable> drawables;
+
+
+
+
+
+
+
+
 
 #endif // EFFECTS_H_INCLUDED
