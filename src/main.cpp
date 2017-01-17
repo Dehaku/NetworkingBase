@@ -284,16 +284,7 @@ int main()
         // Program Specific Components
         runGame();
 
-        //shapes.createCircle(0,0,30,sf::Color::Blue);
 
-        if(inputState.key[Key::Space])
-        {
-            shapes.createSquare(500,500,550,550,sf::Color::Blue);
-            shapes.createSquare(500,500,450,450,sf::Color::Blue);
-        }
-
-        //shapes.createCircle(gameInfo.vPos.x,gameInfo.vPos.y,10,sf::Color::White,2,sf::Color::Blue);
-        //shapes.createText(gameInfo.vPos.x,gameInfo.vPos.y,15,sf::Color::Cyan,"\n \n Pos: " + std::to_string(gameInfo.vPos.x) + ":" + std::to_string(gameInfo.vPos.y));
 
         // Networking
 
@@ -301,6 +292,8 @@ int main()
 
 
         // Graphics
+        renderGame();
+
         window.clear();
         shapes.drawShapes();
         AnyDeletes(shapes.shapes);
