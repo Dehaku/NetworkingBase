@@ -8,9 +8,13 @@
 #include "util.h"
 
 class organism;
+class brain;
 
+extern std::list<brain> BrainStorage;
 extern std::list<organism> Organisms;
 extern std::list<organism> Flora;
+
+void runBrains();
 
 void worldPopulationSetup();
 

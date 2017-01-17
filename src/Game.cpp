@@ -15,6 +15,8 @@ void runGame()
     static int globalCycle = 0;
     globalCycle++;
 
+    runBrains();
+
     drawCritters();
     displayCrittersInfo();
 

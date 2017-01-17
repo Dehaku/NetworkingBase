@@ -1,8 +1,20 @@
 #include "Organism.h"
 
+std::list<brain> BrainStorage;
 std::list<organism> Flora;
-
 std::list<organism> Organisms;
+
+class brain
+{
+public:
+    organism *owner;
+    sf::Vector2f desiredPos;
+    bool desiresMate;
+    brain()
+    {
+        desiresMate = random(0,1);
+    }
+};
 
 class organism
 {
@@ -14,6 +26,9 @@ public:
     float nutrition;
     float hydration;
 
+    // Identity
+    std::string name;
+    brain *brain;
     sf::Color colorPrime;
     sf::Color colorSecondary;
 
@@ -29,6 +44,7 @@ public:
         size = random(1,100) * 0.1;
         baseSpeed = random(1,10);
 
+        brain = nullptr;
         colorPrime = sf::Color(random(0,255),random(0,255),random(0,255));
         colorSecondary = sf::Color(random(0,255),random(0,255),random(0,255));
 
@@ -61,6 +77,32 @@ public:
 
 };
 
+void moveAngle(organism &crit, float ang)
+{
+    crit.pos.x += cosf(ang) * crit.getSpeed(); // * Delta? * Gamespeed()! (Delta+TimeWarp)
+    crit.pos.y += sinf(ang) * crit.getSpeed();
+    //crit.xpos += moveX;
+    //crit.ypos += moveY;
+}
+
+void runBrain(organism &crit)
+{
+
+    if(random(1,600) == 1 || inputState.key[Key::Space].time == 1)
+        crit.brain->desiredPos = sf::Vector2f(random(10,990),random(10,990));
+
+
+    //std::cout << "Critter" + crit.name + ": " + std::to_string(crit.getSpeed()) << std::endl;
+    moveAngle(crit,math::angleBetweenVectors(crit.pos,crit.brain->desiredPos));
+
+}
+
+void runBrains()
+{
+    for(auto &crit : Organisms)
+        runBrain(crit);
+}
+
 void worldPopulationSetup()
 {
     for(int i = 0; i != 100; i++)
@@ -77,8 +119,14 @@ void worldPopulationSetup()
     for(int i = 0; i != 10; i++)
     {
         organism Critter;
+        Critter.name = std::to_string(i); // Temporary
         Critter.pos = sf::Vector2f(random(10,1000),random(10,1000));
         Organisms.push_back(Critter);
+        brain creatureBrain;
+        BrainStorage.push_back(creatureBrain);
+
+        Organisms.back().brain = &BrainStorage.back();
+        BrainStorage.back().owner = &Organisms.back();
     }
 
 }
@@ -104,13 +152,11 @@ void drawCritters()
 
     for(auto &plant : Flora)
     {
-        //organism.pos.x
-
         shapes.createCircle(plant.pos.x,plant.pos.y,plant.size,plant.colorPrime,plant.size/10,plant.colorSecondary);
     }
     for(auto &crit : Organisms)
     {
-        shapes.createCircle(crit.pos.x,crit.pos.y,crit.size,crit.colorPrime,crit.size/10,crit.colorSecondary);
+        shapes.createCircle(crit.pos.x,crit.pos.y,crit.size,crit.colorPrime,crit.size/2,crit.colorSecondary);
     }
 
 
