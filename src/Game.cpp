@@ -19,6 +19,8 @@ void renderGame()
     displayCrittersInfo();
 }
 
+
+
 void runGame()
 {
     static int globalCycle = 0;
@@ -26,7 +28,8 @@ void runGame()
 
     runBrains();
 
-
+    if(inputState.key[Key::C].time == 1)
+        addCreatures(100);
 
 
     if((globalCycle % 60) == 0)

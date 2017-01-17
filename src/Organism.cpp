@@ -130,6 +130,22 @@ void worldPopulationSetup()
     }
 }
 
+void addCreatures(int amount)
+{
+    for(int i = 0; i != amount; i++)
+    {
+        organism Critter;
+        Critter.name = std::to_string(i); // Temporary
+        Critter.pos = sf::Vector2f(random(10,1000),random(10,1000));
+        Organisms.push_back(Critter);
+        brain creatureBrain;
+        BrainStorage.push_back(creatureBrain);
+
+        Organisms.back().brain = &BrainStorage.back();
+        BrainStorage.back().owner = &Organisms.back();
+    }
+}
+
 /*
 FPS Tests
 10 - 10000 Pop Cap
@@ -150,7 +166,9 @@ void displayCrittersInfo()
 
     int yOffset = 3;
 
-    shapes.createText(5,10*1,10,sf::Color::White, "FPS:" + std::to_string(int(fpsKeeper.framesPerSecond)));
+    shapes.createText(5,10*1,10,sf::Color::White, "FPS/UPS:" + std::to_string(int(fpsKeeper.framesPerSecond))
+                      + "/" + std::to_string(int(fpsKeeper.updatesPerSecond))
+                      );
     shapes.createText(5,10*2,10,sf::Color::White, "World Pop:" + std::to_string(Organisms.size()));
     //for(int i = 0; i != Organisms.size(); i++)
     int limitCounter = 0;

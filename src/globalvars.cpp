@@ -12,6 +12,8 @@ fpsTracker::fpsTracker()
     framesPassed = 0;
     framesPerSecond = 0;
     framesPassedTime = fpsTimer.restart();
+    updatesPassed = 0;
+    updatesPerSecond = 0;
 }
 
 void fpsTracker::calcFPS()
@@ -34,9 +36,12 @@ void fpsTracker::calcFPS()
         framesPerSecond = framesPassed;
         framesPassed = 0;
         framesPassedTime = fpsTimer.restart();
+        updatesPerSecond = updatesPassed;
+        updatesPassed = 0;
     }
 
     //std::cout << "FPS(Live/Second/TenSecond): " << estimatedFPS << "/" << framesPerSecond << std::endl;
+    /*
     int floatConv1 = estimatedFPS, floatConv2 = framesPerSecond;
     std::string outPut = "FPS(" + std::to_string(floatConv1) + "/" + std::to_string(floatConv2) + "), ("
         + std::to_string(timeBetweenFrames) + "/" + std::to_string(highestFrameTimePerSecond) + ") \n";
@@ -46,6 +51,7 @@ void fpsTracker::calcFPS()
     int gameSeconds = ((startTime.getElapsedTime().asSeconds()));
     gameSeconds = (gameSeconds % 60);
     outPut.append("Game Time: " + std::to_string(gameHours) + "h" + std::to_string(gameMinutes) + "m" + std::to_string(gameSeconds) + "s" );
+    */
     //textList.createText(sf::Vector2f(0,0),15,sf::Color::White,outPut,gvars::hudView);
 }
 

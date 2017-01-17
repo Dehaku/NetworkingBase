@@ -18,6 +18,8 @@ void runBrains();
 
 void worldPopulationSetup();
 
+void addCreatures(int amount);
+
 void displayCrittersInfo();
 void drawCritters();
 

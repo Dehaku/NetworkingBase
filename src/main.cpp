@@ -274,6 +274,12 @@ int main()
     // Initial
     setup();
 
+    // Delta Timestep
+    double t = 0.0;
+    double dt = 0.01; // const
+    double currentTime = fpsKeeper.startTime.getElapsedTime().asSeconds();
+    double accumulator = 0.0;
+
 	// Start the game loop
     while (window.isOpen())
     {
@@ -281,8 +287,55 @@ int main()
         handleEvents();
         inputState.update();
 
+        if(inputState.key[Key::Left].time == 1)
+        {
+            if(dt < 0.00002)
+                dt += 0.000001;
+            else if(dt < 0.0002)
+                dt += 0.00001;
+            else if(dt < 0.002)
+                dt += 0.0001;
+            else if(dt < 0.02)
+                dt += 0.001;
+        }
+        if(inputState.key[Key::Right].time == 1)
+        {
+            if(dt > 0.002)
+                dt -= 0.001;
+            else if(dt > 0.0002)
+                dt -= 0.0001;
+            else if(dt > 0.00002)
+                dt -= 0.00001;
+        }
+        if(inputState.key[Key::Down].time == 1)
+            dt = 0.01;
+
+        std::cout << "DT: " << dt << std::endl;
+
+
         // Program Specific Components
-        runGame();
+
+        double newTime = fpsKeeper.startTime.getElapsedTime().asSeconds();
+        double frameTime = newTime - currentTime;
+        currentTime = newTime;
+        accumulator += frameTime;
+
+        int runAmount = 0;
+
+        while ( accumulator >= dt )
+        {
+            if(fpsKeeper.framesPerSecond <= 1)
+                dt = 0.01; // A nice little failsafe to help the player.
+            fpsKeeper.updatesPassed++;
+            runAmount++;
+            runGame();
+            accumulator -= dt;
+            t += dt;
+        }
+
+        std::cout << "runAmount: " << runAmount << std::endl;
+
+
 
 
 

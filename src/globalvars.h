@@ -15,6 +15,8 @@ public:
     int framesPassed;
     float framesPerSecond;
     int highestFrameTimePerSecond;
+    int updatesPassed;
+    float updatesPerSecond;
 
     sf::Clock startTime;
     sf::Clock fpsTimerLive;
