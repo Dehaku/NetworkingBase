@@ -10,10 +10,12 @@
 class organism;
 
 extern std::list<organism> Organisms;
+extern std::list<organism> Flora;
 
 void worldPopulationSetup();
 
-void displayCritters();
+void displayCrittersInfo();
+void drawCritters();
 
 
 

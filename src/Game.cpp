@@ -15,12 +15,14 @@ void runGame()
     static int globalCycle = 0;
     globalCycle++;
 
-    displayCritters();
+    drawCritters();
+    displayCrittersInfo();
+
 
     if((globalCycle % 60) == 0)
     {
-        std::cout << "World Size: " << WorldTiles.size() << std::endl;
-        std::cout << "World Population: " << Organisms.size() << std::endl;
+        //std::cout << "World Size: " << WorldTiles.size() << std::endl;
+        //std::cout << "World Population: " << Organisms.size() << std::endl;
     }
 
 }
