@@ -6,7 +6,9 @@
 #include "InputState.h"
 #include "globalvars.h"
 #include "RichText.hpp"
+#include <list>
 
+extern std::list<sfe::RichText> richList;
 
 class Shape
 {
@@ -29,6 +31,7 @@ public:
     //sfe::RichText richText;
     std::string text;
     bool isRichText;
+    sfe::RichText * richText;
     bool offscreenRender;
 
     sf::Vector2f startPos;
@@ -52,6 +55,9 @@ public:
 class Shapes
 {
 public:
+    void createRichText(sfe::RichText &richtext,
+                    sf::View * drawView = &gvars::view1);
+
     void createLine(int sxpos, int sypos, int expos, int eypos, int size,
                     sf::Color mainColor, float outline = 0,
                     sf::Color secondaryColor = sf::Color(0, 0, 0),

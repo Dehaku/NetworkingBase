@@ -6,6 +6,8 @@
 
 extern sf::RenderWindow window;
 
+std::list<sfe::RichText> richList;
+
 int orbRot = 0;
 int orbs = 1;
 int orbSpeed = 2;
@@ -69,6 +71,7 @@ void Orb::drawOrb(int totalOrbs = 1)
 Shape::Shape()
 {
     isRichText = false;
+    richText = nullptr;
     offscreenRender = false;
     layer = 1000;
     shape = Circle;
@@ -86,6 +89,22 @@ Shape::Shape()
     duration = 0;
     id = gvars::glbbtn++;
     toDelete = false;
+}
+
+void Shapes::createRichText(sfe::RichText &richtext, sf::View * drawView)
+{
+    richList.push_back(richtext);
+
+    Shape shape;
+
+    shape.isRichText = true;
+    shape.richText = &richList.back();
+
+    shape.duration = 1;
+    shape.shape = Shape::Text;
+    shape.drawView = drawView;
+    shapes.push_back(shape);
+
 }
 
 void Shapes::createLine(int sxpos, int sypos, int expos, int eypos, int size,
@@ -433,7 +452,14 @@ Shapes shapes;
 
 void drawRichTextShape(Shape &shape)
 {
+    if(shape.richText == nullptr)
+        return;
 
+    window.draw(*shape.richText);
+    shape.richText = nullptr; // Making sure nothing bad happens when the clear is called
+    // Just in case someone sets the duration above 1
+
+    //window.draw(text);
 }
 
 
@@ -633,6 +659,7 @@ void Shapes::drawShapes()
         window.draw(elem);
     }
     polygons.clear();
+    richList.clear();
 }
 
 std::vector<Orb> Orbs;

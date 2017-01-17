@@ -335,18 +335,13 @@ int main()
             t += dt;
         }
 
-        std::cout << "runAmount: " << runAmount << std::endl;
+        //std::cout << "runAmount: " << runAmount << std::endl;
 
 
 
 
 
         // Networking
-
-
-        std::cout << "Sizes: \n";
-        std::cout << sizeof(Shape) << std::endl;
-        std::cout << sizeof(sfe::RichText) << std::endl;
 
 
 

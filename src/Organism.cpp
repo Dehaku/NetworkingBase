@@ -183,9 +183,17 @@ void displayCrittersInfo()
 
 
 
-    shapes.createText(200,200,15,sf::Color::White, "Hello World! \n Goodbye World!");
+    //shapes.createText(200,200,15,sf::Color::White, "Hello World! \n Goodbye World!");
     if(inputState.key[Key::Space])
-        shapes.shapes.back().isRichText = true;
+    {
+        sfe::RichText text(gvars::defaultFont);
+        text.setPosition(200,200);
+        text.setCharacterSize(15);
+        text << sf::Color::White << "Hello World! \n"
+        << sf::Text::Underlined << sf::Color::Red << "Goodbye World!";
+        shapes.createRichText(text);
+    }
+        //shapes.shapes.back().isRichText = true;
 
 
     shapes.createText(5,10*1,10,sf::Color::White, "FPS/UPS:" + std::to_string(int(fpsKeeper.framesPerSecond))
