@@ -8,7 +8,10 @@ void gameSetup()
     worldPopulationSetup();
 }
 
-
+void testFunction()
+{
+    std::cout << "Test! \n";
+}
 
 void runGame()
 {

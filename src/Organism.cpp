@@ -116,7 +116,7 @@ void worldPopulationSetup()
         Flora.push_back(Plant);
     }
 
-    for(int i = 0; i != 10; i++)
+    for(int i = 0; i != 100; i++)
     {
         organism Critter;
         Critter.name = std::to_string(i); // Temporary
@@ -128,35 +128,74 @@ void worldPopulationSetup()
         Organisms.back().brain = &BrainStorage.back();
         BrainStorage.back().owner = &Organisms.back();
     }
-
 }
+
+/*
+FPS Tests
+10 - 10000 Pop Cap
+Disable Drawing of Creatures
+Disable drawing of Info Popups
+(Disable Graphics for each, basically)
+
+Attempt multithreading of creatures. Perhaps splitting the list into four equal parts, and running them concurrently?
+Quad-trees may be useful once creatures start to reference eachother.
+
+
+*/
 
 void displayCrittersInfo()
 {
-    int yOffset = 2;
-    shapes.createText(5,10*1,10,sf::Color::White, "World Pop:" + std::to_string(Organisms.size()));
+    fpsKeeper.calcFPS();
+    //fpsKeeper.framesPerSecond;
+
+    int yOffset = 3;
+
+    shapes.createText(5,10*1,10,sf::Color::White, "FPS:" + std::to_string(int(fpsKeeper.framesPerSecond)));
+    shapes.createText(5,10*2,10,sf::Color::White, "World Pop:" + std::to_string(Organisms.size()));
+    //for(int i = 0; i != Organisms.size(); i++)
+    int limitCounter = 0;
     for(auto &crit : Organisms)
     {
+        if(limitCounter > 10)
+            break;
         std::string descString = "Critter; (" + std::to_string(int(crit.health)) +
             "), " + std::to_string(int(crit.nutrition)) + ":" + std::to_string(int(crit.hydration));
 
         shapes.createText(5,10*yOffset,10,sf::Color::Cyan, descString);
         yOffset++;
+        limitCounter++;
     }
+
+
 }
 
 void drawCritters()
 {
+    static bool draw = true;
+    static bool drawSquareInstead = false;
     static sf::Color background(150,150,10);
     shapes.createSquare(0,0,1000,1000,background);
 
+
+    if(inputState.key[Key::Tab].time == 1)
+        toggle(draw);
+    if(inputState.key[Key::R].time == 1)
+        toggle(drawSquareInstead);
+
+    if(!draw)
+        return;
+
     for(auto &plant : Flora)
     {
+
         shapes.createCircle(plant.pos.x,plant.pos.y,plant.size,plant.colorPrime,plant.size/10,plant.colorSecondary);
     }
     for(auto &crit : Organisms)
     {
-        shapes.createCircle(crit.pos.x,crit.pos.y,crit.size,crit.colorPrime,crit.size/2,crit.colorSecondary);
+        if(drawSquareInstead)
+            shapes.createSquare(crit.pos.x-((crit.size)),crit.pos.y-((crit.size)),crit.pos.x+((crit.size)),crit.pos.y+((crit.size)),crit.colorPrime,crit.size/2,crit.colorSecondary);
+        else
+            shapes.createCircle(crit.pos.x,crit.pos.y,crit.size,crit.colorPrime,crit.size/2,crit.colorSecondary);
     }
 
 
