@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include "globalvars.h"
 #include "defs.h"
-//#include "Networking.h"
+#include "Networking.h"
 #include "InputState.h"
 #include "util.h"
 

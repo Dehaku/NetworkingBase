@@ -1,7 +1,7 @@
 #ifndef CLIENT_H_INCLUDED
 #define CLIENT_H_INCLUDED
 
-int clientNum = 0;
+extern int clientNum;
 
 void ActivateClient();
 

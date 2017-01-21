@@ -6,6 +6,9 @@
 
 #include <list>
 #include "util.h"
+
+#include "Server.h"
+#include "Client.h"
 //#include "Text.h"
 //#include "Tiles.h"
 //#include "Faction.h"

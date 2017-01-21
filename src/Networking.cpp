@@ -5,8 +5,6 @@
 #include <stdio.h>
 #include <string>
 
-#include "Server.h"
-#include "Client.h"
 
 
 namespace network
