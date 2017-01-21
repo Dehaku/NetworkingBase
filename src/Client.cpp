@@ -6,7 +6,13 @@ sf::IpAddress IPAddress;
 unsigned short serverPort;
 sf::TcpSocket socket;
 
-
+void clientSendingPing()
+{
+    const char out[] = "Hi, I'm a client";
+    if (socket.send(out, sizeof(out)) != sf::Socket::Done)
+        return;
+    std::cout << "Message sent to the server: \"" << out << "\"" << std::endl;
+}
 
 void exchangeHellos()
 {
@@ -33,7 +39,11 @@ void activateClient()
     if (status != sf::Socket::Done)
         std::cout << "Failed to connect to... \n" << IPAddress << ":" << serverPort << std::endl;
     if (status == sf::Socket::Done)
+    {
         std::cout << "Probably connected!";
+        socket.setBlocking(false);
+    }
+
     exchangeHellos();
 
 }

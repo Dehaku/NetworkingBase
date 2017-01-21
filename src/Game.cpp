@@ -36,6 +36,9 @@ void runServerStuffs()
     if(network::server)
         serverListen();
 
+    if(network::client && inputState.key[Key::V].time == 1)
+        clientSendingPing();
+
 }
 
 void runGame()

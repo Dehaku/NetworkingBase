@@ -66,6 +66,24 @@ void serverListen()
             }
 
         }
+        else
+        {
+            for(auto &client : clients)
+            {
+                if(selector.isReady(*client))
+                {
+                    std::cout << "Client is ready with something! \n";
+                    char in[128];
+                    std::size_t received;
+                    if (client->receive(in, sizeof(in), received) != sf::Socket::Done)
+                        return;
+                    std::cout << "Client: \"" << in << "\"" << std::endl;
+
+                }
+            }
+        }
+
+
     }
 
     //std::cout << "WEE?! \n \n";

@@ -314,7 +314,7 @@ int main()
             else if(dt > 0.00002)
                 dt -= 0.00001;
         }
-        if(inputState.key[Key::Down].time == 1)
+        if(inputState.key[Key::Down].time == 1 || inputState.key[Key::Up].time == 1 )
             dt = 0.01;
 
         //std::cout << "DT: " << dt << std::endl;
