@@ -19,7 +19,13 @@ void renderGame()
     displayCrittersInfo();
 }
 
-
+void runServerStuffs()
+{
+    if(inputState.key[Key::Home].time == 1)
+        activateServer();
+    if(inputState.key[Key::End].time == 1)
+        activateClient();
+}
 
 void runGame()
 {
@@ -27,6 +33,7 @@ void runGame()
     globalCycle++;
 
     runBrains();
+    runServerStuffs();
 
     if(inputState.key[Key::C].time == 1)
         addCreatures(100);

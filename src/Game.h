@@ -19,6 +19,7 @@ void displayCritters();
 
 void gameSetup();
 
+void runServerStuffs();
 void runGame();
 void renderGame();
 

@@ -271,8 +271,8 @@ void setup()
 
 
     window.setSize(sf::Vector2u(200,100));
-    //gameSetup();
-    activateServer();
+    gameSetup();
+
 
 }
 

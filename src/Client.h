@@ -5,6 +5,6 @@
 
 extern int clientNum;
 
-void ActivateClient();
+void activateClient();
 
 #endif // CLIENT_H_INCLUDED
