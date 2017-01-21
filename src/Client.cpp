@@ -8,6 +8,22 @@ sf::TcpSocket socket;
 
 
 
+void exchangeHellos()
+{
+    // Receive a message from the server
+    char in[128];
+    std::size_t received;
+    if (socket.receive(in, sizeof(in), received) != sf::Socket::Done)
+        return;
+    std::cout << "Message received from the server: \"" << in << "\"" << std::endl;
+
+    // Send an answer to the server
+    const char out[] = "Hi, I'm a client";
+    if (socket.send(out, sizeof(out)) != sf::Socket::Done)
+        return;
+    std::cout << "Message sent to the server: \"" << out << "\"" << std::endl;
+}
+
 
 void activateClient()
 {
@@ -18,6 +34,6 @@ void activateClient()
         std::cout << "Failed to connect to... \n" << IPAddress << ":" << serverPort << std::endl;
 
     std::cout << "Probably connected!";
-
+    exchangeHellos();
 
 }
