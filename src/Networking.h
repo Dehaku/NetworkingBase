@@ -23,6 +23,7 @@ namespace network
     extern bool chatting;
     extern bool needTime;
     extern bool givingTime;
+    extern bool listening;
     extern std::string name;
     extern std::string connectedServer;
 }

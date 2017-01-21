@@ -18,6 +18,7 @@ namespace network
     bool chatting = false;
     bool needTime = false;
     bool givingTime = false;
+    bool listening = false;
     std::string name = "";
     std::string connectedServer = "";
 }

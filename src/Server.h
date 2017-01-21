@@ -5,6 +5,7 @@
 
 extern int serverNum;
 
+void serverPingAll();
 void serverListen();
 void activateServer();
 void deactivateServer();

@@ -19,6 +19,8 @@ void renderGame()
     displayCrittersInfo();
 }
 
+sf::Thread listenThread(&serverListen);
+
 void runServerStuffs()
 {
     if(inputState.key[Key::Home].time == 1)
@@ -33,11 +35,16 @@ void runServerStuffs()
         activateClient();
     }
 
-    if(network::server)
-        serverListen();
+    if(network::server && !network::listening)
+    {
+        network::listening = true;
+        listenThread.launch();
+    }
 
     if(network::client && inputState.key[Key::V].time == 1)
         clientSendingPing();
+    if(network::server && inputState.key[Key::V].time == 1)
+        serverPingAll();
 
 }
 

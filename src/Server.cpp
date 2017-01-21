@@ -24,20 +24,14 @@ void exchangeHellos(sf::TcpSocket &socket)
     std::cout << "Answer received from the client: \"" << in << "\"" << std::endl;
 }
 
-void OLDserverListen()
+
+void serverPingAll()
 {
-    if (listener.listen(port) != sf::Socket::Done)
-        std::cout << "Unable to listen to port: " + port << std::endl;
-    std::cout << "Server is listening to port " << port << ", waiting for connections... " << std::endl;
-    sf::TcpSocket client;
-    //client.setBlocking(false);
-    //listener.setBlocking(false);
-    if (listener.accept(client) != sf::Socket::Done)
-        std::cout << "Listener had an error while listening for a client. \n";
-    std::cout << "Client connected: " << client.getRemoteAddress() << std::endl;
+    const char out[] = "Hi, I'm the server";
 
-    exchangeHellos(client);
-
+    for(auto &client : clients)
+        client->send(out, sizeof(out));
+    std::cout << "Sent: '" << out << "' to all. \n";
 }
 
 void serverListen()
@@ -45,7 +39,6 @@ void serverListen()
 
     if(selector.wait())
     {
-        std::cout << "Something's ready! \n";
         if(selector.isReady(listener))
         {
             std::cout << "Listener Ready! \n";
@@ -72,7 +65,6 @@ void serverListen()
             {
                 if(selector.isReady(*client))
                 {
-                    std::cout << "Client is ready with something! \n";
                     char in[128];
                     std::size_t received;
                     if (client->receive(in, sizeof(in), received) != sf::Socket::Done)
@@ -82,30 +74,8 @@ void serverListen()
                 }
             }
         }
-
-
     }
-
-    //std::cout << "WEE?! \n \n";
-
-
-
-    /*
-
-    if (listener.listen(port) != sf::Socket::Done)
-        std::cout << "Unable to listen to port: " + port << std::endl;
-    std::cout << "Server is listening to port " << port << ", waiting for connections... " << std::endl;
-    sf::TcpSocket client;
-    //client.setBlocking(false);
-    //listener.setBlocking(false);
-    if (listener.accept(client) != sf::Socket::Done)
-        std::cout << "Listener had an error while listening for a client. \n";
-    std::cout << "Client connected: " << client.getRemoteAddress() << std::endl;
-
-    exchangeHellos(client);
-
-    */
-
+    network::listening = false;
 }
 
 void runServer()
