@@ -22,9 +22,20 @@ void renderGame()
 void runServerStuffs()
 {
     if(inputState.key[Key::Home].time == 1)
+    {
+        network::server = true;
         activateServer();
+    }
+
     if(inputState.key[Key::End].time == 1)
+    {
+        network::client = true;
         activateClient();
+    }
+
+    if(network::server)
+        serverListen();
+
 }
 
 void runGame()
@@ -33,7 +44,6 @@ void runGame()
     globalCycle++;
 
     runBrains();
-    runServerStuffs();
 
     if(inputState.key[Key::C].time == 1)
         addCreatures(100);

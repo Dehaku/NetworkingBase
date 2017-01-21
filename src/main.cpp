@@ -341,10 +341,16 @@ int main()
             runAmount++;
             accumulator -= dt;
             t += dt;
+
+            // To hopefully prevent massive jumps if the system lags for a bit.
+            if(accumulator > (dt*1000))
+                accumulator = dt*1000;
         }
 
         //std::cout << "runAmount: " << runAmount << std::endl;
+
         // Networking
+        runServerStuffs();
 
 
 

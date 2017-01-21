@@ -32,8 +32,8 @@ void activateClient()
     sf::Socket::Status status = socket.connect(IPAddress, serverPort);
     if (status != sf::Socket::Done)
         std::cout << "Failed to connect to... \n" << IPAddress << ":" << serverPort << std::endl;
-
-    std::cout << "Probably connected!";
+    if (status == sf::Socket::Done)
+        std::cout << "Probably connected!";
     exchangeHellos();
 
 }
