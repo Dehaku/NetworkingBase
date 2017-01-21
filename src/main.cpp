@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include "globalvars.h"
 #include "defs.h"
-#include "Networking.h"
+//#include "Networking.h"
 #include "InputState.h"
 #include "util.h"
 
@@ -275,6 +275,8 @@ int main()
 {
     // Initial
     setup();
+
+    clientNum = 5;
 
     // Delta Timestep
     double t = 0.0;

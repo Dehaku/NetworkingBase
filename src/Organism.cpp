@@ -87,7 +87,6 @@ void moveAngle(organism &crit, float ang)
 
 void runBrain(organism &crit)
 {
-
     if(random(1,600) == 1 || inputState.key[Key::Space].time == 1)
         crit.brain->desiredPos = sf::Vector2f(random(10,990),random(10,990));
 
