@@ -79,6 +79,7 @@ void handleEvents()
         inputState.updateFromEvent(event);
         if (event.type == sf::Event::Closed)
         {
+            deactivateServer();
             window.close();
         }
         if (event.type == sf::Event::MouseWheelMoved)
@@ -267,7 +268,11 @@ void setup()
     gvars::view1.setSize(1000, 1000);
     window.setView(gvars::view1);
 
-    gameSetup();
+
+
+    window.setSize(sf::Vector2u(200,100));
+    //gameSetup();
+    activateServer();
 
 }
 
@@ -275,8 +280,6 @@ int main()
 {
     // Initial
     setup();
-
-    clientNum = 5;
 
     // Delta Timestep
     double t = 0.0;
@@ -314,7 +317,7 @@ int main()
         if(inputState.key[Key::Down].time == 1)
             dt = 0.01;
 
-        std::cout << "DT: " << dt << std::endl;
+        //std::cout << "DT: " << dt << std::endl;
 
 
         // Program Specific Components
@@ -328,21 +331,19 @@ int main()
 
         while ( accumulator >= dt )
         {
+            // Functions Start.
+            runGame();
+
+            // Functions end, Upkeep begins.
             if(fpsKeeper.framesPerSecond <= 1)
                 dt = 0.01; // A nice little failsafe to help the player.
             fpsKeeper.updatesPassed++;
             runAmount++;
-            runGame();
             accumulator -= dt;
             t += dt;
         }
 
         //std::cout << "runAmount: " << runAmount << std::endl;
-
-
-
-
-
         // Networking
 
 

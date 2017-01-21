@@ -5,6 +5,7 @@
 
 extern int serverNum;
 
-void ActivateServer();
+void activateServer();
+void deactivateServer();
 
 #endif // SERVER_H_INCLUDED
