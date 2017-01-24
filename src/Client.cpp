@@ -30,6 +30,17 @@ void exchangeHellos()
     std::cout << "Message sent to the server: \"" << out << "\"" << std::endl;
 }
 
+void clientListen()
+{
+    // Receive a message from the server
+    char in[128];
+    std::size_t received;
+    if (socket.receive(in, sizeof(in), received) != sf::Socket::Done)
+        return;
+    std::cout << "Server: \"" << in << "\"" << std::endl;
+
+    network::listening = false;
+}
 
 void activateClient()
 {

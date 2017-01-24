@@ -36,7 +36,7 @@ void serverPingAll()
 
 void serverListen()
 {
-
+    // https://www.sfml-dev.org/tutorials/2.4/network-packet.php
     if(selector.wait())
     {
         if(selector.isReady(listener))

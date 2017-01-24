@@ -5,7 +5,11 @@
 
 extern int clientNum;
 
+
 void clientSendingPing();
+
+void clientListen();
+
 void activateClient();
 
 #endif // CLIENT_H_INCLUDED
