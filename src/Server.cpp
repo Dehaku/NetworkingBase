@@ -29,15 +29,10 @@ void serverPingAll()
 {
     sf::Packet packet;
     std::string out = "Hi, I'm the server";
-    packet << out;
-    for(auto &client : clients)
-        client->send(packet);
-    /*
-    const char out[] = "Hi, I'm the server";
+    packet << sf::Uint8(ident::message) << out;
 
     for(auto &client : clients)
-        client->send(out, sizeof(out));
-    */
+        client->send(packet);
 
     std::cout << "Sent: '" << out << "' to all. \n";
 }

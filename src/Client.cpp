@@ -42,15 +42,10 @@ void clientListen()
     if (socket.receive(packet) != sf::Socket::Done)
         return;
     std::string in;
-    packet >> in;
-    /*
-    char in[128];
-    std::size_t received;
-    if (socket.receive(in, sizeof(in), received) != sf::Socket::Done)
-        return;
+    sf::Uint8 type;
+    packet >> type >> in;
 
-    */
-    std::cout << "Server: \"" << in << "\"" << std::endl;
+    std::cout << "Server" << int(type) << ": \"" << in << "\"" << std::endl;
 
     network::listening = false;
 }

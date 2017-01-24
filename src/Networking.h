@@ -26,6 +26,20 @@ namespace network
     extern bool listening;
     extern std::string name;
     extern std::string connectedServer;
+
+}
+
+namespace ident
+{
+    enum ident
+    {
+        connectionAttempt,
+        connectionSuccession,
+        message,
+        organismUpdate,
+        floraUpdate,
+        disconnecting
+    };
 }
 
 
