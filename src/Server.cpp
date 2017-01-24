@@ -27,10 +27,18 @@ void exchangeHellos(sf::TcpSocket &socket)
 
 void serverPingAll()
 {
+    sf::Packet packet;
+    std::string out = "Hi, I'm the server";
+    packet << out;
+    for(auto &client : clients)
+        client->send(packet);
+    /*
     const char out[] = "Hi, I'm the server";
 
     for(auto &client : clients)
         client->send(out, sizeof(out));
+    */
+
     std::cout << "Sent: '" << out << "' to all. \n";
 }
 
