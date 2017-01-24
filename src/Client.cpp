@@ -52,9 +52,8 @@ void activateClient()
     if (status == sf::Socket::Done)
     {
         std::cout << "Probably connected!";
-        socket.setBlocking(false);
     }
 
-    exchangeHellos();
+    // exchangeHellos();
 
 }

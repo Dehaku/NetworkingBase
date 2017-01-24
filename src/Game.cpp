@@ -44,9 +44,9 @@ void runServerStuffs()
     if(network::client && !network::listening)
     {
         network::listening = true;
-        clientListen();
-        //clientListenThread.launch();
-        network::listening = false;
+        // clientListen();
+        clientListenThread.launch();
+        // network::listening = false;
     }
 
     if(network::client && inputState.key[Key::V].time == 1)

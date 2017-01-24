@@ -52,3 +52,6 @@ NetworkingBase.depend
 NetworkingBase.cbp
 NetworkingBase.exe
 gmon.out
+gmon.out
+*.out
+gmon.out
