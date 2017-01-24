@@ -6,6 +6,11 @@ sf::IpAddress IPAddress;
 unsigned short serverPort;
 sf::TcpSocket socket;
 
+void clientPacketManager::handlePackets()
+{
+    std::cout << "Packets: " << packets.size() << std::endl;
+}
+
 void clientSendingPing()
 {
     const char out[] = "Hi, I'm a client";
@@ -33,10 +38,18 @@ void exchangeHellos()
 void clientListen()
 {
     // Receive a message from the server
+    sf::Packet packet;
+    if (socket.receive(packet) != sf::Socket::Done)
+        return;
+    std::string in;
+    packet >> in;
+    /*
     char in[128];
     std::size_t received;
     if (socket.receive(in, sizeof(in), received) != sf::Socket::Done)
         return;
+
+    */
     std::cout << "Server: \"" << in << "\"" << std::endl;
 
     network::listening = false;
@@ -52,6 +65,7 @@ void activateClient()
     if (status == sf::Socket::Done)
     {
         std::cout << "Probably connected!";
+        // socket.setBlocking(false);
     }
 
     // exchangeHellos();

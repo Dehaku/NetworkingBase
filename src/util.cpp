@@ -3,6 +3,12 @@
 
 #include <random>
 
+BoolPacket::BoolPacket()
+{
+    toDelete = false;
+}
+std::vector<BoolPacket> packetContainer;
+
 std::string str(int num)
 {
     return std::to_string(num);

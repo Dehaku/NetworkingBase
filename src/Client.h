@@ -2,9 +2,17 @@
 #define CLIENT_H_INCLUDED
 
 #include "Networking.h"
+#include <vector>
+#include "util.h"
 
 extern int clientNum;
 
+class clientPacketManager
+{
+public:
+    std::vector<BoolPacket> packets;
+    void handlePackets();
+};
 
 void clientSendingPing();
 

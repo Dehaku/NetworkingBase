@@ -10,6 +10,16 @@
 #include <cmath>
 
 #include <SFML/System.hpp>
+#include <SFML/Network.hpp>
+
+class BoolPacket
+{
+    public:
+    sf::Packet packet;
+    bool toDelete;
+    BoolPacket();
+};
+extern std::vector<BoolPacket> packetContainer;
 
 void fSleep(float time);
 std::string str(int num);

@@ -29,14 +29,7 @@ namespace network
 }
 
 
-class BoolPacket
-{
-    public:
-    sf::Packet packet;
-    bool toDelete;
-    BoolPacket();
-};
-extern std::vector<BoolPacket> packetContainer;
+
 
 
 #endif // NETWORKING_H_INCLUDED

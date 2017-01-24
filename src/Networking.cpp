@@ -26,11 +26,7 @@ namespace network
 
 
 
-BoolPacket::BoolPacket()
-{
-    toDelete = false;
-}
-std::vector<BoolPacket> packetContainer;
+
 
 
 
