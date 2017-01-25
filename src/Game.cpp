@@ -66,6 +66,11 @@ void runServerStuffs()
 
     if(network::server)
     {
+        { // Locking and sorting through the packets!
+            sf::Lock lock(network::packetManagerHandling);
+            sPM.handlePackets();
+        }
+
         if(inputState.key[Key::V].time == 1 && inputState.key[Key::LShift].time == 0)
             serverPingAll();
         if(inputState.key[Key::V].time == 1 && inputState.key[Key::LShift].time >= 1)

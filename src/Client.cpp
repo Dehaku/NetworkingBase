@@ -26,9 +26,13 @@ clientPacketManager cPM;
 
 void clientSendingPing()
 {
-    const char out[] = "Hi, I'm a client";
-    if (socket.send(out, sizeof(out)) != sf::Socket::Done)
+    sf::Packet packet;
+    std::string out = "Hi, I'm a client";
+    packet << sf::Uint8(ident::message) << out;
+
+    if (socket.send(packet) != sf::Socket::Done)
         return;
+
     std::cout << "Message sent to the server: \"" << out << "\"" << std::endl;
 }
 
@@ -51,15 +55,9 @@ void exchangeHellos()
 void clientListen()
 {
     // Receive a message from the server
-    // sf::Packet packet;
     BoolPacket packet;
     if (socket.receive(packet.packet) != sf::Socket::Done)
         return;
-    // std::string in;
-    // sf::Uint8 type;
-    // packet >> type >> in;
-
-    // std::cout << "Server" << int(type) << ": \"" << in << "\"" << std::endl;
 
     { // Storing Packet in Manager for external use.
         sf::Lock lock(network::packetManagerHandling);

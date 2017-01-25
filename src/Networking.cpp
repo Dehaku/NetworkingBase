@@ -5,7 +5,12 @@
 #include <stdio.h>
 #include <string>
 
+/*
 
+TODO: Test with alot of players joining and leaving at the same time to see if threaded clients need to be mutex locked.
+
+
+*/
 
 namespace network
 {

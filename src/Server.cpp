@@ -4,6 +4,29 @@ sf::SocketSelector selector;
 sf::TcpListener listener;
 unsigned short port;
 
+
+
+void serverPacketManager::handlePackets()
+{
+    if(packets.size() > 0)
+        std::cout << "Packets: " << packets.size() << std::endl;
+    for(auto &boolPacket : packets)
+    {
+        sf::Packet &packet = boolPacket.packet;
+
+        std::string in;
+        sf::Uint8 type;
+        packet >> type >> in;
+
+        std::cout << "Client" << int(type) << ": \"" << in << "\"" << std::endl;
+    }
+    packets.clear();
+}
+serverPacketManager sPM;
+
+
+
+
 ClientPackage::ClientPackage()
 {
     socket = nullptr;
@@ -15,7 +38,7 @@ ClientPackage::~ClientPackage()
         //delete socket;
 }
 
-//std::list<sf::TcpSocket*> clients;
+
 std::list<ClientPackage> clients;
 
 int serverNum = 0;
@@ -93,7 +116,10 @@ void serverListen()
                 {
                     char in[128];
                     std::size_t received;
-                    sf::Socket::Status status = client.socket->receive(in, sizeof(in), received);
+
+                    BoolPacket packet;
+
+                    sf::Socket::Status status = client.socket->receive(packet.packet);
 
                     if(client.toDelete == false && status == sf::Socket::Disconnected)
                     {
@@ -107,10 +133,10 @@ void serverListen()
                     if(status != sf::Socket::Done)
                         continue;
 
-                    //if (client->receive(in, sizeof(in), received) != sf::Socket::Done)
-
-                    std::cout << "Client: \"" << in << "\"" << std::endl;
-
+                    { // Storing Packet in Manager for external use.
+                        sf::Lock lock(network::packetManagerHandling);
+                        sPM.packets.push_back(packet);
+                    }
                 }
             }
         }

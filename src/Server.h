@@ -5,6 +5,14 @@
 
 extern int serverNum;
 
+class serverPacketManager
+{
+public:
+    std::vector<BoolPacket> packets;
+    void handlePackets();
+};
+extern serverPacketManager sPM;
+
 class ClientPackage
 {
 public:
