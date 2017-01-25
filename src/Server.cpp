@@ -3,7 +3,15 @@
 sf::SocketSelector selector;
 sf::TcpListener listener;
 unsigned short port;
+
+ClientPackage::ClientPackage()
+{
+    socket = nullptr;
+    toDelete = false;
+}
+
 std::list<sf::TcpSocket*> clients;
+std::list<ClientPackage> clients2;
 
 int serverNum = 0;
 
@@ -70,8 +78,19 @@ void serverListen()
                 {
                     char in[128];
                     std::size_t received;
-                    if (client->receive(in, sizeof(in), received) != sf::Socket::Done)
-                        return;
+                    sf::Socket::Status status = client->receive(in, sizeof(in), received);
+
+                    if(status == sf::Socket::Disconnected)
+                    {
+                        std::cout << "Client disconnected! \n";
+                        continue;
+                    }
+
+                    if(status != sf::Socket::Done)
+                        continue;
+
+                    //if (client->receive(in, sizeof(in), received) != sf::Socket::Done)
+
                     std::cout << "Client: \"" << in << "\"" << std::endl;
 
                 }

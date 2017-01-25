@@ -5,6 +5,15 @@
 
 extern int serverNum;
 
+class ClientPackage
+{
+public:
+    std::string userName;
+    sf::TcpSocket* socket;
+    bool toDelete;
+    ClientPackage();
+};
+
 void serverPingAll();
 void serverListen();
 void activateServer();
