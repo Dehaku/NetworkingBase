@@ -10,8 +10,8 @@ ClientPackage::ClientPackage()
     toDelete = false;
 }
 
-std::list<sf::TcpSocket*> clients;
-std::list<ClientPackage> clients2;
+//std::list<sf::TcpSocket*> clients;
+std::list<ClientPackage> clients;
 
 int serverNum = 0;
 
@@ -40,7 +40,7 @@ void serverPingAll()
     packet << sf::Uint8(ident::message) << out;
 
     for(auto &client : clients)
-        client->send(packet);
+        client.socket->send(packet);
 
     std::cout << "Sent: '" << out << "' to all. \n";
 }
@@ -53,20 +53,23 @@ void serverListen()
         if(selector.isReady(listener))
         {
             std::cout << "Listener Ready! \n";
-            sf::TcpSocket* client = new sf::TcpSocket;
-            if(listener.accept(*client) == sf::Socket::Done)
+            ClientPackage client;
+            client.socket = new sf::TcpSocket;
+
+            //sf::TcpSocket* client = new sf::TcpSocket;
+            if(listener.accept(*client.socket) == sf::Socket::Done)
             {
                 std::cout << "New Client! Adding to list...";
                 clients.push_back(client);
                 std::cout << " and selector...";
-                selector.add(*client);
+                selector.add(*client.socket);
                 std::cout << "Done! \n";
 
             }
             else
             {
                 std::cout << "Failed to make new client. \n";
-                delete client;
+                delete client.socket;
             }
 
         }
@@ -74,11 +77,11 @@ void serverListen()
         {
             for(auto &client : clients)
             {
-                if(selector.isReady(*client))
+                if(selector.isReady(*client.socket))
                 {
                     char in[128];
                     std::size_t received;
-                    sf::Socket::Status status = client->receive(in, sizeof(in), received);
+                    sf::Socket::Status status = client.socket->receive(in, sizeof(in), received);
 
                     if(status == sf::Socket::Disconnected)
                     {
