@@ -8,7 +8,14 @@
 /*
 
 TODO: Test with alot of players joining and leaving at the same time to see if threaded clients need to be mutex locked.
+TODO: Remove the server's handling of packets mutex, and do a bool instead(with a mutex afterwards)
+It's okay for the server to not handle every single packet instantly.
+    Or maybe this isn't true since we're using a seperate packet container?
+    It may never get the chance to access it, simply always being filled.
+    Perhaps it's the Packet RECEIVER, the selector, that should have the waiting bool, and simply
+    let the server handle packets it has qued up.
 
+TODO: Add proper client-side connection shutdown
 
 */
 

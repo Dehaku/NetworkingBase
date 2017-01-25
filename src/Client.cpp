@@ -5,6 +5,7 @@ int clientNum = 0;
 sf::IpAddress IPAddress;
 unsigned short serverPort;
 sf::TcpSocket socket;
+sf::SocketSelector serverHolder;
 
 void clientPacketManager::handlePackets()
 {
@@ -36,34 +37,34 @@ void clientSendingPing()
     std::cout << "Message sent to the server: \"" << out << "\"" << std::endl;
 }
 
-void exchangeHellos()
-{
-    // Receive a message from the server
-    char in[128];
-    std::size_t received;
-    if (socket.receive(in, sizeof(in), received) != sf::Socket::Done)
-        return;
-    std::cout << "Message received from the server: \"" << in << "\"" << std::endl;
-
-    // Send an answer to the server
-    const char out[] = "Hi, I'm a client";
-    if (socket.send(out, sizeof(out)) != sf::Socket::Done)
-        return;
-    std::cout << "Message sent to the server: \"" << out << "\"" << std::endl;
-}
 
 void clientListen()
 {
     // Receive a message from the server
-    BoolPacket packet;
-    if (socket.receive(packet.packet) != sf::Socket::Done)
-        return;
 
-    { // Storing Packet in Manager for external use.
-        sf::Lock lock(network::packetManagerHandling);
-        cPM.packets.push_back(packet);
+    while(serverHolder.wait())
+    {
+        if(serverHolder.isReady(socket))
+        {
+            BoolPacket packet;
+
+            sf::Socket::Status status = socket.receive(packet.packet);
+
+            if (status == sf::Socket::Disconnected)
+                std::cout << "We received a disconnect somehow. \n";
+            if (status == sf::Socket::Error)
+                std::cout << "RECIEVE ERROR, PANIC. \n";
+
+
+            if (status != sf::Socket::Done)
+                continue;
+
+            { // Storing Packet in Manager for external use.
+                sf::Lock lock(network::packetManagerHandling);
+                cPM.packets.push_back(packet);
+            }
+        }
     }
-
 
     network::listening = false;
 }
@@ -81,6 +82,6 @@ void activateClient()
         // socket.setBlocking(false);
     }
 
-    // exchangeHellos();
+    serverHolder.add(socket);
 
 }

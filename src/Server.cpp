@@ -44,23 +44,6 @@ std::list<ClientPackage> clients;
 int serverNum = 0;
 
 
-void exchangeHellos(sf::TcpSocket &socket)
-{
-    // Send a message to the connected client
-    const char out[] = "Hi, I'm the server";
-    if (socket.send(out, sizeof(out)) != sf::Socket::Done)
-        return;
-    std::cout << "Message sent to the client: \"" << out << "\"" << std::endl;
-
-    // Receive a message back from the client
-    char in[128];
-    std::size_t received;
-    if (socket.receive(in, sizeof(in), received) != sf::Socket::Done)
-        return;
-    std::cout << "Answer received from the client: \"" << in << "\"" << std::endl;
-}
-
-
 void serverPingAll()
 {
     sf::Packet packet;
@@ -77,7 +60,7 @@ void serverListen()
 {
     // https://www.sfml-dev.org/tutorials/2.4/network-packet.php
 
-    if(selector.wait())
+    while(selector.wait())
     {
         if(selector.isReady(listener))
         {
@@ -114,9 +97,6 @@ void serverListen()
             {
                 if(selector.isReady(*client.socket))
                 {
-                    char in[128];
-                    std::size_t received;
-
                     BoolPacket packet;
 
                     sf::Socket::Status status = client.socket->receive(packet.packet);
@@ -130,9 +110,16 @@ void serverListen()
                         continue;
                     }
 
-                    if(status != sf::Socket::Done)
-                        continue;
+                    if (status == sf::Socket::Error)
+                        std::cout << "RECIEVE ERROR, PANIC. \n";
+                    if (status == sf::Socket::NotReady)
+                        std::cout << "Not Ready! \n";
+                    if (status == sf::Socket::Partial)
+                        std::cout << "P";
 
+
+
+                    if(status == sf::Socket::Done)
                     { // Storing Packet in Manager for external use.
                         sf::Lock lock(network::packetManagerHandling);
                         sPM.packets.push_back(packet);
