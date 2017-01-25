@@ -22,6 +22,7 @@ namespace network
     std::string name = "";
     std::string connectedServer = "";
     sf::Mutex clientHandling;
+    sf::Mutex packetManagerHandling;
 }
 
 

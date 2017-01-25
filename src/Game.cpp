@@ -49,12 +49,29 @@ void runServerStuffs()
         // network::listening = false;
     }
 
-    if(network::client && inputState.key[Key::V].time == 1)
-        clientSendingPing();
+    if(network::client)
+    {
+        { // Locking and sorting through the packets!
+            sf::Lock lock(network::packetManagerHandling);
+            cPM.handlePackets();
+        }
+
+        if(inputState.key[Key::V].time == 1 && inputState.key[Key::LShift].time == 0)
+            clientSendingPing();
+        if(inputState.key[Key::V].time == 1 && inputState.key[Key::LShift].time >= 1)
+            for(int i = 0; i != 10; i++)
+                clientSendingPing();
+    }
+
+
     if(network::server)
     {
-        if(inputState.key[Key::V].time == 1)
+        if(inputState.key[Key::V].time == 1 && inputState.key[Key::LShift].time == 0)
             serverPingAll();
+        if(inputState.key[Key::V].time == 1 && inputState.key[Key::LShift].time >= 1)
+            for(int i = 0; i != 10; i++)
+                serverPingAll();
+
         if(inputState.key[Key::B].time == 1)
             std::cout << "Clients: " << clientCount() << std::endl;
 

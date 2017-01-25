@@ -27,6 +27,7 @@ namespace network
     extern std::string name;
     extern std::string connectedServer;
     extern sf::Mutex clientHandling;
+    extern sf::Mutex packetManagerHandling;
 
 }
 

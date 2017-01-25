@@ -13,6 +13,7 @@ public:
     std::vector<BoolPacket> packets;
     void handlePackets();
 };
+extern clientPacketManager cPM;
 
 void clientSendingPing();
 

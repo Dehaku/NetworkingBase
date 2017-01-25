@@ -8,8 +8,21 @@ sf::TcpSocket socket;
 
 void clientPacketManager::handlePackets()
 {
-    std::cout << "Packets: " << packets.size() << std::endl;
+    if(packets.size() > 0)
+        std::cout << "Packets: " << packets.size() << std::endl;
+    for(auto &boolPacket : packets)
+    {
+        sf::Packet &packet = boolPacket.packet;
+
+        std::string in;
+        sf::Uint8 type;
+        packet >> type >> in;
+
+        std::cout << "Server" << int(type) << ": \"" << in << "\"" << std::endl;
+    }
+    packets.clear();
 }
+clientPacketManager cPM;
 
 void clientSendingPing()
 {
@@ -38,14 +51,21 @@ void exchangeHellos()
 void clientListen()
 {
     // Receive a message from the server
-    sf::Packet packet;
-    if (socket.receive(packet) != sf::Socket::Done)
+    // sf::Packet packet;
+    BoolPacket packet;
+    if (socket.receive(packet.packet) != sf::Socket::Done)
         return;
-    std::string in;
-    sf::Uint8 type;
-    packet >> type >> in;
+    // std::string in;
+    // sf::Uint8 type;
+    // packet >> type >> in;
 
-    std::cout << "Server" << int(type) << ": \"" << in << "\"" << std::endl;
+    // std::cout << "Server" << int(type) << ": \"" << in << "\"" << std::endl;
+
+    { // Storing Packet in Manager for external use.
+        sf::Lock lock(network::packetManagerHandling);
+        cPM.packets.push_back(packet);
+    }
+
 
     network::listening = false;
 }
