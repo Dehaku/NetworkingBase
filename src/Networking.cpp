@@ -21,6 +21,7 @@ namespace network
     bool listening = false;
     std::string name = "";
     std::string connectedServer = "";
+    sf::Mutex clientHandling;
 }
 
 

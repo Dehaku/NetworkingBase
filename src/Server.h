@@ -12,11 +12,13 @@ public:
     sf::TcpSocket* socket;
     bool toDelete;
     ClientPackage();
+    ~ClientPackage();
 };
 
 void serverPingAll();
 void serverListen();
 void activateServer();
 void deactivateServer();
+int clientCount();
 
 #endif // SERVER_H_INCLUDED

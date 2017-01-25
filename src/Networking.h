@@ -26,6 +26,7 @@ namespace network
     extern bool listening;
     extern std::string name;
     extern std::string connectedServer;
+    extern sf::Mutex clientHandling;
 
 }
 

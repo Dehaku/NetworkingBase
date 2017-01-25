@@ -51,8 +51,15 @@ void runServerStuffs()
 
     if(network::client && inputState.key[Key::V].time == 1)
         clientSendingPing();
-    if(network::server && inputState.key[Key::V].time == 1)
-        serverPingAll();
+    if(network::server)
+    {
+        if(inputState.key[Key::V].time == 1)
+            serverPingAll();
+        if(inputState.key[Key::B].time == 1)
+            std::cout << "Clients: " << clientCount() << std::endl;
+
+    }
+
 
 }
 

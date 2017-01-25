@@ -9,6 +9,11 @@ ClientPackage::ClientPackage()
     socket = nullptr;
     toDelete = false;
 }
+ClientPackage::~ClientPackage()
+{
+    //if(socket != nullptr)
+        //delete socket;
+}
 
 //std::list<sf::TcpSocket*> clients;
 std::list<ClientPackage> clients;
@@ -48,6 +53,7 @@ void serverPingAll()
 void serverListen()
 {
     // https://www.sfml-dev.org/tutorials/2.4/network-packet.php
+
     if(selector.wait())
     {
         if(selector.isReady(listener))
@@ -60,7 +66,12 @@ void serverListen()
             if(listener.accept(*client.socket) == sf::Socket::Done)
             {
                 std::cout << "New Client! Adding to list...";
-                clients.push_back(client);
+                {
+                    // sf::Lock lock(network::clientHandling);
+                    clients.push_back(client);
+                }
+
+
                 std::cout << " and selector...";
                 selector.add(*client.socket);
                 std::cout << "Done! \n";
@@ -75,6 +86,7 @@ void serverListen()
         }
         else
         {
+            // sf::Lock lock(network::clientHandling);
             for(auto &client : clients)
             {
                 if(selector.isReady(*client.socket))
@@ -83,9 +95,12 @@ void serverListen()
                     std::size_t received;
                     sf::Socket::Status status = client.socket->receive(in, sizeof(in), received);
 
-                    if(status == sf::Socket::Disconnected)
+                    if(client.toDelete == false && status == sf::Socket::Disconnected)
                     {
                         std::cout << "Client disconnected! \n";
+                        selector.remove(*client.socket);
+                        delete client.socket;
+                        client.toDelete = true;
                         continue;
                     }
 
@@ -100,6 +115,8 @@ void serverListen()
             }
         }
     }
+
+    AnyDeletes(clients);
     network::listening = false;
 }
 
@@ -122,4 +139,9 @@ void activateServer()
 void deactivateServer()
 {
     listener.close();
+}
+
+int clientCount()
+{
+    return clients.size();
 }
