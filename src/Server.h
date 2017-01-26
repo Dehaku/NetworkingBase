@@ -17,6 +17,7 @@ class ClientPackage
 {
 public:
     std::string userName;
+    sf::Uint8 id;
     sf::TcpSocket* socket;
     bool toDelete;
     ClientPackage();

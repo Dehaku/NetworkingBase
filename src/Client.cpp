@@ -1,6 +1,7 @@
 #include "Client.h"
 
 int clientNum = 0;
+sf::Uint8 myID = 0;
 
 sf::IpAddress IPAddress;
 unsigned short serverPort;
@@ -22,6 +23,17 @@ void clientSendingPing()
     std::cout << "Message sent to the server: \"" << out << "\"" << std::endl;
 }
 
+
+void sendServerMyInfo()
+{
+    sf::Packet packet;
+    packet << sf::Uint8(ident::clientID) << myID;
+
+    if (socket.send(packet) != sf::Socket::Done)
+        return;
+
+    std::cout << "Sent Server My ID: \"" << int(myID) << "\"" << std::endl;
+}
 
 void clientListen()
 {
@@ -66,6 +78,8 @@ void activateClient()
         std::cout << "Probably connected!";
         // socket.setBlocking(false);
     }
+
+    sendServerMyInfo();
 
     serverHolder.add(socket);
 

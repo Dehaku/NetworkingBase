@@ -35,10 +35,13 @@ namespace ident
 {
     enum ident
     {
+        clientID,
         connectionAttempt,
         connectionSuccession,
         message,
+        organismInitialization,
         organismUpdate,
+        floraInitialization,
         floraUpdate,
         disconnecting
     };

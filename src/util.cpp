@@ -5,6 +5,7 @@
 
 BoolPacket::BoolPacket()
 {
+    sender = nullptr;
     toDelete = false;
 }
 std::vector<BoolPacket> packetContainer;

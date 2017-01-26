@@ -11,11 +11,13 @@
 
 #include <SFML/System.hpp>
 #include <SFML/Network.hpp>
+class ClientPackage;
 
 class BoolPacket
 {
     public:
     sf::Packet packet;
+    ClientPackage* sender;
     bool toDelete;
     BoolPacket();
 };

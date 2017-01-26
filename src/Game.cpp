@@ -4,16 +4,63 @@ void clientPacketManager::handlePackets()
 {
     if(packets.size() > 0)
         std::cout << "Packets: " << packets.size() << std::endl;
-    for(auto &boolPacket : packets)
+    for(auto &currentPacket : packets)
     {
-        sf::Packet &packet = boolPacket.packet;
-
-        std::string in;
+        sf::Packet &packet = currentPacket.packet;
         sf::Uint8 type;
-        packet >> type >> in;
+        packet >> type;
 
-        std::cout << "Server" << int(type) << ": \"" << in << "\"" << std::endl;
-        std::cout << "Organisms size" << Organisms.size() << std::endl;
+
+        if(type == sf::Uint8(ident::message))
+        {
+            std::string in;
+            packet >> in;
+            std::cout << "Server" << int(type) << ": \"" << in << "\"" << std::endl;
+        }
+        else if(type == sf::Uint8(ident::clientID) )
+        {
+            std::cout << "Received out ID: ";
+            packet >> myID;
+            std::cout << int(myID) << std::endl;
+        }
+
+
+
+    }
+    packets.clear();
+}
+
+void serverPacketManager::handlePackets()
+{
+    if(packets.size() > 0)
+        std::cout << "Packets: " << packets.size() << std::endl;
+    for(auto &currentPacket : packets)
+    {
+        sf::Packet &packet = currentPacket.packet;
+        sf::Uint8 type;
+        packet >> type;
+
+        if(type == sf::Uint8(ident::message))
+        {
+            std::string in;
+            packet >> in;
+            std::cout << "Client" << int(type) << ": \"" << in << "\"" << std::endl;
+        }
+
+        else if(type == sf::Uint8(ident::clientID) )
+        {
+            std::cout << "ID Request received. \n";
+            sf::Uint8 sillyID;
+            packet >> sillyID; // Placeholder for login/profile info.
+
+            sf::Packet returnPacket;
+            // Send them the ID assigned to them when they joined.
+            returnPacket << sf::Uint8(ident::clientID) << sf::Uint8(currentPacket.sender->id);
+            currentPacket.sender->socket->send(returnPacket);
+            std::cout << "Sent ID to client. \n";
+        }
+
+
 
     }
     packets.clear();

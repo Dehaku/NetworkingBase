@@ -3,25 +3,10 @@
 sf::SocketSelector selector;
 sf::TcpListener listener;
 unsigned short port;
+int clientIDCounter = 1;
 
 
 
-void serverPacketManager::handlePackets()
-{
-    if(packets.size() > 0)
-        std::cout << "Packets: " << packets.size() << std::endl;
-    for(auto &boolPacket : packets)
-    {
-        sf::Packet &packet = boolPacket.packet;
-
-        std::string in;
-        sf::Uint8 type;
-        packet >> type >> in;
-
-        std::cout << "Client" << int(type) << ": \"" << in << "\"" << std::endl;
-    }
-    packets.clear();
-}
 serverPacketManager sPM;
 
 
@@ -29,6 +14,7 @@ serverPacketManager sPM;
 
 ClientPackage::ClientPackage()
 {
+    id = 0;
     socket = nullptr;
     toDelete = false;
 }
@@ -42,6 +28,7 @@ ClientPackage::~ClientPackage()
 std::list<ClientPackage> clients;
 
 int serverNum = 0;
+
 
 
 void serverPingAll()
@@ -73,6 +60,7 @@ void serverListen()
             {
                 std::cout << "New Client! Adding to list...";
                 {
+                    client.id = clientIDCounter++;
                     // sf::Lock lock(network::clientHandling);
                     clients.push_back(client);
                 }
@@ -98,6 +86,7 @@ void serverListen()
                 if(selector.isReady(*client.socket))
                 {
                     BoolPacket packet;
+                    packet.sender = &client; // So the server knows who to reply to when reading packets.
 
                     sf::Socket::Status status = client.socket->receive(packet.packet);
 
@@ -128,8 +117,8 @@ void serverListen()
             }
         }
     }
-
-    AnyDeletes(clients);
+    if(sPM.packets.empty()) // To avoid possible nullptr references when a client vanishes.
+        AnyDeletes(clients);
     network::listening = false;
 }
 

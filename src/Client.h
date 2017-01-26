@@ -6,6 +6,7 @@
 #include "util.h"
 
 extern int clientNum;
+extern sf::Uint8 myID;
 
 class clientPacketManager
 {
