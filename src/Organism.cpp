@@ -260,11 +260,19 @@ void displayCrittersInfo()
 
 }
 
+
+
 void drawCritters()
 {
     static bool draw = true;
     static bool drawSquareInstead = false;
+    static bool drawTextureInstead = false;
     static sf::Color background(150,150,10);
+
+    static sf::Sprite circleCritter;
+    if(circleCritter.getTexture() == nullptr)
+        circleCritter.setTexture(texturemanager.getTexture("Circle.png"));
+
 
 
 
@@ -272,6 +280,8 @@ void drawCritters()
         toggle(draw);
     if(inputState.key[Key::R].time == 1)
         toggle(drawSquareInstead);
+    if(inputState.key[Key::T].time == 1)
+        toggle(drawTextureInstead);
 
     if(!draw)
         return;
@@ -283,10 +293,22 @@ void drawCritters()
 
         shapes.createCircle(plant.pos.x,plant.pos.y,plant.size,plant.colorPrime,plant.size/10,plant.colorSecondary);
     }
+
+    sf::Texture &circley = texturemanager.getTexture("Circle.png");
+    sf::Texture &swirl = texturemanager.getTexture("SwirlEffect.png");
+    static int rotation = 0;
+    if(inputState.key[Key::Z])
+        rotation++;
+
     for(auto &crit : Organisms)
     {
         if(drawSquareInstead)
             shapes.createSquare(crit.pos.x-((crit.size)),crit.pos.y-((crit.size)),crit.pos.x+((crit.size)),crit.pos.y+((crit.size)),crit.colorPrime,crit.size/2,crit.colorSecondary);
+        else if(drawTextureInstead)
+        {
+            shapes.createImageButton(crit.pos,circley);
+            //shapes.createImageButton(crit.pos,swirl,"",rotation);
+        }
         else
             shapes.createCircle(crit.pos.x,crit.pos.y,crit.size,crit.colorPrime,crit.size/2,crit.colorSecondary);
     }

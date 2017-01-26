@@ -21,8 +21,9 @@ void clientPacketManager::handlePackets()
 
 void gameSetup()
 {
-    worldTilesSetup();
-    worldPopulationSetup();
+    texturemanager.init();
+
+
 }
 
 void testFunction()
@@ -102,10 +103,20 @@ void runServerStuffs()
 
 }
 
+void simulationInitialization()
+{
+    worldTilesSetup();
+    worldPopulationSetup();
+}
+
 void runGame()
 {
     static int globalCycle = 0;
     globalCycle++;
+
+    if(inputState.key[Key::Return].time == 1)
+        simulationInitialization();
+
 
     runBrains();
 

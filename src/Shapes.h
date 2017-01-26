@@ -6,7 +6,9 @@
 #include "InputState.h"
 #include "globalvars.h"
 #include "RichText.hpp"
+#include "Textures.h"
 #include <list>
+
 
 extern std::list<sfe::RichText> richList;
 
