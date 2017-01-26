@@ -343,8 +343,8 @@ int main()
             t += dt;
 
             // To hopefully prevent massive jumps if the system lags for a bit.
-            if(accumulator > (dt*1000))
-                accumulator = dt*1000;
+            if(accumulator > (dt*10000))
+                accumulator = dt*10000;
         }
 
         //std::cout << "runAmount: " << runAmount << std::endl;

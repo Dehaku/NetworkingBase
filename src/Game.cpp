@@ -1,6 +1,23 @@
 #include "Game.h"
 
+void clientPacketManager::handlePackets()
+{
+    if(packets.size() > 0)
+        std::cout << "Packets: " << packets.size() << std::endl;
+    for(auto &boolPacket : packets)
+    {
+        sf::Packet &packet = boolPacket.packet;
 
+        std::string in;
+        sf::Uint8 type;
+        packet >> type >> in;
+
+        std::cout << "Server" << int(type) << ": \"" << in << "\"" << std::endl;
+        std::cout << "Organisms size" << Organisms.size() << std::endl;
+
+    }
+    packets.clear();
+}
 
 void gameSetup()
 {
