@@ -5,7 +5,7 @@ sf::Uint8 myID = 0;
 
 sf::IpAddress IPAddress;
 unsigned short serverPort;
-sf::TcpSocket socket;
+sf::TcpSocket serverSocket;
 sf::SocketSelector serverHolder;
 
 
@@ -17,7 +17,7 @@ void clientSendingPing()
     std::string out = "Hi, I'm a client";
     packet << sf::Uint8(ident::message) << out;
 
-    if (socket.send(packet) != sf::Socket::Done)
+    if (serverSocket.send(packet) != sf::Socket::Done)
         return;
 
     std::cout << "Message sent to the server: \"" << out << "\"" << std::endl;
@@ -29,7 +29,7 @@ void sendServerMyInfo()
     sf::Packet packet;
     packet << sf::Uint8(ident::clientID) << myID;
 
-    if (socket.send(packet) != sf::Socket::Done)
+    if (serverSocket.send(packet) != sf::Socket::Done)
         return;
 
     std::cout << "Sent Server My ID: \"" << int(myID) << "\"" << std::endl;
@@ -41,11 +41,11 @@ void clientListen()
 
     while(serverHolder.wait())
     {
-        if(serverHolder.isReady(socket))
+        if(serverHolder.isReady(serverSocket))
         {
             BoolPacket packet;
 
-            sf::Socket::Status status = socket.receive(packet.packet);
+            sf::Socket::Status status = serverSocket.receive(packet.packet);
 
             if (status == sf::Socket::Disconnected)
                 std::cout << "We received a disconnect somehow. \n";
@@ -70,7 +70,7 @@ void activateClient()
 {
     IPAddress = "127.0.0.1";
     serverPort = 23636;
-    sf::Socket::Status status = socket.connect(IPAddress, serverPort);
+    sf::Socket::Status status = serverSocket.connect(IPAddress, serverPort);
     if (status != sf::Socket::Done)
         std::cout << "Failed to connect to... \n" << IPAddress << ":" << serverPort << std::endl;
     if (status == sf::Socket::Done)
@@ -81,6 +81,6 @@ void activateClient()
 
     sendServerMyInfo();
 
-    serverHolder.add(socket);
+    serverHolder.add(serverSocket);
 
 }

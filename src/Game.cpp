@@ -17,11 +17,60 @@ void clientPacketManager::handlePackets()
             packet >> in;
             std::cout << "Server" << int(type) << ": \"" << in << "\"" << std::endl;
         }
+
+        else if(type == sf::Uint8(ident::organismUpdate) )
+        {
+            std::cout << "Received update of ";
+            int population;
+            packet >> population;
+            std::cout << population << std::endl;
+            if(population != Organisms.size())
+                std::cout << "Population Desync! Packet: " << population << ", Us: " << Organisms.size() << std::endl;
+
+            int counter = 0;
+            for(auto &critter : Organisms)
+            {
+                if(counter >= population)
+                    break;
+
+                packet >> critter.brain->desiredPos.x;
+                packet >> critter.brain->desiredPos.y;
+
+                /*
+
+                sf::Uint32 packX;
+                sf::Uint32 packY;
+                packet >> packX;
+                packet >> packY;
+
+                std::cout << counter << ": " << packX << "/" << packY << std::endl;
+
+                critter.brain->desiredPos.x = packX;
+                critter.brain->desiredPos.y = packY;
+
+                */
+
+
+
+                counter++;
+            }
+
+        }
+
         else if(type == sf::Uint8(ident::clientID) )
         {
-            std::cout << "Received out ID: ";
+            std::cout << "Received our ID: ";
             packet >> myID;
             std::cout << int(myID) << std::endl;
+            std::cout << "Requesting initial Flora and Organism setup. \n";
+            sf::Packet requestPacket;
+            requestPacket << sf::Uint8(ident::floraInitialization) << myID;
+            serverSocket.send(requestPacket);
+
+            requestPacket.clear();
+            requestPacket << sf::Uint8(ident::organismInitialization) << myID;
+            serverSocket.send(requestPacket);
+
         }
 
 
@@ -46,6 +95,15 @@ void serverPacketManager::handlePackets()
             packet >> in;
             std::cout << "Client" << int(type) << ": \"" << in << "\"" << std::endl;
         }
+        else if(type == sf::Uint8(ident::organismInitialization ) )
+        {
+            std::cout << "organism Initial received from " << currentPacket.sender->id << std::endl;
+        }
+        else if(type == sf::Uint8(ident::floraInitialization ) )
+        {
+            std::cout << "flora Initial received from " << currentPacket.sender->id << std::endl;
+        }
+
 
         else if(type == sf::Uint8(ident::clientID) )
         {
@@ -86,6 +144,26 @@ void renderGame()
 
 sf::Thread serverListenThread(&serverListen);
 sf::Thread clientListenThread(&clientListen);
+
+void sendLifeUpdate()
+{
+    std::cout << "Sending Life Update! \n";
+    sf::Packet packet;
+
+    // Labeling the type of packet.
+    packet << sf::Uint8(ident::organismUpdate);
+
+    // Now we send the amount of creatures, so we know how many times to update. Also functions as a sync check.
+    packet << sf::Uint32(Organisms.size());
+
+    // Then to the meat of the packet!
+    for(auto &critter : Organisms)
+    {
+        packet << critter.brain->desiredPos.x << critter.brain->desiredPos.y;
+    }
+
+    sendToAllClients(packet);
+}
 
 void runServerStuffs()
 {
@@ -148,6 +226,57 @@ void runServerStuffs()
     }
 
 
+    // The Time Zone, tee hee.
+    static bool oneSecondPassed = false;
+    static sf::Clock oneSecondTimer;
+    if(oneSecondTimer.getElapsedTime().asSeconds() > 1)
+    {
+        oneSecondTimer.restart();
+        oneSecondPassed = true;
+    }
+
+    static bool tenSecondPassed = false;
+    static sf::Clock tenSecondTimer;
+    if(tenSecondTimer.getElapsedTime().asSeconds() > 10)
+    {
+        tenSecondTimer.restart();
+        tenSecondPassed = true;
+    }
+
+    static bool oneMinutePassed = false;
+    static sf::Clock oneMinuteTimer;
+    if(oneMinuteTimer.getElapsedTime().asSeconds() > 60)
+    {
+        oneMinuteTimer.restart();
+        oneMinutePassed = true;
+    }
+
+
+    if(oneSecondPassed)
+    {
+        oneSecondPassed = false;
+        if(network::server)
+            sendLifeUpdate();
+        //std::cout << "One Second Passed! \n";
+    }
+    if(tenSecondPassed)
+    {
+        tenSecondPassed = false;
+
+
+        //std::cout << "Ten Seconds Passed! \n";
+    }
+    if(oneMinutePassed)
+    {
+        oneMinutePassed = false;
+        //std::cout << "One Minute Passed! \n";
+    }
+
+
+    if(inputState.key[Key::X].time == 1)
+        std::cout << "Breakin console. \n";
+
+
 }
 
 void simulationInitialization()
@@ -161,8 +290,7 @@ void runGame()
     static int globalCycle = 0;
     globalCycle++;
 
-    if(inputState.key[Key::Return].time == 1)
-        simulationInitialization();
+
 
 
     runBrains();

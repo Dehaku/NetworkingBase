@@ -27,6 +27,12 @@ ClientPackage::~ClientPackage()
 
 std::list<ClientPackage> clients;
 
+void sendToAllClients(sf::Packet packet)
+{
+    for(auto &client : clients)
+        client.socket->send(packet);
+}
+
 int serverNum = 0;
 
 

@@ -14,7 +14,7 @@
 #include "Textures.h"
 
 
-
+void simulationInitialization();
 
 void displayCritters();
 

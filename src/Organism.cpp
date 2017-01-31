@@ -4,78 +4,52 @@ std::list<brain> BrainStorage;
 std::list<organism> Flora;
 std::list<organism> Organisms;
 
-class brain
+brain::brain()
 {
-public:
-    organism *owner;
-    sf::Vector2f desiredPos;
-    bool desiresMate;
-    brain()
-    {
-        desiresMate = random(0,1);
-    }
+    desiresMate = random(0,1);
 };
 
-class organism
+
+
+
+organism::organism()
 {
-public:
-    sf::Vector2f pos;
-    float health;
-    float baseSpeed;
-    float size;
-    float nutrition;
-    float hydration;
+    size = random(1,100) * 0.1;
+    baseSpeed = random(1,10);
 
-    // Identity
-    std::string name;
-    brain *brain;
-    sf::Color colorPrime;
-    sf::Color colorSecondary;
+    brain = nullptr;
+    colorPrime = sf::Color(random(0,255),random(0,255),random(0,255));
+    colorSecondary = sf::Color(random(0,255),random(0,255),random(0,255));
+
+    health = getHealthMax();
+    nutrition = getNutritionMax();
+    hydration = getHealthMax();
+}
 
 
-    float ageMax;
-    float age;
-    float gestationPeriod;
-    float gestationTime;
+float organism::getHealthMax()
+{
+    return std::max(size * 2,1.f);
+}
 
+float organism::getSpeed()
+{
+    return baseSpeed / size;
+}
 
-    organism()
-    {
-        size = random(1,100) * 0.1;
-        baseSpeed = random(1,10);
-
-        brain = nullptr;
-        colorPrime = sf::Color(random(0,255),random(0,255),random(0,255));
-        colorSecondary = sf::Color(random(0,255),random(0,255),random(0,255));
-
-        health = getHealthMax();
-        nutrition = getNutritionMax();
-        hydration = getHealthMax();
-    }
-
-    float getHealthMax()
-    {
-        return std::max(size * 2,1.f);
-    }
-
-    float getSpeed()
-    {
-        return baseSpeed / size;
-    }
-
-    float getNutritionMax()
-    {
-        return std::max(size / 2,1.f);
-    }
-
-    float getHydrationMax()
-    {
-        return std::max(size,1.f);
-    }
+float organism::getNutritionMax()
+{
+    return std::max(size / 2,1.f);
+}
 
 
 
-};
+float organism::getHydrationMax()
+{
+    return std::max(size,1.f);
+}
+
+
 
 void moveAngle(organism &crit, float ang)
 {
@@ -87,8 +61,9 @@ void moveAngle(organism &crit, float ang)
 
 void runBrain(organism &crit)
 {
-    if(random(1,600) == 1 || inputState.key[Key::Space].time == 1)
-        crit.brain->desiredPos = sf::Vector2f(random(10,990),random(10,990));
+    if(!network::client)
+        if(random(1,600) == 1 || inputState.key[Key::Space].time == 1)
+            crit.brain->desiredPos = sf::Vector2f(random(10,990),random(10,990));
 
 
     //std::cout << "Critter" + crit.name + ": " + std::to_string(crit.getSpeed()) << std::endl;

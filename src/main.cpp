@@ -322,6 +322,9 @@ int main()
 
         // Program Specific Components
 
+        if(inputState.key[Key::Return].time == 1)
+            simulationInitialization();
+
         double newTime = fpsKeeper.startTime.getElapsedTime().asSeconds();
         double frameTime = newTime - currentTime;
         currentTime = newTime;

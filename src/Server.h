@@ -23,6 +23,8 @@ public:
     ClientPackage();
     ~ClientPackage();
 };
+extern std::list<ClientPackage> clients;
+void sendToAllClients(sf::Packet packet);
 
 void serverPingAll();
 void serverListen();
