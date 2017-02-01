@@ -270,7 +270,7 @@ void setup()
 
 
 
-    window.setSize(sf::Vector2u(200,100));
+    window.setSize(sf::Vector2u(400,200));
     gameSetup();
 
 

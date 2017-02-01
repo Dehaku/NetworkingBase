@@ -23,6 +23,7 @@ sf::Packet& operator <<(sf::Packet& packet, const organism& critter)
     return packet
     << critter.pos.x
     << critter.pos.y
+
     << critter.health
     << critter.baseSpeed
     << critter.size
@@ -37,21 +38,20 @@ sf::Packet& operator <<(sf::Packet& packet, const organism& critter)
     << critter.colorSecondary.g
     << critter.colorSecondary.b
 
-    // << sf::Uint8(critter.brain->desiresMate)
-    // << critter.brain->desiredPos.x
-    // << critter.brain->desiredPos.y
-
     << critter.ageMax
     << critter.age
     << critter.gestationPeriod
+
     << critter.gestationTime;
 }
 
 sf::Packet& operator >>(sf::Packet& packet, organism& critter)
 {
+
     return packet
     >> critter.pos.x
     >> critter.pos.y
+
     >> critter.health
     >> critter.baseSpeed
     >> critter.size
@@ -66,13 +66,10 @@ sf::Packet& operator >>(sf::Packet& packet, organism& critter)
     >> critter.colorSecondary.g
     >> critter.colorSecondary.b
 
-    // >> critter.brain->desiresMate
-    // >> critter.brain->desiredPos.x
-    // >> critter.brain->desiredPos.y
-
     >> critter.ageMax
     >> critter.age
     >> critter.gestationPeriod
+
     >> critter.gestationTime;
 }
 
@@ -143,8 +140,7 @@ void clientPacketManager::handlePackets()
 
         else if(type == sf::Uint8(ident::organismInitialization ) )
         {
-            organism Creature;
-            brain Brain;
+
 
             int population;
             sf::Uint32 recPop;
@@ -159,14 +155,17 @@ void clientPacketManager::handlePackets()
                 // TODO: I have no idea, but this is slow and sluggish. I'm sure this'll cause issues in the future as well.
                 std::cout << "Adding Creature " << counter << "! \n";
 
-                Organisms.push_back(Creature);
-                BrainStorage.push_back(Brain);
+                organism Creature;
+                brain Brain;
 
                 packet >> Creature;
                 packet >> Brain;
 
-                Organisms.back() = Creature;
-                BrainStorage.back() = Brain;
+                Organisms.push_back(Creature);
+                BrainStorage.push_back(Brain);
+
+                //Organisms.back() = Creature;
+                //BrainStorage.back() = Brain;
 
                 Organisms.back().brain = &BrainStorage.back();
                 BrainStorage.back().owner = &Organisms.back();
@@ -228,7 +227,7 @@ void serverPacketManager::handlePackets()
             for(auto &critter : Organisms)
             {
                 sendPacket << critter;
-                sendPacket << critter.brain;
+                sendPacket << *(critter.brain);
             }
 
 
@@ -420,6 +419,8 @@ void runServerStuffs()
 void simulationInitialization()
 {
     worldTilesSetup();
+    Organisms.clear();
+    Flora.clear();
     worldPopulationSetup();
 }
 
@@ -428,7 +429,48 @@ void runGame()
     static int globalCycle = 0;
     globalCycle++;
 
+    if(inputState.key[Key::F])
+    {
+        std::cout << "Doing! \n";
+        sf::Packet packetez;
+        std::cout << "Packet Size: " << packetez.getDataSize() << std::endl;
+        for(auto &critter : Organisms)
+        {
+            packetez << critter;
+            packetez << *(critter.brain);
 
+        }
+        std::cout << "Packet Size: " << packetez.getDataSize() << std::endl;
+        Organisms.clear();
+        BrainStorage.clear();
+
+
+
+
+        for(int i = 0; i != 10; i++)
+        {
+            organism Crit;
+            brain Brain;
+
+            Organisms.push_back(Crit);
+            BrainStorage.push_back(Brain);
+
+            packetez >> Organisms.back();
+            packetez >> BrainStorage.back();
+
+            Organisms.back().brain = &BrainStorage.back();
+            BrainStorage.back().owner = &Organisms.back();
+
+
+        }
+        for(auto &critter : Organisms)
+        {
+
+        }
+
+
+
+    }
 
 
     runBrains();
