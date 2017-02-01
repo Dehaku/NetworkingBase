@@ -1,5 +1,87 @@
 #include "Game.h"
 
+
+sf::Packet& operator <<(sf::Packet& packet, const brain& brain)
+{
+    return packet
+    << brain.desiresMate
+    << brain.desiredPos.x
+    << brain.desiredPos.y;
+
+}
+
+sf::Packet& operator >>(sf::Packet& packet, brain& brain)
+{
+    return packet
+    >> brain.desiresMate
+    >> brain.desiredPos.x
+    >> brain.desiredPos.y;
+}
+
+sf::Packet& operator <<(sf::Packet& packet, const organism& critter)
+{
+    return packet
+    << critter.pos.x
+    << critter.pos.y
+    << critter.health
+    << critter.baseSpeed
+    << critter.size
+    << critter.nutrition
+    << critter.hydration
+
+    << critter.name
+    << critter.colorPrime.r
+    << critter.colorPrime.g
+    << critter.colorPrime.b
+    << critter.colorSecondary.r
+    << critter.colorSecondary.g
+    << critter.colorSecondary.b
+
+    // << sf::Uint8(critter.brain->desiresMate)
+    // << critter.brain->desiredPos.x
+    // << critter.brain->desiredPos.y
+
+    << critter.ageMax
+    << critter.age
+    << critter.gestationPeriod
+    << critter.gestationTime;
+}
+
+sf::Packet& operator >>(sf::Packet& packet, organism& critter)
+{
+    return packet
+    >> critter.pos.x
+    >> critter.pos.y
+    >> critter.health
+    >> critter.baseSpeed
+    >> critter.size
+    >> critter.nutrition
+    >> critter.hydration
+
+    >> critter.name
+    >> critter.colorPrime.r
+    >> critter.colorPrime.g
+    >> critter.colorPrime.b
+    >> critter.colorSecondary.r
+    >> critter.colorSecondary.g
+    >> critter.colorSecondary.b
+
+    // >> critter.brain->desiresMate
+    // >> critter.brain->desiredPos.x
+    // >> critter.brain->desiredPos.y
+
+    >> critter.ageMax
+    >> critter.age
+    >> critter.gestationPeriod
+    >> critter.gestationTime;
+}
+
+
+
+
+
+
+
 void clientPacketManager::handlePackets()
 {
     if(packets.size() > 0)
@@ -17,6 +99,8 @@ void clientPacketManager::handlePackets()
             packet >> in;
             std::cout << "Server" << int(type) << ": \"" << in << "\"" << std::endl;
         }
+
+
 
         else if(type == sf::Uint8(ident::organismUpdate) )
         {
@@ -55,6 +139,41 @@ void clientPacketManager::handlePackets()
                 counter++;
             }
 
+        }
+
+        else if(type == sf::Uint8(ident::organismInitialization ) )
+        {
+            organism Creature;
+            brain Brain;
+
+            int population;
+            sf::Uint32 recPop;
+            packet >> recPop;
+            population = int(recPop);
+            std::cout << population << std::endl;
+
+            std::cout << "Received Organism Initial ( " << population << ") \n";
+            int counter = 0;
+            for(int i = 0; i != population; i++)
+            {
+                // TODO: I have no idea, but this is slow and sluggish. I'm sure this'll cause issues in the future as well.
+                std::cout << "Adding Creature " << counter << "! \n";
+
+                Organisms.push_back(Creature);
+                BrainStorage.push_back(Brain);
+
+                packet >> Creature;
+                packet >> Brain;
+
+                Organisms.back() = Creature;
+                BrainStorage.back() = Brain;
+
+                Organisms.back().brain = &BrainStorage.back();
+                BrainStorage.back().owner = &Organisms.back();
+
+                //Organisms.push_back(Creature);
+                counter++;
+            }
         }
 
         else if(type == sf::Uint8(ident::clientID) )
@@ -97,11 +216,30 @@ void serverPacketManager::handlePackets()
         }
         else if(type == sf::Uint8(ident::organismInitialization ) )
         {
-            std::cout << "organism Initial received from " << currentPacket.sender->id << std::endl;
+            std::cout << "organism Initial 'Request' received from " << currentPacket.sender->id << std::endl;
+            sf::Packet sendPacket;
+
+            // Send the same type back.
+            sendPacket << type;
+            sendPacket << sf::Uint32(Organisms.size());
+            int numbers = int(sf::Uint32(Organisms.size()));
+            std::cout << "Things: " << Organisms.size() << "/" << sf::Uint32(Organisms.size()) << "/" << numbers << std::endl;
+
+            for(auto &critter : Organisms)
+            {
+                sendPacket << critter;
+                sendPacket << critter.brain;
+            }
+
+
+
+
+            currentPacket.sender->socket->send(sendPacket);
+
         }
         else if(type == sf::Uint8(ident::floraInitialization ) )
         {
-            std::cout << "flora Initial received from " << currentPacket.sender->id << std::endl;
+            std::cout << "flora Initial 'Request' received from " << currentPacket.sender->id << std::endl;
         }
 
 
