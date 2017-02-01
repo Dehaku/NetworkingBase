@@ -73,7 +73,49 @@ sf::Packet& operator >>(sf::Packet& packet, organism& critter)
     >> critter.gestationTime;
 }
 
+struct CritterPositions
+{
+    sf::Vector2f position;
+    bool brainBool;
+    sf::Vector2f desiredPosition;
+    CritterPositions()
+    {
+        brainBool = false;
+    }
 
+    CritterPositions(organism Critter)
+    {
+        position = Critter.pos;
+        if(Critter.brain != nullptr)
+        {
+            brainBool = true;
+            desiredPosition = Critter.brain->desiredPos;
+        }
+        else
+            brainBool = false;
+
+    }
+};
+
+sf::Packet& operator <<(sf::Packet& packet, const CritterPositions& critter)
+{
+    return packet
+    << critter.position.x
+    << critter.position.y
+    << critter.brainBool
+    << critter.desiredPosition.x
+    << critter.desiredPosition.y;
+}
+
+sf::Packet& operator >>(sf::Packet& packet, CritterPositions& critter)
+{
+    return packet
+    >> critter.position.x
+    >> critter.position.y
+    >> critter.brainBool
+    >> critter.desiredPosition.x
+    >> critter.desiredPosition.y;
+}
 
 
 
@@ -114,24 +156,16 @@ void clientPacketManager::handlePackets()
                 if(counter >= population)
                     break;
 
-                packet >> critter.brain->desiredPos.x;
-                packet >> critter.brain->desiredPos.y;
-
-                /*
-
-                sf::Uint32 packX;
-                sf::Uint32 packY;
-                packet >> packX;
-                packet >> packY;
-
-                std::cout << counter << ": " << packX << "/" << packY << std::endl;
-
-                critter.brain->desiredPos.x = packX;
-                critter.brain->desiredPos.y = packY;
-
-                */
+                CritterPositions cPos;
+                packet >> cPos;
 
 
+                // Update Position
+                critter.pos = cPos.position;
+
+                // If you've gotta brain, you gotta desire.
+                if(cPos.brainBool)
+                    critter.brain->desiredPos = cPos.desiredPosition;
 
                 counter++;
             }
@@ -150,13 +184,12 @@ void clientPacketManager::handlePackets()
 
             std::cout << "Received Organism Initial ( " << population << ") \n";
             int counter = 0;
+
+            organism Creature;
+            brain Brain;
+
             for(int i = 0; i != population; i++)
             {
-                // TODO: I have no idea, but this is slow and sluggish. I'm sure this'll cause issues in the future as well.
-                std::cout << "Adding Creature " << counter << "! \n";
-
-                organism Creature;
-                brain Brain;
 
                 packet >> Creature;
                 packet >> Brain;
@@ -164,13 +197,9 @@ void clientPacketManager::handlePackets()
                 Organisms.push_back(Creature);
                 BrainStorage.push_back(Brain);
 
-                //Organisms.back() = Creature;
-                //BrainStorage.back() = Brain;
-
                 Organisms.back().brain = &BrainStorage.back();
                 BrainStorage.back().owner = &Organisms.back();
 
-                //Organisms.push_back(Creature);
                 counter++;
             }
         }
@@ -296,7 +325,11 @@ void sendLifeUpdate()
     // Then to the meat of the packet!
     for(auto &critter : Organisms)
     {
-        packet << critter.brain->desiredPos.x << critter.brain->desiredPos.y;
+        CritterPositions CPos(critter);
+        //cPos.position = critter.pos;
+
+        //packet << critter.brain->desiredPos.x << critter.brain->desiredPos.y;
+        packet << CPos;
     }
 
     sendToAllClients(packet);
