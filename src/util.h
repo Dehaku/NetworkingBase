@@ -106,7 +106,7 @@ public:
     std::string getRandomName();
     void printEntries();
     float getChance(std::string entryName);
-    float getChance(int entryPosition);
+    float getChance(unsigned int entryPosition);
     void printChances();
 };
 extern RandomWeightList randomWeightList;

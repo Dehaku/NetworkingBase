@@ -273,7 +273,7 @@ void Shapes::layerSortAlpha()
     // http://mathbits.com/MathBits/CompSci/Arrays/Shell.htm
 
     std::vector<Shape> &num = shapes;
-    int i, temp, flag = 1, numLength = num.size();
+    int i, flag = 1, numLength = num.size();
     Shape tempShape;
     int d = numLength;
     while( flag || (d > 1))      // boolean flag (true when not equal to 0)
@@ -284,10 +284,8 @@ void Shapes::layerSortAlpha()
         {
             if (num[i + d].layer < num[i].layer)
             {
-                //temp = num[i + d];      // swap positions i+d and i
                 tempShape = num[i + d];      // swap positions i+d and i
                 num[i + d] = num[i];
-                //num[i] = temp;
                 num[i] = tempShape;
                 flag = 1;                  // tells swap has occurred
             }
@@ -351,7 +349,7 @@ int Shapes::createImageButton(sf::Vector2f vPos, sf::Texture &Tex, std::string t
 
 int Shapes::createImageButton(sf::Vector2f vPos, const sf::Texture &Tex, std::string text, int rotation, sf::View * drawView)
 {
-    const sf::Texture * texture = &Tex;
+    // const sf::Texture * texture = &Tex;
 
     Shape evar;
     evar.shape = Shape::Button;
@@ -485,7 +483,6 @@ void Shapes::drawShapes()
 
 
 
-    int lastLayer = 0;
     bool drawnNPCstuffs = false;
 
     for(auto &shape : shapes)

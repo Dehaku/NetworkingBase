@@ -7,7 +7,7 @@ std::list<organism> Organisms;
 brain::brain()
 {
     desiresMate = random(0,1);
-};
+}
 
 
 
@@ -55,8 +55,8 @@ void moveAngle(organism &crit, float ang)
 {
     crit.pos.x += cosf(ang) * crit.getSpeed(); // * Delta? * Gamespeed()! (Delta+TimeWarp)
     crit.pos.y += sinf(ang) * crit.getSpeed();
-    //crit.xpos += moveX;
-    //crit.ypos += moveY;
+    // crit.xpos += moveX;
+    // crit.ypos += moveY;
 }
 
 void runBrain(organism &crit)

@@ -1,5 +1,6 @@
 #include "Game.h"
 
+// sf::Vector2f worldPos = window.mapPixelToCoords(sf::Mouse::getPosition(window), *button.drawView);
 
 sf::Packet& operator <<(sf::Packet& packet, const brain& brain)
 {
@@ -144,13 +145,13 @@ void clientPacketManager::handlePackets()
         else if(type == sf::Uint8(ident::organismUpdate) )
         {
             std::cout << "Received update of ";
-            int population;
+            unsigned int population;
             packet >> population;
             std::cout << population << std::endl;
             if(population != Organisms.size())
                 std::cout << "Population Desync! Packet: " << population << ", Us: " << Organisms.size() << std::endl;
 
-            int counter = 0;
+            unsigned int counter = 0;
             for(auto &critter : Organisms)
             {
                 if(counter >= population)
