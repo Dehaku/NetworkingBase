@@ -2,6 +2,7 @@
 #define __GLOBALS_H_INCLUDED__
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Network.hpp>
 
 #include "defs.h"
 
@@ -32,6 +33,35 @@ public:
 
 };
 extern fpsTracker fpsKeeper;
+
+class ByteTracker
+{
+public:
+    unsigned int bytesCollected;
+    unsigned int kilobytesCollected;
+    unsigned int megabytesCollected;
+    unsigned int gigabytesCollected;
+    unsigned int bytesPassed;
+    float bytesPerSecond;
+
+
+    sf::Clock startTime;
+    sf::Clock byteTimer;
+
+    sf::Clock fpsTimerLive;
+
+    sf::Clock frameClock;
+
+    sf::Time bytesPassedTime;
+    sf::Time frameTime;
+
+    ByteTracker();
+
+    void calcBytes();
+    void byteInput(sf::Packet& packet);
+
+};
+extern ByteTracker byteKeeper;
 
 
 class Screen

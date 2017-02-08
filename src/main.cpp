@@ -67,12 +67,41 @@ void GameInfo::moveSquare()
 
 }
 
+
+
+
+
+
+
+
+void setup()
+{
+    // Font
+    if (!gvars::defaultFont.loadFromFile("data/fonts/Xolonium-Regular.otf"))
+        throw std::runtime_error("Failed to load font!");
+
+    // View
+    gvars::view1.setSize(1000, 1000);
+    window.setView(gvars::view1);
+
+
+
+    window.setSize(sf::Vector2u(400,200));
+    gameSetup();
+
+
+}
+
+
+
+
 void handleEvents()
 {
     sf::Event event;
     while (window.pollEvent(event))
     {
         inputState.updateFromEvent(event);
+
         if (event.type == sf::Event::Closed)
         {
             deactivateServer();
@@ -248,34 +277,12 @@ void handleEvents()
 }
 
 
-
-
-
-
-
-
-void setup()
-{
-    // Font
-    if (!gvars::defaultFont.loadFromFile("data/fonts/Xolonium-Regular.otf"))
-        throw std::runtime_error("Failed to load font!");
-
-    // View
-    gvars::view1.setSize(1000, 1000);
-    window.setView(gvars::view1);
-
-
-
-    window.setSize(sf::Vector2u(400,200));
-    gameSetup();
-
-
-}
-
 int main()
 {
     // Initial
     setup();
+
+
 
     // Delta Timestep
     double t = 0.0;
@@ -352,12 +359,18 @@ int main()
         runServerStuffs();
 
 
-
+        fpsKeeper.calcFPS();
+        byteKeeper.calcBytes();
         // Graphics
         renderGame();
 
+
+
         shapes.drawShapes();
         AnyDeletes(shapes.shapes);
+
+
+
         window.display();
         window.clear();
     }

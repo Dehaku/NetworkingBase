@@ -35,7 +35,14 @@ namespace network
     std::string connectedServer = "";
     sf::Mutex clientHandling;
     sf::Mutex packetManagerHandling;
+    unsigned int bytesCollected = 0;
+    unsigned int megabytesCollected = 0;
+    unsigned int gigabytesCollected = 0;
+    unsigned int bytesPassed = 0;
+    float bytesPerSecond = 0;
 }
+
+
 
 
 

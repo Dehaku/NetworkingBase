@@ -55,6 +55,52 @@ void fpsTracker::calcFPS()
     //textList.createText(sf::Vector2f(0,0),15,sf::Color::White,outPut,gvars::hudView);
 }
 
+ByteTracker byteKeeper;
+
+ByteTracker::ByteTracker()
+{
+    startTime.restart();
+    bytesCollected = 0;
+    kilobytesCollected = 0;
+    megabytesCollected = 0;
+    gigabytesCollected = 0;
+    bytesPassed = 0;
+    bytesPerSecond = 0;
+}
+
+void ByteTracker::calcBytes()
+{
+    if(byteTimer.getElapsedTime().asMilliseconds() >= 1000)
+    {
+        byteTimer.restart();
+        bytesPerSecond = bytesPassed;
+        bytesCollected += bytesPassed;
+        bytesPassed = 0;
+
+        while(bytesCollected > 1024)
+        {
+            kilobytesCollected++;
+            bytesCollected -= 1024;
+        }
+        while(kilobytesCollected > 1024)
+        {
+            megabytesCollected++;
+            kilobytesCollected -= 1024;
+        }
+        while(megabytesCollected > 1024)
+        {
+            gigabytesCollected++;
+            megabytesCollected -= 1024;
+        }
+    }
+}
+
+void ByteTracker::byteInput(sf::Packet& packet)
+{
+    // network::bytesCollected += packet.getDataSize();
+    bytesPassed += packet.getDataSize();
+}
+
 void debug(std::string info, bool endline)
 {
 

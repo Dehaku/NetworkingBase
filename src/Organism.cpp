@@ -135,80 +135,37 @@ Quad-trees may be useful once creatures start to reference eachother.
 
 void displayCrittersInfo()
 {
-    fpsKeeper.calcFPS();
-    //fpsKeeper.framesPerSecond;
-
-    int yOffset = 3;
+    int yOffset = 4;
 
 
-    /*
-    sfe::RichText text(gvars::defaultFont);
+    { // FPS/UPS Richtext Display
+        sfe::RichText fpsText(gvars::defaultFont);
+        fpsText.setPosition(5,10*1);
+        fpsText.setCharacterSize(10);
+        fpsText << sf::Text::Bold << sf::Color::White << "FPS/UPS:" ;
 
-    text.setFont(gvars::defaultFont);
-    text.setPosition(100,100);
-    text << sf::Text::Bold       << sf::Color::Cyan  << "This "
-         << sf::Text::Italic     << sf::Color::White << "is\ncool\n"
-         << sf::Text::Regular    << sf::Color::Green << "mate"
-         << sf::Color::White     << ".\n"
-         << sf::Text::Underlined << "I wish I could lick it!";
+        if(fpsKeeper.framesPerSecond < 60)
+            fpsText << sf::Color::Red << std::to_string(int(fpsKeeper.framesPerSecond));
+        else
+            fpsText << sf::Color::White << std::to_string(int(fpsKeeper.framesPerSecond));
 
-    text.setCharacterSize(25);
-    //text.setOrigin(text.getGlobalBounds().width / 2.f, text.getGlobalBounds().height / 2.f);
+        fpsText << sf::Color::White << "/";
 
-    window.draw(text);
-    */
+        if(fpsKeeper.updatesPerSecond > 10000)
+            fpsText << sf::Color::Red << std::to_string(int(fpsKeeper.updatesPerSecond));
+        else
+            fpsText << sf::Color::White << std::to_string(int(fpsKeeper.updatesPerSecond));
 
-
-
-    //shapes.createText(200,200,15,sf::Color::White, "Hello World! \n Goodbye World!");
-    if(inputState.key[Key::Space])
-    {
-        sfe::RichText text(gvars::defaultFont);
-        text.setPosition(200,200);
-        text.setCharacterSize(15);
-        text << sf::Color::White << "Hello World! \n"
-        << sf::Text::Underlined << sf::Color::Red << "Goodbye World!";
-        shapes.createRichText(text);
+        shapes.createRichText(fpsText);
     }
-        //shapes.shapes.back().isRichText = true;
 
-
-    sfe::RichText fpsText(gvars::defaultFont);
-    fpsText.setPosition(5,10*1);
-    fpsText.setCharacterSize(10);
-    fpsText << sf::Text::Bold << sf::Color::White << "FPS/UPS:" ;
-
-    if(fpsKeeper.framesPerSecond < 60)
-        fpsText << sf::Color::Red << std::to_string(int(fpsKeeper.framesPerSecond));
-    else
-        fpsText << sf::Color::White << std::to_string(int(fpsKeeper.framesPerSecond));
-
-    fpsText << sf::Color::White << "/";
-
-    if(fpsKeeper.updatesPerSecond > 10000)
-        fpsText << sf::Color::Red << std::to_string(int(fpsKeeper.updatesPerSecond));
-    else
-        fpsText << sf::Color::White << std::to_string(int(fpsKeeper.updatesPerSecond));
-
-
-
-    //<< std::to_string(int(fpsKeeper.framesPerSecond))
-
-
-    //<< "/" + std::to_string(int(fpsKeeper.updatesPerSecond))
-
-
-
-
-    shapes.createRichText(fpsText);
-
-
-    if(true == false)
-    {
-        shapes.createText(5,10*1,10,sf::Color::White, "FPS/UPS:" + std::to_string(int(fpsKeeper.framesPerSecond))
-                      + "/" + std::to_string(int(fpsKeeper.updatesPerSecond))
+    shapes.createText(5,10*2,10,sf::Color::White, "Data: "
+                      + std::to_string(int(byteKeeper.bytesPerSecond)) + " B/s, "
+                      + std::to_string(int(byteKeeper.bytesCollected)) + " B, "
+                      + std::to_string(int(byteKeeper.kilobytesCollected)) + " KB, "
+                      + std::to_string(int(byteKeeper.megabytesCollected)) + " MB, "
+                      + std::to_string(int(byteKeeper.gigabytesCollected)) + " GB"
                       );
-    }
 
 
 
@@ -216,8 +173,7 @@ void displayCrittersInfo()
 
 
 
-
-    shapes.createText(5,10*2,10,sf::Color::White, "World Pop:" + std::to_string(Organisms.size()));
+    shapes.createText(5,10*3,10,sf::Color::White, "World Pop:" + std::to_string(Organisms.size()));
     //for(int i = 0; i != Organisms.size(); i++)
     int limitCounter = 0;
     for(auto &crit : Organisms)

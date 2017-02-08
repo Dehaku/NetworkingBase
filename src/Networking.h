@@ -28,7 +28,6 @@ namespace network
     extern std::string connectedServer;
     extern sf::Mutex clientHandling;
     extern sf::Mutex packetManagerHandling;
-
 }
 
 namespace ident

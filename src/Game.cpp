@@ -124,11 +124,14 @@ sf::Packet& operator >>(sf::Packet& packet, CritterPositions& critter)
 
 void clientPacketManager::handlePackets()
 {
-    if(packets.size() > 0)
-        std::cout << "Packets: " << packets.size() << std::endl;
     for(auto &currentPacket : packets)
     {
+
+
         sf::Packet &packet = currentPacket.packet;
+        byteKeeper.byteInput(packet);
+
+
         sf::Uint8 type;
         packet >> type;
 
@@ -229,11 +232,11 @@ void clientPacketManager::handlePackets()
 
 void serverPacketManager::handlePackets()
 {
-    if(packets.size() > 0)
-        std::cout << "Packets: " << packets.size() << std::endl;
     for(auto &currentPacket : packets)
     {
         sf::Packet &packet = currentPacket.packet;
+        byteKeeper.byteInput(packet);
+
         sf::Uint8 type;
         packet >> type;
 
