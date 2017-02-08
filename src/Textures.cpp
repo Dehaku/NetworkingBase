@@ -37,8 +37,9 @@ void TextureManager::init()
         {
             line.append(ending);
             TextureHolder image;
-            image.texture.loadFromFile(line);
-            //std::cout << Size.x << " : " << Size.y << std::endl;
+            bool imageLoaded = image.texture.loadFromFile(line);
+            if(!imageLoaded)
+                continue;
 
             std::string namebit = file;
             image.name = namebit;
