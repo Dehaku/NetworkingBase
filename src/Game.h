@@ -8,6 +8,9 @@
 #include "Shapes.h"
 #include "math.h"
 #include "Tiles.h"
+
+#include "Simulation.h"
+
 #include "Organism.h"
 #include "util.h"
 #include "Networking.h"

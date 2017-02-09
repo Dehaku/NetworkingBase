@@ -1,10 +1,10 @@
 #include "Organism.h"
 
-std::list<brain> BrainStorage;
-std::list<organism> Flora;
-std::list<organism> Organisms;
+std::list<Brain> brainStorage;
+std::list<Organism> flora;
+std::list<Organism> organisms;
 
-brain::brain()
+Brain::Brain()
 {
     desiresMate = random(0,1);
 }
@@ -12,7 +12,7 @@ brain::brain()
 
 
 
-organism::organism()
+Organism::Organism()
 {
     size = random(1,100) * 0.1;
     baseSpeed = random(1,10);
@@ -27,31 +27,31 @@ organism::organism()
 }
 
 
-float organism::getHealthMax()
+float Organism::getHealthMax()
 {
     return std::max(size * 2,1.f);
 }
 
-float organism::getSpeed()
+float Organism::getSpeed()
 {
     return baseSpeed / size;
 }
 
-float organism::getNutritionMax()
+float Organism::getNutritionMax()
 {
     return std::max(size / 2,1.f);
 }
 
 
 
-float organism::getHydrationMax()
+float Organism::getHydrationMax()
 {
     return std::max(size,1.f);
 }
 
 
 
-void moveAngle(organism &crit, float ang)
+void moveAngle(Organism &crit, float ang)
 {
     crit.pos.x += cosf(ang) * crit.getSpeed(); // * Delta? * Gamespeed()! (Delta+TimeWarp)
     crit.pos.y += sinf(ang) * crit.getSpeed();
@@ -59,7 +59,7 @@ void moveAngle(organism &crit, float ang)
     // crit.ypos += moveY;
 }
 
-void runBrain(organism &crit)
+void runBrain(Organism &crit)
 {
     if(!network::client)
         if(random(1,600) == 1 || inputState.key[Key::Space].time == 1)
@@ -73,7 +73,7 @@ void runBrain(organism &crit)
 
 void runBrains()
 {
-    for(auto &crit : Organisms)
+    for(auto &crit : organisms)
         runBrain(crit);
 }
 
@@ -81,26 +81,26 @@ void worldPopulationSetup()
 {
     for(int i = 0; i != 100; i++)
     {
-        organism Plant;
+        Organism Plant;
         Plant.size = random(5,30);
         Plant.baseSpeed = 0;
         Plant.pos = sf::Vector2f(random(10,1000),random(10,1000));
         Plant.colorPrime = sf::Color(0,200,0,150);
         Plant.colorSecondary = sf::Color(0,100,0,150);
-        Flora.push_back(Plant);
+        flora.push_back(Plant);
     }
 
     for(int i = 0; i != 100; i++)
     {
-        organism Critter;
+        Organism Critter;
         Critter.name = std::to_string(i); // Temporary
         Critter.pos = sf::Vector2f(random(10,1000),random(10,1000));
-        Organisms.push_back(Critter);
-        brain creatureBrain;
-        BrainStorage.push_back(creatureBrain);
+        organisms.push_back(Critter);
+        Brain creatureBrain;
+        brainStorage.push_back(creatureBrain);
 
-        Organisms.back().brain = &BrainStorage.back();
-        BrainStorage.back().owner = &Organisms.back();
+        organisms.back().brain = &brainStorage.back();
+        brainStorage.back().owner = &organisms.back();
     }
 }
 
@@ -108,15 +108,15 @@ void addCreatures(int amount)
 {
     for(int i = 0; i != amount; i++)
     {
-        organism Critter;
-        Critter.name = std::to_string(i); // Temporary
-        Critter.pos = sf::Vector2f(random(10,1000),random(10,1000));
-        Organisms.push_back(Critter);
-        brain creatureBrain;
-        BrainStorage.push_back(creatureBrain);
+        Organism critter;
+        critter.name = std::to_string(i); // Temporary
+        critter.pos = sf::Vector2f(random(10,1000),random(10,1000));
+        organisms.push_back(critter);
+        Brain creatureBrain;
+        brainStorage.push_back(creatureBrain);
 
-        Organisms.back().brain = &BrainStorage.back();
-        BrainStorage.back().owner = &Organisms.back();
+        organisms.back().brain = &brainStorage.back();
+        brainStorage.back().owner = &organisms.back();
     }
 }
 
@@ -175,11 +175,11 @@ void displayCrittersInfo()
 
 
 
-    shapes.createText(-130,10*yOffset,10,sf::Color::White, "World Pop:" + std::to_string(Organisms.size()), &gvars::hudView);
+    shapes.createText(-130,10*yOffset,10,sf::Color::White, "World Pop:" + std::to_string(organisms.size()), &gvars::hudView);
     yOffset++;
     //for(int i = 0; i != Organisms.size(); i++)
     int limitCounter = 0;
-    for(auto &crit : Organisms)
+    for(auto &crit : organisms)
     {
         if(limitCounter > 10)
             break;
@@ -222,7 +222,7 @@ void drawCritters()
 
     shapes.createSquare(0,0,1000,1000,background);
 
-    for(auto &plant : Flora)
+    for(auto &plant : flora)
     {
 
         shapes.createCircle(plant.pos.x,plant.pos.y,plant.size,plant.colorPrime,plant.size/10,plant.colorSecondary);
@@ -234,7 +234,7 @@ void drawCritters()
     if(inputState.key[Key::Z])
         rotation++;
 
-    for(auto &crit : Organisms)
+    for(auto &crit : organisms)
     {
         if(drawSquareInstead)
             shapes.createSquare(crit.pos.x-((crit.size)),crit.pos.y-((crit.size)),crit.pos.x+((crit.size)),crit.pos.y+((crit.size)),crit.colorPrime,crit.size/2,crit.colorSecondary);

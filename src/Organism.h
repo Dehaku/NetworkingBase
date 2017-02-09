@@ -8,18 +8,18 @@
 #include "util.h"
 #include "Networking.h"
 
-class organism;
+class Organism;
 
-class brain
+class Brain
 {
     public:
-    organism *owner;
+    Organism *owner;
     sf::Vector2f desiredPos;
     bool desiresMate;
-    brain();
+    Brain();
 };
 
-class organism
+class Organism
 {
     public:
     public:
@@ -32,7 +32,7 @@ class organism
 
     // Identity
     std::string name;
-    brain *brain;
+    Brain *brain;
     sf::Color colorPrime;
     sf::Color colorSecondary;
 
@@ -41,7 +41,7 @@ class organism
     float age;
     float gestationPeriod;
     float gestationTime;
-    organism();
+    Organism();
     float getHealthMax();
     float getSpeed();
     float getNutritionMax();
@@ -49,9 +49,9 @@ class organism
 };
 
 
-extern std::list<brain> BrainStorage;
-extern std::list<organism> Organisms;
-extern std::list<organism> Flora;
+extern std::list<Brain> brainStorage;
+extern std::list<Organism> organisms;
+extern std::list<Organism> flora;
 
 void runBrains();
 

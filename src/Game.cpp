@@ -2,7 +2,7 @@
 
 // sf::Vector2f worldPos = window.mapPixelToCoords(sf::Mouse::getPosition(window), *button.drawView);
 
-sf::Packet& operator <<(sf::Packet& packet, const brain& brain)
+sf::Packet& operator <<(sf::Packet& packet, const Brain& brain)
 {
     return packet
     << brain.desiresMate
@@ -11,7 +11,7 @@ sf::Packet& operator <<(sf::Packet& packet, const brain& brain)
 
 }
 
-sf::Packet& operator >>(sf::Packet& packet, brain& brain)
+sf::Packet& operator >>(sf::Packet& packet, Brain& brain)
 {
     return packet
     >> brain.desiresMate
@@ -19,7 +19,7 @@ sf::Packet& operator >>(sf::Packet& packet, brain& brain)
     >> brain.desiredPos.y;
 }
 
-sf::Packet& operator <<(sf::Packet& packet, const organism& critter)
+sf::Packet& operator <<(sf::Packet& packet, const Organism& critter)
 {
     return packet
     << critter.pos.x
@@ -46,7 +46,7 @@ sf::Packet& operator <<(sf::Packet& packet, const organism& critter)
     << critter.gestationTime;
 }
 
-sf::Packet& operator >>(sf::Packet& packet, organism& critter)
+sf::Packet& operator >>(sf::Packet& packet, Organism& critter)
 {
 
     return packet
@@ -84,7 +84,7 @@ struct CritterPositions
         brainBool = false;
     }
 
-    CritterPositions(organism Critter)
+    CritterPositions(Organism Critter)
     {
         position = Critter.pos;
         if(Critter.brain != nullptr)
@@ -151,11 +151,11 @@ void clientPacketManager::handlePackets()
             unsigned int population;
             packet >> population;
             std::cout << population << std::endl;
-            if(population != Organisms.size())
-                std::cout << "Population Desync! Packet: " << population << ", Us: " << Organisms.size() << std::endl;
+            if(population != organisms.size())
+                std::cout << "Population Desync! Packet: " << population << ", Us: " << organisms.size() << std::endl;
 
             unsigned int counter = 0;
-            for(auto &critter : Organisms)
+            for(auto &critter : organisms)
             {
                 if(counter >= population)
                     break;
@@ -189,20 +189,20 @@ void clientPacketManager::handlePackets()
             std::cout << "Received Organism Initial ( " << population << ") \n";
             int counter = 0;
 
-            organism Creature;
-            brain Brain;
+            Organism Creature;
+            Brain brain;
 
             for(int i = 0; i != population; i++)
             {
 
                 packet >> Creature;
-                packet >> Brain;
+                packet >> brain;
 
-                Organisms.push_back(Creature);
-                BrainStorage.push_back(Brain);
+                organisms.push_back(Creature);
+                brainStorage.push_back(brain);
 
-                Organisms.back().brain = &BrainStorage.back();
-                BrainStorage.back().owner = &Organisms.back();
+                organisms.back().brain = &brainStorage.back();
+                brainStorage.back().owner = &organisms.back();
 
                 counter++;
             }
@@ -253,11 +253,11 @@ void serverPacketManager::handlePackets()
 
             // Send the same type back.
             sendPacket << type;
-            sendPacket << sf::Uint32(Organisms.size());
-            int numbers = int(sf::Uint32(Organisms.size()));
-            std::cout << "Things: " << Organisms.size() << "/" << sf::Uint32(Organisms.size()) << "/" << numbers << std::endl;
+            sendPacket << sf::Uint32(organisms.size());
+            int numbers = int(sf::Uint32(organisms.size()));
+            std::cout << "Things: " << organisms.size() << "/" << sf::Uint32(organisms.size()) << "/" << numbers << std::endl;
 
-            for(auto &critter : Organisms)
+            for(auto &critter : organisms)
             {
                 sendPacket << critter;
                 sendPacket << *(critter.brain);
@@ -419,10 +419,10 @@ void sendLifeUpdate()
     packet << sf::Uint8(ident::organismUpdate);
 
     // Now we send the amount of creatures, so we know how many times to update. Also functions as a sync check.
-    packet << sf::Uint32(Organisms.size());
+    packet << sf::Uint32(organisms.size());
 
     // Then to the meat of the packet!
-    for(auto &critter : Organisms)
+    for(auto &critter : organisms)
     {
         CritterPositions CPos(critter);
         //cPos.position = critter.pos;
@@ -551,8 +551,8 @@ void runServerStuffs()
 void simulationInitialization()
 {
     worldTilesSetup();
-    Organisms.clear();
-    Flora.clear();
+    organisms.clear();
+    flora.clear();
     worldPopulationSetup();
 }
 
@@ -566,36 +566,36 @@ void runGame()
         std::cout << "Doing! \n";
         sf::Packet packetez;
         std::cout << "Packet Size: " << packetez.getDataSize() << std::endl;
-        for(auto &critter : Organisms)
+        for(auto &critter : organisms)
         {
             packetez << critter;
             packetez << *(critter.brain);
 
         }
         std::cout << "Packet Size: " << packetez.getDataSize() << std::endl;
-        Organisms.clear();
-        BrainStorage.clear();
+        organisms.clear();
+        brainStorage.clear();
 
 
 
 
         for(int i = 0; i != 10; i++)
         {
-            organism Crit;
-            brain Brain;
+            Organism Crit;
+            Brain brain;
 
-            Organisms.push_back(Crit);
-            BrainStorage.push_back(Brain);
+            organisms.push_back(Crit);
+            brainStorage.push_back(brain);
 
-            packetez >> Organisms.back();
-            packetez >> BrainStorage.back();
+            packetez >> organisms.back();
+            packetez >> brainStorage.back();
 
-            Organisms.back().brain = &BrainStorage.back();
-            BrainStorage.back().owner = &Organisms.back();
+            organisms.back().brain = &brainStorage.back();
+            brainStorage.back().owner = &organisms.back();
 
 
         }
-        for(auto &critter : Organisms)
+        for(auto &critter : organisms)
         {
 
         }
