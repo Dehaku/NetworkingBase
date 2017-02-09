@@ -347,7 +347,39 @@ void HUDTabs()
 
     if(shapes.shapeHovered(workDudeButt))
     {
-        std::cout << "Workdude Hovered! \n";
+        int posX = -33;
+        int posY = 190;
+        shapes.createSquare(posX-105,posY-15,posX+106,posY+15,sf::Color(255,255,255,150),0,sf::Color::White,&gvars::hudView);
+    }
+    if(shapes.shapeHovered(evolutionButt))
+    {
+        int posX = 179;
+        int posY = 190;
+        shapes.createSquare(posX-105,posY-15,posX+106,posY+15,sf::Color(255,255,255,150),0,sf::Color::White,&gvars::hudView);
+    }
+    if(shapes.shapeHovered(simulationButt))
+    {
+        int posX = 391;
+        int posY = 190;
+        shapes.createSquare(posX-105,posY-15,posX+106,posY+15,sf::Color(255,255,255,150),0,sf::Color::White,&gvars::hudView);
+    }
+    if(shapes.shapeHovered(contestButt))
+    {
+        int posX = 606;
+        int posY = 190;
+        shapes.createSquare(posX-105,posY-15,posX+106,posY+15,sf::Color(255,255,255,150),0,sf::Color::White,&gvars::hudView);
+    }
+    if(shapes.shapeHovered(shopButt))
+    {
+        int posX = 818;
+        int posY = 190;
+        shapes.createSquare(posX-105,posY-15,posX+106,posY+15,sf::Color(255,255,255,150),0,sf::Color::White,&gvars::hudView);
+    }
+    if(shapes.shapeHovered(archiveButt))
+    {
+        int posX = 1030;
+        int posY = 190;
+        shapes.createSquare(posX-105,posY-15,posX+106,posY+15,sf::Color(255,255,255,150),0,sf::Color::White,&gvars::hudView);
     }
 
 
