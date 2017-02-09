@@ -4,9 +4,21 @@
 #include <vector>
 #include <iostream>
 
-class worldtile;
+class WorldTile{
+public:
+    //sf::Color color;
 
-extern std::vector<std::vector<worldtile>> WorldTiles;
+    bool isWater;
+    float moveSpeedModifier;
+    float temperature;
+    WorldTile();
+
+
+};
+
+extern std::vector<std::vector<WorldTile>> worldTiles;
+
+void resizeWorld(int x, int y, std::vector<std::vector<WorldTile>>& worldlies);
 
 
 

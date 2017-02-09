@@ -1,34 +1,30 @@
 #include "Tiles.h"
 
-class worldtile{
-public:
-    //sf::Color color;
 
-    bool isWater;
-    float moveSpeedModifier;
-    float temperature;
-
-    worldtile()
+WorldTile::WorldTile()
     {
         isWater = false;
         moveSpeedModifier = 0;
         temperature = 50;
     }
-};
 
-std::vector<std::vector<worldtile>> WorldTiles;
+std::vector<std::vector<WorldTile>> worldTiles;
 
-void resizeWorld(int x, int y)
+void resizeWorld(int x, int y, std::vector<std::vector<WorldTile>>& worldlies)
 {
-    WorldTiles.resize(x);
+    worldlies.resize(x);
 
     for(int i = 0; i != x; i++)
     {
-        WorldTiles.at(i).resize(y);
+        worldlies.at(i).resize(y);
     }
 }
 
 void worldTilesSetup()
 {
-    resizeWorld(10,10);
+    resizeWorld(10,10,worldTiles);
+    for(auto i : worldTiles)
+    {
+        std::cout << "Wee!" << std::endl;
+    }
 }

@@ -312,19 +312,6 @@ void HUDTabs()
     if(hudButton == nullptr)
         hudButton = &texturemanager.getTexture("HUDTab.png");
 
-    static int xMod = 15;
-    static int yMod = 62;
-    std::cout << "X/Y Mod: " << xMod << "/" << yMod << std::endl;
-    if(inputState.key[Key::Up].time == 1 || inputState.key[Key::Up].time >= 15)
-        yMod--;
-    if(inputState.key[Key::Down].time == 1 || inputState.key[Key::Down].time >= 15)
-        yMod++;
-    if(inputState.key[Key::Left].time == 1 || inputState.key[Key::Left].time >= 15)
-        xMod--;
-    if(inputState.key[Key::Right].time == 1 || inputState.key[Key::Right].time >= 15)
-        xMod++;
-
-
     int workDudeButt = shapes.createImageButton(sf::Vector2f(-33,190),*hudButton,"",0,&gvars::hudView);
     shapes.createText(-33-40,190-8,12,sf::Color::Black,"Workdude",&gvars::hudView);
     int evolutionButt = shapes.createImageButton(sf::Vector2f(179,190),*hudButton,"",0,&gvars::hudView);

@@ -355,8 +355,10 @@ int main()
 
         // Program Specific Components
 
-        if(inputState.key[Key::Return].time == 1)
+        if(inputState.key[Key::RShift].time == 1)
             simulationInitialization();
+        if(inputState.key[Key::Return].time == 1)
+            simulationManager.createSimulation();
 
         double newTime = fpsKeeper.startTime.getElapsedTime().asSeconds();
         double frameTime = newTime - currentTime;
