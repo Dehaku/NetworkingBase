@@ -306,16 +306,64 @@ void testFunction()
     std::cout << "Test! \n";
 }
 
+void HUDTabs()
+{
+    static sf::Texture* hudButton;
+    if(hudButton == nullptr)
+        hudButton = &texturemanager.getTexture("HUDTab.png");
 
+    static int xMod = 15;
+    static int yMod = 62;
+    std::cout << "X/Y Mod: " << xMod << "/" << yMod << std::endl;
+    if(inputState.key[Key::Up].time == 1 || inputState.key[Key::Up].time >= 15)
+        yMod--;
+    if(inputState.key[Key::Down].time == 1 || inputState.key[Key::Down].time >= 15)
+        yMod++;
+    if(inputState.key[Key::Left].time == 1 || inputState.key[Key::Left].time >= 15)
+        xMod--;
+    if(inputState.key[Key::Right].time == 1 || inputState.key[Key::Right].time >= 15)
+        xMod++;
+
+
+    int workDudeButt = shapes.createImageButton(sf::Vector2f(-33,190),*hudButton,"",0,&gvars::hudView);
+    shapes.createText(-33-40,190-8,12,sf::Color::Black,"Workdude",&gvars::hudView);
+    int evolutionButt = shapes.createImageButton(sf::Vector2f(179,190),*hudButton,"",0,&gvars::hudView);
+    shapes.createText(179-40,190-8,12,sf::Color::Black,"Evolution",&gvars::hudView);
+    int simulationButt = shapes.createImageButton(sf::Vector2f(391,190),*hudButton,"",0,&gvars::hudView);
+    shapes.createText(391-40,190-8,12,sf::Color::Black,"Simulation",&gvars::hudView);
+    int contestButt = shapes.createImageButton(sf::Vector2f(606,190),*hudButton,"",0,&gvars::hudView);
+    shapes.createText(606-40,190-8,12,sf::Color::Black,"Contests",&gvars::hudView);
+    int shopButt = shapes.createImageButton(sf::Vector2f(818,190),*hudButton,"",0,&gvars::hudView);
+    shapes.createText(818-40,190-8,12,sf::Color::Black,"Shops",&gvars::hudView);
+    int archiveButt = shapes.createImageButton(sf::Vector2f(1030,190),*hudButton,"",0,&gvars::hudView);
+    shapes.createText(1030-40,190-8,12,sf::Color::Black,"Archive",&gvars::hudView);
+
+
+    if(shapes.shapeClicked(workDudeButt))
+    {
+        std::cout << "Workdude clicked! \n";
+        sf::sleep(sf::seconds(2));
+    }
+
+    if(shapes.shapeHovered(workDudeButt))
+    {
+        std::cout << "Workdude Hovered! \n";
+    }
+
+
+}
 
 void drawHUD()
 {
+
     static sf::Texture* mainHud;
     if(mainHud == nullptr)
         mainHud = &texturemanager.getTexture("MainHUD.png");
 
     // -281, 283
     shapes.createImageButton(sf::Vector2f((1280+(-281))/2,(720+283)/2),*mainHud,"",0,&gvars::hudView);
+
+    HUDTabs();
 
 }
 

@@ -391,7 +391,7 @@ bool Shapes::shapeClicked(int id)
             sf::Vector2f vSize(button.texture->getSize().x/2,button.texture->getSize().y/2);
 
 
-            /*
+
             if ((inputState.lmbTime == 1 || inputState.lmbTime > 20) &&
                 aabb(worldPos, button.startPos.x - vSize.x,
                      button.startPos.x + vSize.x,
@@ -399,7 +399,7 @@ bool Shapes::shapeClicked(int id)
                      button.startPos.y + vSize.y)
                 )
 
-                */
+
             {
                 //button.beenPressed = true;
                 std::cout << "Pressed! \n";
@@ -426,14 +426,14 @@ bool Shapes::shapeHovered(int id)
             sf::Vector2f vSize(button.texture->getSize().x/2,button.texture->getSize().y/2);
 
 
-            /*
+
             if (aabb(worldPos, button.startPos.x - vSize.x,
                      button.startPos.x + vSize.x,
                      button.startPos.y - vSize.y,
                      button.startPos.y + vSize.y)
                 )
 
-                */
+
             {
                 //button.Hovered = true;
                 return true;

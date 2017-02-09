@@ -7,6 +7,7 @@
 #include "globalvars.h"
 #include "RichText.hpp"
 #include "Textures.h"
+#include "util.h"
 #include <list>
 
 
