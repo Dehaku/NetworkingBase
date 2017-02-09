@@ -83,11 +83,39 @@ void setup()
         throw std::runtime_error("Failed to load font!");
 
     // View
+    gvars::hudView.setSize(1280,720); // blargle.
+
+    std::cout << "Size: " << gvars::hudView.getSize().x << "/" << gvars::hudView.getSize().y << std::endl;
+
+    gvars::view1.setSize(1280, 720);
     window.setView(gvars::view1);
+    gvars::view1.setCenter(1280/2,720/2);
 
 
 
-    window.setSize(sf::Vector2u(400,200));
+
+
+    /* 16:9 Cheatsheet
+    128 	72
+    256 	144
+    384 	216
+    512 	288
+    640 	360
+    768 	432
+    896 	504
+    1024 	576
+    1152 	648
+    1280 	720 // Bing!
+    1408 	792
+    1536 	864
+    // Apparently 1600:900 isn't divisable by 8, so I guess it's not a super good resolution? My monitor is 1600:900 by default though, hmm.
+    1664 	936
+    ...
+    3840 	2160 // 4k apparently.
+
+    */
+
+    window.setSize(sf::Vector2u(640,360));
     gameSetup();
 
 
@@ -297,6 +325,7 @@ int main()
         // Basic Program Components
         handleEvents();
         inputState.update();
+        cameraControls();
 
         if(inputState.key[Key::Left].time == 1)
         {
