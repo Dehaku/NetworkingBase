@@ -93,6 +93,7 @@ void Simulation::drawCritters()
 SimulationManager::SimulationManager()
 {
     simulationID = 0;
+    drawSimNumber = 0;
 }
 
 Simulation* SimulationManager::createSimulation()

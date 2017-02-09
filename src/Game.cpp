@@ -2,6 +2,14 @@
 
 // sf::Vector2f worldPos = window.mapPixelToCoords(sf::Mouse::getPosition(window), *button.drawView);
 
+
+
+// Fix network syncing of organisms, as well as flora and tiles
+// Switch to smart pointers already.
+
+
+
+
 sf::Packet& operator <<(sf::Packet& packet, const Brain& brain)
 {
     return packet
@@ -320,7 +328,7 @@ void HUDTabs()
 
     std::string simAddon = "";
     if(simulationManager.simulations.size() > 0)
-        simAddon.append("("+std::to_string(simulationManager.simulations.size())+")");
+        simAddon.append("("+std::to_string(simulationManager.drawSimNumber+1)+"/"+std::to_string(simulationManager.simulations.size())+")");
 
     int simulationButt = shapes.createImageButton(sf::Vector2f(391,190),*hudButton,"",0,&gvars::hudView);
     shapes.createText(391-40,190-8,12,sf::Color::Black,"Simulation"+simAddon,&gvars::hudView);
@@ -336,6 +344,17 @@ void HUDTabs()
     {
         std::cout << "Workdude clicked! \n";
         sf::sleep(sf::seconds(2));
+    }
+
+    if(shapes.shapeClicked(simulationButt))
+    {
+        int simCount = simulationManager.simulations.size();
+        int &simDraw = simulationManager.drawSimNumber;
+        simDraw++;
+        if(simDraw >= simCount) // For when a simulation is ended, and yet we were viewing it.
+            simDraw = 0;
+
+
     }
 
     if(shapes.shapeHovered(workDudeButt))
@@ -355,6 +374,10 @@ void HUDTabs()
         int posX = 391;
         int posY = 190;
         shapes.createSquare(posX-105,posY-15,posX+106,posY+15,sf::Color(255,255,255,150),0,sf::Color::White,&gvars::hudView);
+
+        if(inputState.rmbTime == 1 && simulationManager.simulations.size() > 0)
+            simulationManager.simulations.pop_back();
+
     }
     if(shapes.shapeHovered(contestButt))
     {
@@ -431,12 +454,13 @@ void renderGame()
 {
     if(simulationManager.simulations.size() > 0)
     {
+        int i = 0;
         for(auto &sim : simulationManager.simulations)
         {
-            sim.drawCritters();
+            if(i == simulationManager.drawSimNumber)
+                sim.drawCritters();
 
-
-            break; // TODO: Just want the first, in this case.
+            i++;
         }
     }
 
@@ -594,6 +618,9 @@ void simulationInitialization()
     flora.clear();
     worldPopulationSetup();
 }
+
+
+
 
 void runGame()
 {

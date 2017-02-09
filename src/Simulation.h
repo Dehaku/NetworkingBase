@@ -34,6 +34,7 @@ class SimulationManager
 public:
     int simulationID;
     int maxSimulationsAllowed;
+    int drawSimNumber;
     std::list<Simulation> simulations;
     Simulation* createSimulation();
 
