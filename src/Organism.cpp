@@ -135,12 +135,13 @@ Quad-trees may be useful once creatures start to reference eachother.
 
 void displayCrittersInfo()
 {
-    int yOffset = 4;
+    int yOffset = 21;
 
 
     { // FPS/UPS Richtext Display
         sfe::RichText fpsText(gvars::defaultFont);
-        fpsText.setPosition(5,10*1);
+        fpsText.setPosition(-130,10*yOffset);
+        yOffset++;
         fpsText.setCharacterSize(10);
         fpsText << sf::Text::Bold << sf::Color::White << "FPS/UPS:" ;
 
@@ -156,16 +157,17 @@ void displayCrittersInfo()
         else
             fpsText << sf::Color::White << std::to_string(int(fpsKeeper.updatesPerSecond));
 
-        shapes.createRichText(fpsText);
+        shapes.createRichText(fpsText, &gvars::hudView);
     }
 
-    shapes.createText(5,10*2,10,sf::Color::White, "Data: "
+    shapes.createText(-130,10*yOffset,10,sf::Color::White, "Data: "
                       + std::to_string(int(byteKeeper.bytesPerSecond)) + " B/s, "
                       + std::to_string(int(byteKeeper.bytesCollected)) + " B, "
                       + std::to_string(int(byteKeeper.kilobytesCollected)) + " KB, "
                       + std::to_string(int(byteKeeper.megabytesCollected)) + " MB, "
                       + std::to_string(int(byteKeeper.gigabytesCollected)) + " GB"
-                      );
+                      , &gvars::hudView);
+    yOffset++;
 
 
 
@@ -173,7 +175,8 @@ void displayCrittersInfo()
 
 
 
-    shapes.createText(5,10*3,10,sf::Color::White, "World Pop:" + std::to_string(Organisms.size()));
+    shapes.createText(-130,10*yOffset,10,sf::Color::White, "World Pop:" + std::to_string(Organisms.size()), &gvars::hudView);
+    yOffset++;
     //for(int i = 0; i != Organisms.size(); i++)
     int limitCounter = 0;
     for(auto &crit : Organisms)
@@ -183,7 +186,7 @@ void displayCrittersInfo()
         std::string descString = "Critter; (" + std::to_string(int(crit.health)) +
             "), " + std::to_string(int(crit.nutrition)) + ":" + std::to_string(int(crit.hydration));
 
-        shapes.createText(5,10*yOffset,10,sf::Color::Cyan, descString);
+        shapes.createText(-130,10*yOffset,10,sf::Color::Cyan, descString, &gvars::hudView);
         yOffset++;
         limitCounter++;
     }

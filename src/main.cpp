@@ -14,6 +14,8 @@
 #include "Tiles.h"
 #include "Game.h"
 
+#include "Camera.h"
+
 sf::RenderWindow window(sf::VideoMode(960, 720), "Networking the Networth");
 
 class GameInfo
@@ -81,7 +83,6 @@ void setup()
         throw std::runtime_error("Failed to load font!");
 
     // View
-    gvars::view1.setSize(1000, 1000);
     window.setView(gvars::view1);
 
 

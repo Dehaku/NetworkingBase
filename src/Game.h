@@ -12,6 +12,7 @@
 #include "util.h"
 #include "Networking.h"
 #include "Textures.h"
+#include "Camera.h"
 
 
 void simulationInitialization();

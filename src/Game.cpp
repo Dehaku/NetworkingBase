@@ -306,10 +306,25 @@ void testFunction()
     std::cout << "Test! \n";
 }
 
+
+
+void drawHUD()
+{
+    static sf::Texture* mainHud;
+    if(mainHud == nullptr)
+        mainHud = &texturemanager.getTexture("MainHUD.png");
+
+    // -281, 283
+    shapes.createImageButton(sf::Vector2f((1280+(-281))/2,(720+283)/2),*mainHud,"",0,&gvars::hudView);
+
+}
+
 void renderGame()
 {
+
     drawCritters();
     displayCrittersInfo();
+    drawHUD();
 }
 
 sf::Thread serverListenThread(&serverListen);
