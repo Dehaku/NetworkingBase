@@ -316,8 +316,14 @@ void HUDTabs()
     shapes.createText(-33-40,190-8,12,sf::Color::Black,"Workdude",&gvars::hudView);
     int evolutionButt = shapes.createImageButton(sf::Vector2f(179,190),*hudButton,"",0,&gvars::hudView);
     shapes.createText(179-40,190-8,12,sf::Color::Black,"Evolution",&gvars::hudView);
+
+
+    std::string simAddon = "";
+    if(simulationManager.simulations.size() > 0)
+        simAddon.append("("+std::to_string(simulationManager.simulations.size())+")");
+
     int simulationButt = shapes.createImageButton(sf::Vector2f(391,190),*hudButton,"",0,&gvars::hudView);
-    shapes.createText(391-40,190-8,12,sf::Color::Black,"Simulation",&gvars::hudView);
+    shapes.createText(391-40,190-8,12,sf::Color::Black,"Simulation"+simAddon,&gvars::hudView);
     int contestButt = shapes.createImageButton(sf::Vector2f(606,190),*hudButton,"",0,&gvars::hudView);
     shapes.createText(606-40,190-8,12,sf::Color::Black,"Contests",&gvars::hudView);
     int shopButt = shapes.createImageButton(sf::Vector2f(818,190),*hudButton,"",0,&gvars::hudView);
@@ -386,12 +392,58 @@ void drawHUD()
 
 }
 
+void drawFPSandData()
+{
+    int yOffset = 21;
+    { // FPS/UPS Richtext Display
+        sfe::RichText fpsText(gvars::defaultFont);
+        fpsText.setPosition(-130,10*yOffset);
+        yOffset++;
+        fpsText.setCharacterSize(10);
+        fpsText << sf::Text::Bold << sf::Color::White << "FPS/UPS:" ;
+
+        if(fpsKeeper.framesPerSecond < 60)
+            fpsText << sf::Color::Red << std::to_string(int(fpsKeeper.framesPerSecond));
+        else
+            fpsText << sf::Color::White << std::to_string(int(fpsKeeper.framesPerSecond));
+
+        fpsText << sf::Color::White << "/";
+
+        if(fpsKeeper.updatesPerSecond > 10000)
+            fpsText << sf::Color::Red << std::to_string(int(fpsKeeper.updatesPerSecond));
+        else
+            fpsText << sf::Color::White << std::to_string(int(fpsKeeper.updatesPerSecond));
+
+        shapes.createRichText(fpsText, &gvars::hudView);
+    }
+
+    shapes.createText(-130,10*yOffset,10,sf::Color::White, "Data: "
+                      + std::to_string(int(byteKeeper.bytesPerSecond)) + " B/s, "
+                      + std::to_string(int(byteKeeper.bytesCollected)) + " B, "
+                      + std::to_string(int(byteKeeper.kilobytesCollected)) + " KB, "
+                      + std::to_string(int(byteKeeper.megabytesCollected)) + " MB, "
+                      + std::to_string(int(byteKeeper.gigabytesCollected)) + " GB"
+                      , &gvars::hudView);
+    yOffset++;
+}
+
 void renderGame()
 {
+    if(simulationManager.simulations.size() > 0)
+    {
+        for(auto &sim : simulationManager.simulations)
+        {
+            sim.drawCritters();
 
-    drawCritters();
-    displayCrittersInfo();
+
+            break; // TODO: Just want the first, in this case.
+        }
+    }
+
+    //drawCritters();
+    //displayCrittersInfo();
     drawHUD();
+    drawFPSandData();
 }
 
 sf::Thread serverListenThread(&serverListen);
@@ -537,7 +589,7 @@ void runServerStuffs()
 
 void simulationInitialization()
 {
-    worldTilesSetup();
+    worldTilesSetup(worldTiles);
     organisms.clear();
     flora.clear();
     worldPopulationSetup();
@@ -591,8 +643,9 @@ void runGame()
 
     }
 
-
-    runBrains();
+    for(auto &sim : simulationManager.simulations)
+        runBrains(sim.organisms);
+    //runBrains(organisms);
 
     if(inputState.key[Key::C].time == 1)
         addCreatures(100);

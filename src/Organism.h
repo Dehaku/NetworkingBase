@@ -53,7 +53,7 @@ extern std::list<Brain> brainStorage;
 extern std::list<Organism> organisms;
 extern std::list<Organism> flora;
 
-void runBrains();
+void runBrains(std::list<Organism>& organismList);
 
 void worldPopulationSetup();
 

@@ -20,9 +20,9 @@ void resizeWorld(int x, int y, std::vector<std::vector<WorldTile>>& worldlies)
     }
 }
 
-void worldTilesSetup()
+void worldTilesSetup(std::vector<std::vector<WorldTile>>& worldlies)
 {
-    resizeWorld(10,10,worldTiles);
+    resizeWorld(10,10,worldlies);
     for(auto i : worldTiles)
     {
         std::cout << "Wee!" << std::endl;

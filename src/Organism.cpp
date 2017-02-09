@@ -53,14 +53,15 @@ float Organism::getHydrationMax()
 
 void moveAngle(Organism &crit, float ang)
 {
-    crit.pos.x += cosf(ang) * crit.getSpeed(); // * Delta? * Gamespeed()! (Delta+TimeWarp)
+
+    crit.pos.x += cosf(ang) * crit.getSpeed();
     crit.pos.y += sinf(ang) * crit.getSpeed();
-    // crit.xpos += moveX;
-    // crit.ypos += moveY;
 }
 
 void runBrain(Organism &crit)
 {
+
+
     if(!network::client)
         if(random(1,600) == 1 || inputState.key[Key::Space].time == 1)
             crit.brain->desiredPos = sf::Vector2f(random(10,990),random(10,990));
@@ -69,11 +70,12 @@ void runBrain(Organism &crit)
     //std::cout << "Critter" + crit.name + ": " + std::to_string(crit.getSpeed()) << std::endl;
     moveAngle(crit,math::angleBetweenVectors(crit.pos,crit.brain->desiredPos));
 
+
 }
 
-void runBrains()
+void runBrains(std::list<Organism>& organismList)
 {
-    for(auto &crit : organisms)
+    for(auto &crit : organismList)
         runBrain(crit);
 }
 
@@ -138,36 +140,7 @@ void displayCrittersInfo()
     int yOffset = 21;
 
 
-    { // FPS/UPS Richtext Display
-        sfe::RichText fpsText(gvars::defaultFont);
-        fpsText.setPosition(-130,10*yOffset);
-        yOffset++;
-        fpsText.setCharacterSize(10);
-        fpsText << sf::Text::Bold << sf::Color::White << "FPS/UPS:" ;
 
-        if(fpsKeeper.framesPerSecond < 60)
-            fpsText << sf::Color::Red << std::to_string(int(fpsKeeper.framesPerSecond));
-        else
-            fpsText << sf::Color::White << std::to_string(int(fpsKeeper.framesPerSecond));
-
-        fpsText << sf::Color::White << "/";
-
-        if(fpsKeeper.updatesPerSecond > 10000)
-            fpsText << sf::Color::Red << std::to_string(int(fpsKeeper.updatesPerSecond));
-        else
-            fpsText << sf::Color::White << std::to_string(int(fpsKeeper.updatesPerSecond));
-
-        shapes.createRichText(fpsText, &gvars::hudView);
-    }
-
-    shapes.createText(-130,10*yOffset,10,sf::Color::White, "Data: "
-                      + std::to_string(int(byteKeeper.bytesPerSecond)) + " B/s, "
-                      + std::to_string(int(byteKeeper.bytesCollected)) + " B, "
-                      + std::to_string(int(byteKeeper.kilobytesCollected)) + " KB, "
-                      + std::to_string(int(byteKeeper.megabytesCollected)) + " MB, "
-                      + std::to_string(int(byteKeeper.gigabytesCollected)) + " GB"
-                      , &gvars::hudView);
-    yOffset++;
 
 
 

@@ -11,9 +11,21 @@ class Simulation
 public:
     std::list<Brain> brainStorage;
     std::list<Organism> flora;
-    std::vector<Organism> organisms;
+    std::list<Organism> organisms;
     std::vector<std::vector<WorldTile>> worldTiles;
+
+    bool draw;
+    bool drawSquareInstead;
+    bool drawTextureInstead;
+    sf::Color background;
+    sf::Sprite circleCritter;
+
+    Simulation();
+
+
     void worldPopulationSetup();
+
+    void drawCritters();
 
 };
 
@@ -21,6 +33,7 @@ class SimulationManager
 {
 public:
     int simulationID;
+    int maxSimulationsAllowed;
     std::list<Simulation> simulations;
     Simulation* createSimulation();
 

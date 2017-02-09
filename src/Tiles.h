@@ -22,7 +22,7 @@ void resizeWorld(int x, int y, std::vector<std::vector<WorldTile>>& worldlies);
 
 
 
-void worldTilesSetup();
+void worldTilesSetup(std::vector<std::vector<WorldTile>>& worldlies);
 
 
 #endif // TILES_H_INCLUDED

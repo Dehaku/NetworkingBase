@@ -2,6 +2,15 @@
 
 SimulationManager simulationManager;
 
+Simulation::Simulation()
+{
+    draw = true;
+    drawSquareInstead = false;
+    drawTextureInstead = false;
+    background = sf::Color(150,150,10);
+    circleCritter;
+}
+
 void Simulation::worldPopulationSetup()
 {
     for(int i = 0; i != 100; i++)
@@ -29,6 +38,58 @@ void Simulation::worldPopulationSetup()
     }
 }
 
+void Simulation::drawCritters()
+{
+    if(circleCritter.getTexture() == nullptr)
+        circleCritter.setTexture(texturemanager.getTexture("Circle.png"));
+
+    if(inputState.key[Key::Tab].time == 1)
+        toggle(draw);
+    if(inputState.key[Key::R].time == 1)
+        toggle(drawSquareInstead);
+    if(inputState.key[Key::T].time == 1)
+        toggle(drawTextureInstead);
+
+    if(!draw)
+        return;
+
+    shapes.createSquare(0,0,1000,1000,background);
+
+    for(auto &plant : flora)
+    {
+
+        shapes.createCircle(plant.pos.x,plant.pos.y,plant.size,plant.colorPrime,plant.size/10,plant.colorSecondary);
+    }
+
+    sf::Texture &circley = texturemanager.getTexture("Circle.png");
+    sf::Texture &swirl = texturemanager.getTexture("SwirlEffect.png");
+
+    for(auto &crit : organisms)
+    {
+        if(drawSquareInstead)
+            shapes.createSquare(crit.pos.x-((crit.size)),crit.pos.y-((crit.size)),crit.pos.x+((crit.size)),crit.pos.y+((crit.size)),crit.colorPrime,crit.size/2,crit.colorSecondary);
+        else if(drawTextureInstead)
+        {
+            shapes.createImageButton(crit.pos,circley);
+            //shapes.createImageButton(crit.pos,swirl,"",rotation);
+        }
+        else
+            shapes.createCircle(crit.pos.x,crit.pos.y,crit.size,crit.colorPrime,crit.size/2,crit.colorSecondary);
+    }
+
+
+    if(inputState.key[Key::Space].time == 1 && true == false)
+    {
+        background = sf::Color(random(0,255),random(0,255),random(0,255));
+        std::cout << "Color: " << background.r << "/" << background.g << "/" << background.b << std::endl;
+        std::string descString = "Color: " + std::to_string(background.r) + "/" + std::to_string(background.g) + "/" + std::to_string(background.b);
+        //shapes.createText(100,100,10,sf::Color::White, descString);
+
+    }
+
+
+}
+
 SimulationManager::SimulationManager()
 {
     simulationID = 0;
@@ -36,8 +97,17 @@ SimulationManager::SimulationManager()
 
 Simulation* SimulationManager::createSimulation()
 {
+    simulationID++;
+    std::cout << "Creating Simulation " << simulationID << std::endl;
     Simulation simulation;
     simulations.push_back(simulation);
+    // You must use .back() here, and work it /after/ it's in the container, otherwise the pointers between the containers inside simulation will fail.
+    // I should probably use 'new' and have a list of pointers, instead.
+    simulations.back().worldPopulationSetup();
+    worldTilesSetup(simulations.back().worldTiles);
+
+    std::cout << "Critters: " << simulations.back().organisms.size() << std::endl;
+
 
     return &simulations.back();
 }
