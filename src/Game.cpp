@@ -95,10 +95,10 @@ struct CritterPositions
     CritterPositions(Organism Critter)
     {
         position = Critter.pos;
-        if(Critter.brain != nullptr)
+        if(auto thisBrain = Critter.brain.lock())
         {
             brainBool = true;
-            desiredPosition = Critter.brain->desiredPos;
+            desiredPosition = thisBrain->desiredPos;
         }
         else
             brainBool = false;
@@ -176,8 +176,8 @@ void clientPacketManager::handlePackets()
                 critter.pos = cPos.position;
 
                 // If you've gotta brain, you gotta desire.
-                if(cPos.brainBool)
-                    critter.brain->desiredPos = cPos.desiredPosition;
+                if(cPos.brainBool && critter.brain.lock())
+                    critter.brain.lock()->desiredPos = cPos.desiredPosition;
 
                 counter++;
             }
@@ -209,8 +209,8 @@ void clientPacketManager::handlePackets()
                 organisms.push_back(Creature);
                 brainStorage.push_back(brain);
 
-                organisms.back().brain = &brainStorage.back();
-                brainStorage.back().owner = &organisms.back();
+                //* organisms.back().brain = brainStorage.back();
+                //* brainStorage.back().owner = organisms.back();
 
                 counter++;
             }
@@ -268,7 +268,7 @@ void serverPacketManager::handlePackets()
             for(auto &critter : organisms)
             {
                 sendPacket << critter;
-                sendPacket << *(critter.brain);
+                //* sendPacket << *(critter.brain);
             }
 
 
@@ -627,48 +627,7 @@ void runGame()
     static int globalCycle = 0;
     globalCycle++;
 
-    if(inputState.key[Key::F])
-    {
-        std::cout << "Doing! \n";
-        sf::Packet packetez;
-        std::cout << "Packet Size: " << packetez.getDataSize() << std::endl;
-        for(auto &critter : organisms)
-        {
-            packetez << critter;
-            packetez << *(critter.brain);
 
-        }
-        std::cout << "Packet Size: " << packetez.getDataSize() << std::endl;
-        organisms.clear();
-        brainStorage.clear();
-
-
-
-
-        for(int i = 0; i != 10; i++)
-        {
-            Organism Crit;
-            Brain brain;
-
-            organisms.push_back(Crit);
-            brainStorage.push_back(brain);
-
-            packetez >> organisms.back();
-            packetez >> brainStorage.back();
-
-            organisms.back().brain = &brainStorage.back();
-            brainStorage.back().owner = &organisms.back();
-
-
-        }
-        for(auto &critter : organisms)
-        {
-
-        }
-
-
-
-    }
 
     for(auto &sim : simulationManager.simulations)
         runBrains(sim.organisms);

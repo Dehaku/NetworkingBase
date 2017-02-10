@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <memory>
 
 #include <SFML/Graphics.hpp>
 #include "globalvars.h"

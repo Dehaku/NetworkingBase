@@ -3,6 +3,7 @@
 #include <list>
 #include <algorithm>
 #include <iomanip>
+#include <memory>
 
 #include "Shapes.h"
 #include "util.h"
@@ -13,7 +14,7 @@ class Organism;
 class Brain
 {
     public:
-    Organism *owner;
+    std::weak_ptr<Organism> owner;
     sf::Vector2f desiredPos;
     bool desiresMate;
     Brain();
@@ -32,7 +33,7 @@ class Organism
 
     // Identity
     std::string name;
-    Brain *brain;
+    std::weak_ptr<Brain> brain;
     sf::Color colorPrime;
     sf::Color colorSecondary;
 
@@ -53,7 +54,7 @@ extern std::list<Brain> brainStorage;
 extern std::list<Organism> organisms;
 extern std::list<Organism> flora;
 
-void runBrains(std::list<Organism>& organismList);
+void runBrains(std::list<std::shared_ptr<Organism>>& organismList);
 
 void worldPopulationSetup();
 

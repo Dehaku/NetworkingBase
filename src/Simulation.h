@@ -9,9 +9,9 @@
 class Simulation
 {
 public:
-    std::list<Brain> brainStorage;
-    std::list<Organism> flora;
-    std::list<Organism> organisms;
+    std::list<std::shared_ptr<Brain>> brainStorage;
+    std::list<std::shared_ptr<Organism>> flora;
+    std::list<std::shared_ptr<Organism>> organisms;
     std::vector<std::vector<WorldTile>> worldTiles;
 
     bool draw;

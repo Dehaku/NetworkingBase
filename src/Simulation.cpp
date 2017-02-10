@@ -15,26 +15,31 @@ void Simulation::worldPopulationSetup()
 {
     for(int i = 0; i != 100; i++)
     {
-        Organism Plant;
-        Plant.size = random(5,30);
-        Plant.baseSpeed = 0;
-        Plant.pos = sf::Vector2f(random(10,1000),random(10,1000));
-        Plant.colorPrime = sf::Color(0,200,0,150);
-        Plant.colorSecondary = sf::Color(0,100,0,150);
+        //Organism Plant;
+        std::shared_ptr<Organism> Plant(new Organism());
+        Plant->size = random(5,30);
+        Plant->baseSpeed = 0;
+        Plant->pos = sf::Vector2f(random(10,1000),random(10,1000));
+        Plant->colorPrime = sf::Color(0,200,0,150);
+        Plant->colorSecondary = sf::Color(0,100,0,150);
+
         flora.push_back(Plant);
     }
 
     for(int i = 0; i != 100; i++)
     {
-        Organism Critter;
-        Critter.name = std::to_string(i); // Temporary
-        Critter.pos = sf::Vector2f(random(10,1000),random(10,1000));
+        //Organism Critter;
+        std::shared_ptr<Organism> Critter(new Organism());
+        Critter->name = std::to_string(i); // Temporary
+        Critter->pos = sf::Vector2f(random(10,1000),random(10,1000));
         organisms.push_back(Critter);
-        Brain creatureBrain;
+
+        //Brain creatureBrain;
+        std::shared_ptr<Brain> creatureBrain(new Brain());
         brainStorage.push_back(creatureBrain);
 
-        organisms.back().brain = &brainStorage.back();
-        brainStorage.back().owner = &organisms.back();
+        organisms.back().get()->brain = brainStorage.back();
+        brainStorage.back().get()->owner = organisms.back();
     }
 }
 
@@ -55,17 +60,19 @@ void Simulation::drawCritters()
 
     shapes.createSquare(0,0,1000,1000,background);
 
-    for(auto &plant : flora)
+    for(auto &planty : flora)
     {
-
+        Organism &plant = *planty.get();
         shapes.createCircle(plant.pos.x,plant.pos.y,plant.size,plant.colorPrime,plant.size/10,plant.colorSecondary);
     }
 
     sf::Texture &circley = texturemanager.getTexture("Circle.png");
     sf::Texture &swirl = texturemanager.getTexture("SwirlEffect.png");
 
-    for(auto &crit : organisms)
+    for(auto &critter : organisms)
     {
+        Organism &crit = *critter.get();
+
         if(drawSquareInstead)
             shapes.createSquare(crit.pos.x-((crit.size)),crit.pos.y-((crit.size)),crit.pos.x+((crit.size)),crit.pos.y+((crit.size)),crit.colorPrime,crit.size/2,crit.colorSecondary);
         else if(drawTextureInstead)

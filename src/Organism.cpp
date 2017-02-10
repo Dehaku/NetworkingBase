@@ -17,7 +17,7 @@ Organism::Organism()
     size = random(1,100) * 0.1;
     baseSpeed = random(1,10);
 
-    brain = nullptr;
+    //* brain = nullptr;
     colorPrime = sf::Color(random(0,255),random(0,255),random(0,255));
     colorSecondary = sf::Color(random(0,255),random(0,255),random(0,255));
 
@@ -64,19 +64,20 @@ void runBrain(Organism &crit)
 
     if(!network::client)
         if(random(1,600) == 1 || inputState.key[Key::Space].time == 1)
-            crit.brain->desiredPos = sf::Vector2f(random(10,990),random(10,990));
+            crit.brain.lock()->desiredPos = sf::Vector2f(random(10,990),random(10,990));
 
 
     //std::cout << "Critter" + crit.name + ": " + std::to_string(crit.getSpeed()) << std::endl;
-    moveAngle(crit,math::angleBetweenVectors(crit.pos,crit.brain->desiredPos));
+    moveAngle(crit,math::angleBetweenVectors(crit.pos,crit.brain.lock()->desiredPos));
 
 
 }
 
-void runBrains(std::list<Organism>& organismList)
+//void runBrains(std::list<Organism>& organismList)
+void runBrains(std::list<std::shared_ptr<Organism>>& organismList)
 {
     for(auto &crit : organismList)
-        runBrain(crit);
+        runBrain(*crit.get());
 }
 
 void worldPopulationSetup()
@@ -101,8 +102,8 @@ void worldPopulationSetup()
         Brain creatureBrain;
         brainStorage.push_back(creatureBrain);
 
-        organisms.back().brain = &brainStorage.back();
-        brainStorage.back().owner = &organisms.back();
+        //* organisms.back().brain = &brainStorage.back();
+        //* brainStorage.back().owner = &organisms.back();
     }
 }
 
@@ -117,8 +118,8 @@ void addCreatures(int amount)
         Brain creatureBrain;
         brainStorage.push_back(creatureBrain);
 
-        organisms.back().brain = &brainStorage.back();
-        brainStorage.back().owner = &organisms.back();
+        //* organisms.back().brain = &brainStorage.back();
+        //* brainStorage.back().owner = &organisms.back();
     }
 }
 
