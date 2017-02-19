@@ -300,6 +300,26 @@ void clientPacketManager::handlePackets()
                     counter++;
                 }
 
+                int plantPop;
+                packet >> plantPop;
+                if(plantPop != simPtr->flora.size())
+                    std::cout << "Plant Pop Desync! Packet: " << population << ", Us: " << simPtr->flora.size() << std::endl;
+
+                counter = 0;
+                for(auto &plant : simPtr->flora)
+                {
+                    if(counter >= plantPop)
+                        break;
+
+                    CritterPositions cPos;
+                    packet >> cPos;
+
+                    // Update Position
+                    plant.get()->pos = cPos.position;
+
+                    counter++;
+                }
+
             }
         }
 
@@ -691,6 +711,15 @@ void sendLifeUpdate()
             CritterPositions CPos(*critter.get());
             packet << CPos;
         }
+
+        // Amount of Plants
+        packet << sf::Uint32(sim.flora.size());
+        for(auto &plant : sim.flora)
+        {
+            CritterPositions CPos(*plant.get());
+            packet << CPos;
+        }
+
     }
     sendToAllClients(packet);
 }
@@ -825,7 +854,17 @@ void runGame()
     static int globalCycle = 0;
     globalCycle++;
 
-
+    if(inputState.key[Key::L].time == 1)
+    {
+        for(auto &sim : simulationManager.simulations)
+        {
+            for(auto &plant : sim.flora)
+            {
+                plant.get()->pos.x = random(1,1000);
+                plant.get()->pos.y = random(1,1000);
+            }
+        }
+    }
 
     for(auto &sim : simulationManager.simulations)
         runBrains(sim.organisms);
