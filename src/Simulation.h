@@ -9,6 +9,8 @@
 class Simulation
 {
 public:
+    unsigned int simulationID;
+
     std::list<std::shared_ptr<Brain>> brainStorage;
     std::list<std::shared_ptr<Organism>> flora;
     std::list<std::shared_ptr<Organism>> organisms;
@@ -32,11 +34,12 @@ public:
 class SimulationManager
 {
 public:
-    int simulationID;
+    unsigned int simulationID;
     int maxSimulationsAllowed;
     int drawSimNumber;
     std::list<Simulation> simulations;
     Simulation* createSimulation();
+    Simulation* getSimulation(int id);
 
     SimulationManager();
 

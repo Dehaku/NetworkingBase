@@ -66,7 +66,7 @@ void serverListen()
             {
                 std::cout << "New Client! Adding to list...";
                 {
-                    client.id = clientIDCounter++;
+                    client.id = ++clientIDCounter;
                     // sf::Lock lock(network::clientHandling);
                     clients.push_back(client);
                 }

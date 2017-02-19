@@ -5,7 +5,6 @@
 
 
 // Fix network syncing of organisms, as well as flora and tiles
-// Switch to smart pointers already.
 
 
 
@@ -126,6 +125,56 @@ sf::Packet& operator >>(sf::Packet& packet, CritterPositions& critter)
     >> critter.desiredPosition.y;
 }
 
+sf::Packet& operator <<(sf::Packet& packet, const Simulation& sim)
+{
+
+    // Organism Pop
+    // Organism then Brain
+    // Flora Pop
+    // Flora
+    // Tiles
+    // Runtime
+
+
+    packet << sf::Uint32(sim.organisms.size());
+    for(auto critter : sim.organisms)
+    {
+        packet << *(critter.get());
+        packet << *(critter.get()->brain.lock());
+    }
+
+
+    return packet;
+}
+
+sf::Packet& operator >>(sf::Packet& packet, Simulation& sim)
+{
+    int population;
+    packet >> population;
+
+    for(int i = 0; i != population; i++)
+    {
+        // Create critter
+        std::shared_ptr<Organism> Critter(new Organism());
+        sim.organisms.push_back(Critter);
+
+        // Extract and Overwrite
+        packet >> *(sim.organisms.back().get());
+
+        // Create Brain
+        std::shared_ptr<Brain> creatureBrain(new Brain());
+        sim.brainStorage.push_back(creatureBrain);
+
+        // Extract and Overwrite
+        packet >> *(sim.brainStorage.back().get());
+
+        // Link brains and bodies.
+        sim.organisms.back().get()->brain = sim.brainStorage.back();
+        sim.brainStorage.back().get()->owner = sim.organisms.back();
+    }
+
+    return packet;
+}
 
 
 
@@ -142,6 +191,7 @@ void clientPacketManager::handlePackets()
 
         sf::Uint8 type;
         packet >> type;
+        //std::cout << "P: " << int(type) << std::endl;
 
 
         if(type == sf::Uint8(ident::message))
@@ -151,9 +201,40 @@ void clientPacketManager::handlePackets()
             std::cout << "Server" << int(type) << ": \"" << in << "\"" << std::endl;
         }
 
+        else if(type == sf::Uint8(ident::initialization))
+        {
+            std::cout << "Received initialization, ";
+            int simCount;
+            packet >> simCount;
+            std::cout << simCount << " simulations." << std::endl;
 
+            for(int i = 0; i != simCount; i++) // We know all the currently running sims, now we request them all individually.
+            {
+                sf::Packet sendPacket;
+                sendPacket << sf::Uint8(ident::simulationRequest);
 
-        else if(type == sf::Uint8(ident::organismUpdate) )
+                // Take out the ID from the packet, and send it back with the request.
+                sf::Uint32 simID;
+                packet >> simID;
+                sendPacket << simID;
+                serverSocket.send(sendPacket);
+                std::cout << "Requested Sim " << int(simID) << std::endl;
+            }
+
+            // TODO: Send/receive players connected here.
+
+        }
+
+        else if(type == sf::Uint8(ident::simulationInitialization))
+        {
+            Simulation sim;
+            packet >> sim;
+            std::cout << "Received Sim " << sim.simulationID;
+            simulationManager.simulations.push_back(sim);
+            std::cout << ", and inserted it. \n";
+        }
+
+        else if(type == sf::Uint8(ident::organismUpdate ))
         {
             std::cout << "Received update of ";
             unsigned int population;
@@ -184,7 +265,7 @@ void clientPacketManager::handlePackets()
 
         }
 
-        else if(type == sf::Uint8(ident::organismInitialization ) )
+        else if(type == sf::Uint8(ident::organismInitialization ))
         {
 
 
@@ -221,19 +302,14 @@ void clientPacketManager::handlePackets()
             std::cout << "Received our ID: ";
             packet >> myID;
             std::cout << int(myID) << std::endl;
-            std::cout << "Requesting initial Flora and Organism setup. \n";
+
+
+
+            std::cout << "Requesting initialization\n";
             sf::Packet requestPacket;
-            requestPacket << sf::Uint8(ident::floraInitialization) << myID;
+            requestPacket << sf::Uint8(ident::initialization) << myID;
             serverSocket.send(requestPacket);
-
-            requestPacket.clear();
-            requestPacket << sf::Uint8(ident::organismInitialization) << myID;
-            serverSocket.send(requestPacket);
-
         }
-
-
-
     }
     packets.clear();
 }
@@ -254,7 +330,54 @@ void serverPacketManager::handlePackets()
             packet >> in;
             std::cout << "Client" << int(type) << ": \"" << in << "\"" << std::endl;
         }
-        else if(type == sf::Uint8(ident::organismInitialization ) )
+
+        else if(type == sf::Uint8(ident::initialization))
+        {
+            std::cout << "Initialization 'Request' received from " << int(currentPacket.sender->id) << std::endl;
+            sf::Packet sendPacket;
+
+            // Send the same type back.
+            sendPacket << type;
+            sendPacket << sf::Uint32(simulationManager.simulations.size());
+
+            for(auto &sim : simulationManager.simulations)
+            {
+                sendPacket << sf::Uint32(sim.simulationID);
+            }
+
+            // TODO: Send/receive players connected here.
+
+            currentPacket.sender->socket->send(sendPacket);
+        }
+
+        else if(type == sf::Uint8(ident::simulationRequest))
+        {
+            std::cout << "Received request of simulation ";
+            int simReqID;
+            packet >> simReqID;
+            std::cout << simReqID;
+
+            Simulation* simPtr = simulationManager.getSimulation(simReqID);
+            if(simPtr == nullptr)
+            {
+                std::cout << "Failed to find " << simReqID << std::endl;
+                continue;
+            }
+            Simulation& sim = *simPtr;
+
+
+            std::cout << "Sim(" << sim.simulationID << ")";
+
+            std::cout << " has " << sim.organisms.size() << " creatures. \n";
+
+            sf::Packet returnPacket;
+            returnPacket << sf::Uint8(ident::simulationInitialization);
+            returnPacket << sim;
+
+            currentPacket.sender->socket->send(returnPacket);
+        }
+
+        else if(type == sf::Uint8(ident::organismInitialization ))
         {
             std::cout << "organism Initial 'Request' received from " << currentPacket.sender->id << std::endl;
             sf::Packet sendPacket;
@@ -277,7 +400,7 @@ void serverPacketManager::handlePackets()
             currentPacket.sender->socket->send(sendPacket);
 
         }
-        else if(type == sf::Uint8(ident::floraInitialization ) )
+        else if(type == sf::Uint8(ident::floraInitialization) )
         {
             std::cout << "flora Initial 'Request' received from " << currentPacket.sender->id << std::endl;
         }
@@ -291,13 +414,11 @@ void serverPacketManager::handlePackets()
 
             sf::Packet returnPacket;
             // Send them the ID assigned to them when they joined.
-            returnPacket << sf::Uint8(ident::clientID) << sf::Uint8(currentPacket.sender->id);
+
+            returnPacket << sf::Uint8(ident::clientID) << currentPacket.sender->id;
+
             currentPacket.sender->socket->send(returnPacket);
-            std::cout << "Sent ID to client. \n";
         }
-
-
-
     }
     packets.clear();
 }

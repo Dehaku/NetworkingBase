@@ -4,6 +4,7 @@ SimulationManager simulationManager;
 
 Simulation::Simulation()
 {
+    simulationID = 0;
     draw = true;
     drawSquareInstead = false;
     drawTextureInstead = false;
@@ -111,6 +112,7 @@ Simulation* SimulationManager::createSimulation()
     simulations.push_back(simulation);
     // You must use .back() here, and work it /after/ it's in the container, otherwise the pointers between the containers inside simulation will fail.
     // I should probably use 'new' and have a list of pointers, instead.
+    simulations.back().simulationID = simulationID;
     simulations.back().worldPopulationSetup();
     worldTilesSetup(simulations.back().worldTiles);
 
@@ -118,4 +120,14 @@ Simulation* SimulationManager::createSimulation()
 
 
     return &simulations.back();
+}
+
+Simulation* SimulationManager::getSimulation(int id)
+{
+
+    for(auto &sim : simulations)
+        if(sim.simulationID == id)
+            return &sim;
+
+    return nullptr;
 }
