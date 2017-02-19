@@ -6,7 +6,6 @@
 #include "util.h"
 
 extern int clientNum;
-extern sf::Uint8 myID;
 extern sf::TcpSocket serverSocket;
 
 class clientPacketManager

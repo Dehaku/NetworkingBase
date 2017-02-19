@@ -18,6 +18,17 @@ class ClientPackage
 public:
     std::string userName;
     sf::Uint8 id;
+    sf::Uint32 credits;
+    sf::Uint32 pix;
+
+
+
+
+
+
+
+
+
     sf::TcpSocket* socket;
     bool toDelete;
     ClientPackage();

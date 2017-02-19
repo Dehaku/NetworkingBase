@@ -18,6 +18,7 @@
 #include "Textures.h"
 #include "Camera.h"
 
+bool chatCommand(std::string input);
 
 void simulationInitialization();
 

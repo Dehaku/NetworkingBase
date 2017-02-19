@@ -19,6 +19,10 @@ TODO: Add proper client-side connection shutdown
 
 */
 
+ChatManager chatManager;
+Profile myProfile;
+
+
 namespace network
 {
     int mainPort = 23636;

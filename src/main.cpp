@@ -79,6 +79,7 @@ void GameInfo::moveSquare()
 
 void setup()
 {
+
     // Font
     if (!gvars::defaultFont.loadFromFile("data/fonts/Xolonium-Regular.otf"))
         throw std::runtime_error("Failed to load font!");
@@ -209,7 +210,7 @@ void handleEvents()
         }
         if (event.type == sf::Event::TextEntered)
         {
-            /*
+
 
             if (event.text.unicode < 128 && network::chatting == true) //
             {
@@ -217,11 +218,11 @@ void handleEvents()
                 {
                     std::string TempStr;
                     TempStr = event.text.unicode;
-                    cliCon.chatString.append( TempStr );
+                    chatManager.chatString.append( TempStr );
                 }
-                if(event.text.unicode == 8 && cliCon.chatString.size() != 0)
+                if(event.text.unicode == 8 && chatManager.chatString.size() != 0)
                 {
-                    cliCon.chatString.erase(cliCon.chatString.end()-1);
+                    chatManager.chatString.erase(chatManager.chatString.end()-1);
                 }
                 if(event.text.unicode == 13 && network::client == true)
                 {
@@ -229,26 +230,26 @@ void handleEvents()
                     sf::UdpSocket socket;
                     sf::Packet ToSend;
                     std::string SendText;
-                    SendText.append(cliCon.name);
+                    SendText.append(myProfile.name);
                     SendText.append(": ");
-                    SendText.append(cliCon.chatString);
+                    SendText.append(chatManager.chatString);
 
-                    ToSend << ident.textMessage << SendText;
+                    ToSend << sf::Uint8(ident::textMessage) << SendText;
                     if(ToSend.getDataSize() != 0)
                     {
 
                         sf::Packet sendpacket;
 
-                        sendpacket << ident.textMessage << SendText;
+                        sendpacket << ident::textMessage << SendText;
 
                         // Send an answer to the server
-                        if(cliSocket.send(sendpacket) != sf::Socket::Done)
+                        if(serverSocket.send(sendpacket) != sf::Socket::Done)
                         {
                             std::cout << "!= Socket Done (In client sending chat), Apparently! Tell the Devs! \n";
                         }
 
 
-                        cliCon.chatString.clear();
+                        chatManager.chatString.clear();
                     }
                 }
 
@@ -259,38 +260,33 @@ void handleEvents()
                     std::string SendText;
                     SendText.append("*Server*");
                     SendText.append(": ");
-                    SendText.append(cliCon.chatString);
+                    SendText.append(chatManager.chatString);
 
-                    ToSend << ident.textMessage << SendText;
+                    ToSend << ident::textMessage << SendText;
                     if(ToSend.getDataSize() != 0)
                     {
 
-                        for (std::list<sf::TcpSocket*>::iterator it = clients.begin(); it != clients.end(); ++it)
-                        {
-                            if(gvars::debug) std::cout << "Running through clients \n";
-                            sf::TcpSocket& client = **it;
-                            client.send(ToSend);
-                        }
-                        cliCon.chatString.clear();
+                        sendToAllClients(ToSend);
+                        chatManager.chatString.clear();
                     }
                 }
                 if(event.text.unicode == 13)
                 {
                     network::chatting = false;
                     std::string firstLetter;
-                    firstLetter.append(cliCon.chatString,0,1);
+                    firstLetter.append(chatManager.chatString,0,1);
                     std::cout << "(" << firstLetter << ")\n";
                     if(firstLetter == "/")
-                        chatCommand(cliCon.chatString);
+                        chatCommand(chatManager.chatString);
                     else if(firstLetter != "/" && network::connectedServer != "")
                     {
                         sf::Packet pack;
-                        pack << ident.textMessage << network::name + ": " + cliCon.chatString;
-                        cliSocket.send(pack);
+                        pack << ident::textMessage << myProfile.name + ": " + chatManager.chatString;
+                        serverSocket.send(pack);
                     }
                     //else
                         //chatBox.addChat(cliCon.chatString,sf::Color::White);
-                    cliCon.chatString.clear();
+                    chatManager.chatString.clear();
                 }
 
             }
@@ -298,8 +294,6 @@ void handleEvents()
             {
                 network::chatting = true;
             }
-
-            */
 
         }
 
@@ -327,6 +321,11 @@ int main()
         handleEvents();
         inputState.update();
         cameraControls();
+
+        if(inputState.key[Key::Return].time == 1 || inputState.key[Key::T].time == 1)
+        {
+            //network::chatting = true;
+        }
 
         if(inputState.key[Key::Left].time == 1)
         {

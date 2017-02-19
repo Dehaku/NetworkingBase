@@ -9,6 +9,7 @@
 
 
 
+
 sf::Packet& operator <<(sf::Packet& packet, const Brain& brain)
 {
     return packet
@@ -252,6 +253,123 @@ sf::Packet& operator >>(sf::Packet& packet, Simulation& sim)
 }
 
 
+bool chatCommand(std::string input)
+{
+    std::vector<std::string> elements;
+    bool finished = false;
+    sf::Color errorColor(100,100,100);
+    sf::Color warmColor(255,150,150);
+    sf::Color goodColor = sf::Color::White;
+    size_t tStart = 0;
+    size_t tEnd = 0;
+
+    while(finished == false)
+    {
+
+        tEnd = input.find(" ",tStart);
+        std::string injection;
+        injection.append(input,tStart,tEnd-tStart);
+        elements.push_back(injection);
+        tStart = tEnd+1;
+        if(tEnd == input.npos)
+            finished = true;
+    }
+    std::cout << "input: " << input << std::endl;
+    for(auto &i : elements)
+    {
+        std::cout << "elements: " << i << std::endl;
+    }
+    /*
+
+    if(elements[0] == "/connect")
+    {
+        std::cout << "Connect chat command detected. \n";
+        if(network::connectedServer != "")
+        {
+            chatBox.addChat("Server: Error, You're already connected to " + network::connectedServer, errorColor);
+            return false;
+        }
+        if(network::name == "")
+        {
+            chatBox.addChat("Server: Error, please give yourself a name with /setname before attempting to connect.", errorColor);
+            return false;
+        }
+        try
+        {
+            int test = std::stoi(elements[2]);
+        }
+        catch (std::exception &e)
+        {
+            chatBox.addChat("Command: /connect [IP Address] [Port]", errorColor);
+            return false;
+        }
+
+        if (cliSocket.connect(elements[1], std::stoi(elements[2])) == sf::Socket::Done)
+        {
+            std::cout << "Connected to server " << elements[1] << std::endl;
+            network::connectedServer = elements[1];
+            sf::Packet packet;
+
+            packet << ident.connection << network::name;
+            cliSocket.send(packet);
+            packet.clear();
+            packet << ident.clientMouse << network::name << gvars::mousePos.x << gvars::mousePos.y;
+            cliSocket.send(packet);
+            packet.clear();
+            packet << ident.textMessage << network::name + randomWindowName();
+            cliSocket.send(packet);
+
+            chatBox.addChat("Server: Connected to " + elements[1] + "(" + elements[2] + ")", goodColor);
+
+            return true;
+        }
+        chatBox.addChat("Server: Something went wrong...", goodColor);
+        return false;
+
+
+    }
+    else if(elements[0] == "/setname")
+    {
+        chatBox.addChat("Server: " + network::name + " has changed their name to " + elements[1], goodColor);
+        network::name = elements[1];
+        if(elements[1] == "Lithi" || elements[1] == "Biocava" || elements[1] == "Sneaky" || elements[1] == "SneakySnake")
+            chatBox.addChat("Server: Ooo, Ooo, I like you!", warmColor);
+        if(elements[1] == "Argwm" || elements[1] == "Dehaku")
+            chatBox.addChat("Server: Hey, that's my masters name!", warmColor);
+        return true;
+    }
+    else if(elements[0] == "/repeat")
+    {
+        try
+        {
+            int test = std::stoi(elements[1]);
+        }
+        catch (std::exception &e)
+        {
+            chatBox.addChat("Invalid argument: " + elements[1] + " in command " + input, errorColor);
+            chatBox.addChat("Command: /repeat [numberoftimes] [series of words or numbers]", errorColor);
+            return false;
+        }
+        std::string repeatingLine;
+        for(int i = 0; i != elements.size(); i++)
+        {
+            if(i != 0 && i != 1)
+            {
+                repeatingLine.append(elements[i] + " ");
+            }
+        }
+        for(int i = 0; i != std::stoi(elements[1]); i++)
+        {
+            chatBox.addChat("Server: Repeating; " + repeatingLine, goodColor);
+        }
+        return true;
+    }
+
+    chatBox.addChat("Unrecognized command: " + input, errorColor);
+
+    */
+    return false;
+}
 
 
 void clientPacketManager::handlePackets()
@@ -437,14 +555,14 @@ void clientPacketManager::handlePackets()
         else if(type == sf::Uint8(ident::clientID) )
         {
             std::cout << "Received our ID: ";
-            packet >> myID;
-            std::cout << int(myID) << std::endl;
+            packet >> myProfile.ID;
+            std::cout << int(myProfile.ID) << std::endl;
 
 
 
             std::cout << "Requesting initialization\n";
             sf::Packet requestPacket;
-            requestPacket << sf::Uint8(ident::initialization) << myID;
+            requestPacket << sf::Uint8(ident::initialization) << myProfile.ID;
             serverSocket.send(requestPacket);
         }
     }
@@ -709,6 +827,37 @@ void drawFPSandData()
     yOffset++;
 }
 
+void drawChat()
+{
+
+    int xDraw = 200-332;
+    int yDraw = 200+637;
+
+
+
+
+
+    sfe::RichText chatText(gvars::defaultFont);
+
+
+
+    chatText.setPosition(xDraw,yDraw);
+    chatText.setCharacterSize(15);
+
+    chatText << sf::Color::White
+    << chatManager.chatString;
+
+    // TODO: Enhance the chat to accept ^89 colors and such, ala Toribash.
+
+
+    if(network::chatting)
+    {
+        int chatGrowth = chatText.getLocalBounds().width;
+        shapes.createSquare(xDraw-10,yDraw,xDraw+1200,yDraw+22,sf::Color(0,0,0,100),0,sf::Color::Transparent, &gvars::hudView);
+    }
+    shapes.createRichText(chatText, &gvars::hudView);
+}
+
 void renderGame()
 {
     if(simulationManager.simulations.size() > 0)
@@ -727,6 +876,7 @@ void renderGame()
     //displayCrittersInfo();
     drawHUD();
     drawFPSandData();
+    drawChat();
 }
 
 sf::Thread serverListenThread(&serverListen);

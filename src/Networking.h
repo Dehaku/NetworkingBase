@@ -11,6 +11,21 @@
 #include "Server.h"
 #include "Client.h"
 
+class ChatManager
+{
+public:
+    std::string chatString;
+    std::vector<std::string> chatBox;
+};
+extern ChatManager chatManager;
+
+class Profile
+{
+public:
+    std::string name;
+    sf::Uint8 ID;
+};
+extern Profile myProfile;
 
 namespace network
 {
@@ -37,6 +52,7 @@ namespace ident
 
         connectionAttempt,
         connectionSuccession,
+        textMessage,
         initialization,
         simulationRequest,
         simulationInitialization,

@@ -15,6 +15,11 @@ serverPacketManager sPM;
 ClientPackage::ClientPackage()
 {
     id = 0;
+    credits = 100;
+    pix = 0;
+
+
+
     socket = nullptr;
     toDelete = false;
 }
