@@ -129,6 +129,31 @@ sf::Packet& operator >>(sf::Packet& packet, CritterPositions& critter)
     >> critter.desiredPosition.y;
 }
 
+sf::Packet& operator <<(sf::Packet& packet, const WorldTile& tile)
+{
+    return packet
+    << tile.color.r
+    << tile.color.g
+    << tile.color.b
+    << tile.color.a
+    << sf::Uint8(tile.isWater)
+    << tile.moveSpeedModifier
+    << tile.temperature;
+
+}
+
+sf::Packet& operator >>(sf::Packet& packet, WorldTile& tile)
+{
+    return packet
+    >> tile.color.r
+    >> tile.color.g
+    >> tile.color.b
+    >> tile.color.a
+    >> tile.isWater
+    >> tile.moveSpeedModifier
+    >> tile.temperature;
+}
+
 sf::Packet& operator <<(sf::Packet& packet, const Simulation& sim)
 {
     // ID
@@ -153,6 +178,15 @@ sf::Packet& operator <<(sf::Packet& packet, const Simulation& sim)
     {
         packet << *(plant.get());
     }
+
+    packet << sf::Uint32(sim.worldTiles.size());
+    packet << sf::Uint32(sim.worldTiles[0].size()); // We only allow square worlds, so using 0 is just fine.
+    packet << sf::Uint32(sim.worldTileSizeX);
+    packet << sf::Uint32(sim.worldTileSizeY);
+
+    for(int i = 0; i != sim.worldTiles.size(); i++)
+        for(int t = 0; t != sim.worldTiles[0].size(); t++)
+            packet << sim.worldTiles[i][t];
 
 
 
@@ -199,6 +233,20 @@ sf::Packet& operator >>(sf::Packet& packet, Simulation& sim)
         packet >> *(sim.flora.back().get());
 
     }
+
+
+    int iTiles;
+    int tTiles;
+    packet >> iTiles;
+    packet >> tTiles;
+    packet >> sim.worldTileSizeX;
+    packet >> sim.worldTileSizeY;
+
+    resizeWorld(iTiles,tTiles,sim.worldTiles);
+
+    for(int i = 0; i != sim.worldTiles.size(); i++)
+        for(int t = 0; t != sim.worldTiles[0].size(); t++)
+            packet >> sim.worldTiles[i][t];
 
     return packet;
 }
