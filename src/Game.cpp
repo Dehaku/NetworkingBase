@@ -127,7 +127,7 @@ sf::Packet& operator >>(sf::Packet& packet, CritterPositions& critter)
 
 sf::Packet& operator <<(sf::Packet& packet, const Simulation& sim)
 {
-
+    // ID
     // Organism Pop
     // Organism then Brain
     // Flora Pop
@@ -135,7 +135,7 @@ sf::Packet& operator <<(sf::Packet& packet, const Simulation& sim)
     // Tiles
     // Runtime
 
-
+    packet << sf::Uint32(sim.simulationID);
     packet << sf::Uint32(sim.organisms.size());
     for(auto critter : sim.organisms)
     {
@@ -149,6 +149,7 @@ sf::Packet& operator <<(sf::Packet& packet, const Simulation& sim)
 
 sf::Packet& operator >>(sf::Packet& packet, Simulation& sim)
 {
+    packet >> sim.simulationID;
     int population;
     packet >> population;
 
@@ -232,6 +233,48 @@ void clientPacketManager::handlePackets()
             std::cout << "Received Sim " << sim.simulationID;
             simulationManager.simulations.push_back(sim);
             std::cout << ", and inserted it. \n";
+        }
+
+        else if(type == sf::Uint8(ident::simulationUpdate ))
+        {
+            int simCount;
+            packet >> simCount;
+            for(int i = 0; i != simCount; i++)
+            {
+                int simID;
+                int population;
+                packet >> simID;
+                packet >> population;
+                Simulation* simPtr = simulationManager.getSimulation(simID);
+                if(simPtr == nullptr)
+                {
+                    std::cout << "Attempted to update a non-existing simulation, Abandoning this packet. This is bad. \n";
+                    break;
+                }
+
+                if(population != simPtr->organisms.size())
+                    std::cout << "Population Desync! Packet: " << population << ", Us: " << simPtr->organisms.size() << std::endl;
+
+                unsigned int counter = 0;
+                for(auto &critter : simPtr->organisms)
+                {
+                    if(counter >= population)
+                        break;
+
+                    CritterPositions cPos;
+                    packet >> cPos;
+
+                    // Update Position
+                    critter.get()->pos = cPos.position;
+
+                    // If you've gotta brain, you gotta desire.
+                    if(cPos.brainBool && critter.get()->brain.lock())
+                        critter.get()->brain.lock()->desiredPos = cPos.desiredPosition;
+
+                    counter++;
+                }
+
+            }
         }
 
         else if(type == sf::Uint8(ident::organismUpdate ))
@@ -343,6 +386,7 @@ void serverPacketManager::handlePackets()
             for(auto &sim : simulationManager.simulations)
             {
                 sendPacket << sf::Uint32(sim.simulationID);
+                std::cout << "Sent " << sim.simulationID << std::endl;
             }
 
             // TODO: Send/receive players connected here.
@@ -596,25 +640,32 @@ sf::Thread clientListenThread(&clientListen);
 
 void sendLifeUpdate()
 {
+    // TODO: Maybe: Perhaps have the clients request updates, rather than constantly pinging them with it.
     std::cout << "Sending Life Update! \n";
     sf::Packet packet;
 
     // Labeling the type of packet.
-    packet << sf::Uint8(ident::organismUpdate);
+    packet << sf::Uint8(ident::simulationUpdate);
 
-    // Now we send the amount of creatures, so we know how many times to update. Also functions as a sync check.
-    packet << sf::Uint32(organisms.size());
+    // Sending amount of simulations.
+    packet << sf::Uint32(simulationManager.simulations.size());
 
-    // Then to the meat of the packet!
-    for(auto &critter : organisms)
+    // Sending the simulations infos...
+    for(auto &sim : simulationManager.simulations)
     {
-        CritterPositions CPos(critter);
-        //cPos.position = critter.pos;
+        // First, Sim ID
+        packet << sf::Uint32(sim.simulationID);
 
-        //packet << critter.brain->desiredPos.x << critter.brain->desiredPos.y;
-        packet << CPos;
+        // Amount of organisms.
+        packet << sf::Uint32(sim.organisms.size());
+
+        // Then the Organism updates.
+        for(auto &critter : sim.organisms)
+        {
+            CritterPositions CPos(*critter.get());
+            packet << CPos;
+        }
     }
-
     sendToAllClients(packet);
 }
 
