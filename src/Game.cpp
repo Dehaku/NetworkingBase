@@ -42,9 +42,11 @@ sf::Packet& operator <<(sf::Packet& packet, const Organism& critter)
     << critter.colorPrime.r
     << critter.colorPrime.g
     << critter.colorPrime.b
+    << critter.colorPrime.a
     << critter.colorSecondary.r
     << critter.colorSecondary.g
     << critter.colorSecondary.b
+    << critter.colorSecondary.a
 
     << critter.ageMax
     << critter.age
@@ -70,9 +72,11 @@ sf::Packet& operator >>(sf::Packet& packet, Organism& critter)
     >> critter.colorPrime.r
     >> critter.colorPrime.g
     >> critter.colorPrime.b
+    >> critter.colorPrime.a
     >> critter.colorSecondary.r
     >> critter.colorSecondary.g
     >> critter.colorSecondary.b
+    >> critter.colorSecondary.a
 
     >> critter.ageMax
     >> critter.age
@@ -136,12 +140,20 @@ sf::Packet& operator <<(sf::Packet& packet, const Simulation& sim)
     // Runtime
 
     packet << sf::Uint32(sim.simulationID);
+
     packet << sf::Uint32(sim.organisms.size());
     for(auto critter : sim.organisms)
     {
         packet << *(critter.get());
         packet << *(critter.get()->brain.lock());
     }
+
+    packet << sf::Uint32(sim.flora.size());
+    for(auto plant : sim.flora)
+    {
+        packet << *(plant.get());
+    }
+
 
 
     return packet;
@@ -150,10 +162,10 @@ sf::Packet& operator <<(sf::Packet& packet, const Simulation& sim)
 sf::Packet& operator >>(sf::Packet& packet, Simulation& sim)
 {
     packet >> sim.simulationID;
-    int population;
-    packet >> population;
+    int critterPop;
+    packet >> critterPop;
 
-    for(int i = 0; i != population; i++)
+    for(int i = 0; i != critterPop; i++)
     {
         // Create critter
         std::shared_ptr<Organism> Critter(new Organism());
@@ -172,6 +184,20 @@ sf::Packet& operator >>(sf::Packet& packet, Simulation& sim)
         // Link brains and bodies.
         sim.organisms.back().get()->brain = sim.brainStorage.back();
         sim.brainStorage.back().get()->owner = sim.organisms.back();
+    }
+
+    int plantPop;
+    packet >> plantPop;
+    for(int i = 0; i != plantPop; i++)
+    {
+
+        // Create plant
+        std::shared_ptr<Organism> plant(new Organism());
+        sim.flora.push_back(plant);
+
+        // Extract and Overwrite
+        packet >> *(sim.flora.back().get());
+
     }
 
     return packet;
