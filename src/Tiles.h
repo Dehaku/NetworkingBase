@@ -3,11 +3,14 @@
 
 #include <vector>
 #include <iostream>
+#include <SFML/Graphics.hpp>
+
+#include "util.h"
 
 class WorldTile{
 public:
-    //sf::Color color;
 
+    sf::Color color;
     bool isWater;
     float moveSpeedModifier;
     float temperature;

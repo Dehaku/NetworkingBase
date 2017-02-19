@@ -4,12 +4,17 @@ SimulationManager simulationManager;
 
 Simulation::Simulation()
 {
+    worldTileSizeX = 1000;
+    worldTileSizeY = 1000;
+
     simulationID = 0;
     draw = true;
     drawSquareInstead = false;
     drawTextureInstead = false;
     background = sf::Color(150,150,10);
     circleCritter;
+
+
 }
 
 void Simulation::worldPopulationSetup()
@@ -44,6 +49,26 @@ void Simulation::worldPopulationSetup()
     }
 }
 
+void Simulation::drawWorld()
+{
+
+    int xOffset = 0;
+    int yOffset = 0;
+    for(int i = 0; i != worldTiles.size(); i++)
+    {
+        for(int t = 0; t != worldTiles[i].size(); t++)
+        {
+            shapes.createSquare(i*worldTileSizeX,t*worldTileSizeY,i*worldTileSizeX+worldTileSizeX,t*worldTileSizeY+worldTileSizeY,worldTiles[i][t].color);
+            xOffset++;
+        }
+        yOffset++;
+    }
+
+
+
+
+}
+
 void Simulation::drawCritters()
 {
     if(circleCritter.getTexture() == nullptr)
@@ -59,7 +84,9 @@ void Simulation::drawCritters()
     if(!draw)
         return;
 
-    shapes.createSquare(0,0,1000,1000,background);
+    drawWorld();
+
+
 
     for(auto &planty : flora)
     {

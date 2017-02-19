@@ -15,6 +15,8 @@ public:
     std::list<std::shared_ptr<Organism>> flora;
     std::list<std::shared_ptr<Organism>> organisms;
     std::vector<std::vector<WorldTile>> worldTiles;
+    unsigned int worldTileSizeX;
+    unsigned int worldTileSizeY;
 
     bool draw;
     bool drawSquareInstead;
@@ -27,6 +29,7 @@ public:
 
     void worldPopulationSetup();
 
+    void drawWorld();
     void drawCritters();
 
 };
