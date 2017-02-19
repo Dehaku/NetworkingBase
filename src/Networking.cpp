@@ -19,7 +19,7 @@ TODO: Add proper client-side connection shutdown
 
 */
 
-ChatManager chatManager;
+
 Profile myProfile;
 
 

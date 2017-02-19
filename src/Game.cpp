@@ -279,6 +279,23 @@ bool chatCommand(std::string input)
     {
         std::cout << "elements: " << i << std::endl;
     }
+
+    if(elements[0] == "/name" || elements[0] == "/setname" || elements[0] == "/nick")
+    {
+        chatBox.addChat("Server: " + network::name + " has changed their name to " + elements[1], goodColor);
+        myProfile.name = elements[1];
+        if(elements[1] == "Lithi" || elements[1] == "Biocava" || elements[1] == "Sneaky" || elements[1] == "SneakySnake")
+            chatBox.addChat("Server: Ooo, Ooo, I like you!", warmColor);
+        if(elements[1] == "Dehaku")
+            chatBox.addChat("Server: Hey, that's my masters name!", warmColor);
+        return true;
+    }
+
+    else if(elements[0] == "/setname")
+    {
+
+    }
+
     /*
 
     if(elements[0] == "/connect")
@@ -834,28 +851,63 @@ void drawChat()
     int yDraw = 200+637;
 
 
+    // The Chatbox History
+    {
+        int yOffset = 0;
+
+        std::cout << "ChatSize: " << chatBox.chatStorage.size() << std::endl;
+
+        //std::cout << "ChatSize: " << std::max(chatBox.chatStorage.size()-10,0) << std::endl;
+
+        //for(int i = chatBox.chatStorage.size(); (i != 0 && i >= chatBox.chatStorage.size()-10); i--)
+        for(int i = chatBox.chatStorage.size()-1; i >= chatBox.chatStorage.size()-10; i--)
+        {
+
+            std::cout << "Running on " << i << std::endl;
+            sfe::RichText chatText(gvars::defaultFont);
+
+            chatText.setPosition(xDraw,(yDraw-15)-(15*yOffset));
+            //chatText.setPosition(300,300);
+            chatText.setCharacterSize(15);
+
+            chatText << chatBox.chatStorage[i].color
+            << sf::Text::Regular << chatBox.chatStorage[i].line;
+
+            shapes.createRichText(chatText, &gvars::hudView);
+            yOffset++;
+
+            if(i <= 0)
+                break;
+        }
+    }
 
 
+
+
+
+
+
+
+    // Our entered text
 
     sfe::RichText chatText(gvars::defaultFont);
-
-
 
     chatText.setPosition(xDraw,yDraw);
     chatText.setCharacterSize(15);
 
     chatText << sf::Color::White
-    << chatManager.chatString;
+    << sf::Text::Bold << myProfile.name << ": "
+    << sf::Text::Regular << chatBox.chatString;
 
     // TODO: Enhance the chat to accept ^89 colors and such, ala Toribash.
-
 
     if(network::chatting)
     {
         int chatGrowth = chatText.getLocalBounds().width;
         shapes.createSquare(xDraw-10,yDraw,xDraw+1200,yDraw+22,sf::Color(0,0,0,100),0,sf::Color::Transparent, &gvars::hudView);
+
+        shapes.createRichText(chatText, &gvars::hudView);
     }
-    shapes.createRichText(chatText, &gvars::hudView);
 }
 
 void renderGame()

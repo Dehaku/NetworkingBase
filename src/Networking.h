@@ -11,13 +11,7 @@
 #include "Server.h"
 #include "Client.h"
 
-class ChatManager
-{
-public:
-    std::string chatString;
-    std::vector<std::string> chatBox;
-};
-extern ChatManager chatManager;
+
 
 class Profile
 {

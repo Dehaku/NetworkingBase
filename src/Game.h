@@ -6,6 +6,8 @@
 #include <list>
 #include <memory>
 
+#include "Text.h"
+
 #include "Shapes.h"
 #include "math.h"
 #include "Tiles.h"

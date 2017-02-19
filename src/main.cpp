@@ -3,6 +3,7 @@
 #include <memory>
 
 #include <SFML/Graphics.hpp>
+#include "Text.h"
 #include "globalvars.h"
 #include "defs.h"
 //#include "Networking.h"
@@ -17,7 +18,7 @@
 
 #include "Camera.h"
 
-sf::RenderWindow window(sf::VideoMode(960, 720), "Networking the Networth");
+sf::RenderWindow window(sf::VideoMode(960, 720), randomWindowName());
 
 class GameInfo
 {
@@ -79,6 +80,12 @@ void GameInfo::moveSquare()
 
 void setup()
 {
+
+    for(int i = 0; i != 10; i++)
+    {
+        sf::Color color(100+random(1,100),100+random(1,100),100+random(1,100));
+        chatBox.addChat(" ",color);
+    }
 
     // Font
     if (!gvars::defaultFont.loadFromFile("data/fonts/Xolonium-Regular.otf"))
@@ -218,11 +225,11 @@ void handleEvents()
                 {
                     std::string TempStr;
                     TempStr = event.text.unicode;
-                    chatManager.chatString.append( TempStr );
+                    chatBox.chatString.append( TempStr );
                 }
-                if(event.text.unicode == 8 && chatManager.chatString.size() != 0)
+                if(event.text.unicode == 8 && chatBox.chatString.size() != 0)
                 {
-                    chatManager.chatString.erase(chatManager.chatString.end()-1);
+                    chatBox.chatString.erase(chatBox.chatString.end()-1);
                 }
                 if(event.text.unicode == 13 && network::client == true)
                 {
@@ -232,7 +239,7 @@ void handleEvents()
                     std::string SendText;
                     SendText.append(myProfile.name);
                     SendText.append(": ");
-                    SendText.append(chatManager.chatString);
+                    SendText.append(chatBox.chatString);
 
                     ToSend << sf::Uint8(ident::textMessage) << SendText;
                     if(ToSend.getDataSize() != 0)
@@ -249,7 +256,7 @@ void handleEvents()
                         }
 
 
-                        chatManager.chatString.clear();
+                        chatBox.chatString.clear();
                     }
                 }
 
@@ -260,33 +267,33 @@ void handleEvents()
                     std::string SendText;
                     SendText.append("*Server*");
                     SendText.append(": ");
-                    SendText.append(chatManager.chatString);
+                    SendText.append(chatBox.chatString);
 
                     ToSend << ident::textMessage << SendText;
                     if(ToSend.getDataSize() != 0)
                     {
 
                         sendToAllClients(ToSend);
-                        chatManager.chatString.clear();
+                        chatBox.chatString.clear();
                     }
                 }
                 if(event.text.unicode == 13)
                 {
                     network::chatting = false;
                     std::string firstLetter;
-                    firstLetter.append(chatManager.chatString,0,1);
+                    firstLetter.append(chatBox.chatString,0,1);
                     std::cout << "(" << firstLetter << ")\n";
                     if(firstLetter == "/")
-                        chatCommand(chatManager.chatString);
+                        chatCommand(chatBox.chatString);
                     else if(firstLetter != "/" && network::connectedServer != "")
                     {
                         sf::Packet pack;
-                        pack << ident::textMessage << myProfile.name + ": " + chatManager.chatString;
+                        pack << ident::textMessage << myProfile.name + ": " + chatBox.chatString;
                         serverSocket.send(pack);
                     }
-                    //else
-                        //chatBox.addChat(cliCon.chatString,sf::Color::White);
-                    chatManager.chatString.clear();
+                    else
+                        chatBox.addChat(chatBox.chatString,sf::Color::White);
+                    chatBox.chatString.clear();
                 }
 
             }
