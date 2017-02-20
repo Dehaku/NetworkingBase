@@ -1,13 +1,10 @@
 #include "Game.h"
 
-// sf::Vector2f worldPos = window.mapPixelToCoords(sf::Mouse::getPosition(window), *button.drawView);
-
-
-
-// Fix network syncing of organisms, as well as flora and tiles
-
-
-
+StateTracker::StateTracker()
+{
+    currentState = mainMenu;
+}
+StateTracker stateTracker;
 
 
 sf::Packet& operator <<(sf::Packet& packet, const Brain& brain)
@@ -927,25 +924,172 @@ void drawChat()
     }
 }
 
-void renderGame()
+void drawMainMenu()
 {
-    if(simulationManager.simulations.size() > 0)
-    {
-        int i = 0;
-        for(auto &sim : simulationManager.simulations)
-        {
-            if(i == simulationManager.drawSimNumber)
-                sim.drawCritters();
+    int mainButt = shapes.createImageButton(sf::Vector2f(500,500),texturemanager.getTexture("ArtevoMain.png"),"",0,&gvars::hudView);
 
-            i++;
-        }
+    sf::Texture* hudButton = &texturemanager.getTexture("HUDTab.png");
+
+
+    int startButt = shapes.createImageButton(sf::Vector2f(-33,843),*hudButton,"",0,&gvars::hudView);
+    shapes.createText(-33-40,843-8,12,sf::Color::Black,"Start Game",&gvars::hudView);
+
+    int multiplayerButt = shapes.createImageButton(sf::Vector2f(179,843),*hudButton,"",0,&gvars::hudView);
+    shapes.createText(179-40,843-8,12,sf::Color::Black,"Multiplayer",&gvars::hudView);
+
+    int profileButt = shapes.createImageButton(sf::Vector2f(391,843),*hudButton,"",0,&gvars::hudView);
+    shapes.createText(391-40,843-8,12,sf::Color::Black,"Profile",&gvars::hudView);
+
+    int optionsButt = shapes.createImageButton(sf::Vector2f(606,843),*hudButton,"",0,&gvars::hudView);
+    shapes.createText(606-40,843-8,12,sf::Color::Black,"Options",&gvars::hudView);
+
+    int creditsButt = shapes.createImageButton(sf::Vector2f(818,843),*hudButton,"",0,&gvars::hudView);
+    shapes.createText(818-40,843-8,12,sf::Color::Black,"Credits",&gvars::hudView);
+
+    int exitButt = shapes.createImageButton(sf::Vector2f(1030,843),*hudButton,"",0,&gvars::hudView);
+    shapes.createText(1030-40,843-8,12,sf::Color::Black,"Quit",&gvars::hudView);
+
+
+    if(shapes.shapeClicked(startButt))
+    {
+        stateTracker.currentState = stateTracker.mainLoop;
+    }
+    if(shapes.shapeClicked(multiplayerButt))
+    {
+        stateTracker.currentState = stateTracker.multiplayer;
+    }
+    if(shapes.shapeClicked(profileButt))
+    {
+        stateTracker.currentState = stateTracker.profile;
+    }
+    if(shapes.shapeClicked(optionsButt))
+    {
+        stateTracker.currentState = stateTracker.options;
+    }
+    if(shapes.shapeClicked(creditsButt))
+    {
+        stateTracker.currentState = stateTracker.credits;
+    }
+    if(shapes.shapeClicked(exitButt))
+    {
+        window.close();
     }
 
-    //drawCritters();
-    //displayCrittersInfo();
-    drawHUD();
-    drawFPSandData();
-    drawChat();
+
+
+    int posY = 843;
+    if(shapes.shapeHovered(startButt))
+    {
+        int posX = -33;
+        shapes.createSquare(posX-105,posY-15,posX+106,posY+15,sf::Color(255,255,255,150),0,sf::Color::White,&gvars::hudView);
+    }
+    if(shapes.shapeHovered(multiplayerButt))
+    {
+        int posX = 179;
+        shapes.createSquare(posX-105,posY-15,posX+106,posY+15,sf::Color(255,255,255,150),0,sf::Color::White,&gvars::hudView);
+    }
+    if(shapes.shapeHovered(profileButt))
+    {
+        int posX = 391;
+        shapes.createSquare(posX-105,posY-15,posX+106,posY+15,sf::Color(255,255,255,150),0,sf::Color::White,&gvars::hudView);
+
+        if(inputState.rmbTime == 1 && simulationManager.simulations.size() > 0)
+            simulationManager.simulations.pop_back();
+
+    }
+    if(shapes.shapeHovered(optionsButt))
+    {
+        int posX = 606;
+        shapes.createSquare(posX-105,posY-15,posX+106,posY+15,sf::Color(255,255,255,150),0,sf::Color::White,&gvars::hudView);
+    }
+    if(shapes.shapeHovered(creditsButt))
+    {
+        int posX = 818;
+        shapes.createSquare(posX-105,posY-15,posX+106,posY+15,sf::Color(255,255,255,150),0,sf::Color::White,&gvars::hudView);
+    }
+    if(shapes.shapeHovered(exitButt))
+    {
+        int posX = 1030;
+        shapes.createSquare(posX-105,posY-15,posX+106,posY+15,sf::Color(255,255,255,150),0,sf::Color::White,&gvars::hudView);
+    }
+
+
+
+}
+
+void drawSubMain()
+{
+
+    sf::Texture* hudButton = &texturemanager.getTexture("HUDTab.png");
+
+
+    int mainButt = shapes.createImageButton(sf::Vector2f(-33,170),*hudButton,"",0,&gvars::hudView);
+    shapes.createText(-33-40,170-8,12,sf::Color::Black,"Main Menu",&gvars::hudView);
+    if(shapes.shapeClicked(mainButt))
+    {
+        stateTracker.currentState = stateTracker.mainMenu;
+    }
+    if(shapes.shapeHovered(mainButt))
+    {
+        int posX = -33;
+        int posY = 170;
+        shapes.createSquare(posX-105,posY-15,posX+106,posY+15,sf::Color(255,255,255,150),0,sf::Color::White,&gvars::hudView);
+    }
+
+
+    if(stateTracker.currentState == stateTracker.multiplayer)
+    {
+        shapes.createText(500,150,20,sf::Color::Cyan,"Multiplayer",&gvars::hudView);
+    }
+    if(stateTracker.currentState == stateTracker.profile)
+    {
+        shapes.createText(500,150,20,sf::Color::Cyan,"Profile",&gvars::hudView);
+    }
+    if(stateTracker.currentState == stateTracker.options)
+    {
+        shapes.createText(500,150,20,sf::Color::Cyan,"Options",&gvars::hudView);
+    }
+    if(stateTracker.currentState == stateTracker.credits)
+    {
+        shapes.createText(500,150,20,sf::Color::Cyan,"Credits",&gvars::hudView);
+    }
+
+
+
+
+}
+
+void renderGame()
+{
+    if(stateTracker.currentState == stateTracker.mainMenu)
+    {
+        drawMainMenu();
+    }
+    else if(stateTracker.currentState == stateTracker.mainLoop)
+    {
+
+
+        if(simulationManager.simulations.size() > 0)
+        {
+            int i = 0;
+            for(auto &sim : simulationManager.simulations)
+            {
+                if(i == simulationManager.drawSimNumber)
+                    sim.drawCritters();
+
+                i++;
+            }
+        }
+
+        drawHUD();
+        drawFPSandData();
+        drawChat();
+    }
+    else
+    {
+        drawSubMain();
+    }
+
 }
 
 sf::Thread serverListenThread(&serverListen);

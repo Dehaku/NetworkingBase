@@ -20,6 +20,25 @@
 #include "Textures.h"
 #include "Camera.h"
 
+class StateTracker
+{
+public:
+    unsigned int currentState;
+    enum
+    {
+        mainLoop,
+        mainMenu,
+        multiplayer,
+        profile,
+        options,
+        credits
+
+
+    };
+    StateTracker();
+};
+extern StateTracker stateTracker;
+
 bool chatCommand(std::string input);
 
 void simulationInitialization();

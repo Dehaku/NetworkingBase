@@ -266,8 +266,6 @@ void handleEvents()
                         sf::Packet sendpacket;
 
                         sendpacket << sf::Uint8(ident::textMessage) << SendText;
-
-                        // Send an answer to the server
                         if(serverSocket.send(sendpacket) != sf::Socket::Done)
                         {
                             std::cout << "!= Socket Done (In client sending chat), Apparently! Tell the Devs! \n";
