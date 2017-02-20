@@ -18,6 +18,7 @@ class Profile
 public:
     std::string name;
     sf::Uint8 ID;
+    Profile();
 };
 extern Profile myProfile;
 

@@ -19,7 +19,10 @@ TODO: Add proper client-side connection shutdown
 
 */
 
-
+Profile::Profile()
+{
+    name = "Guest";
+}
 Profile myProfile;
 
 

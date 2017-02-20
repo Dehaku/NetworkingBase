@@ -231,9 +231,27 @@ void handleEvents()
                 {
                     chatBox.chatString.erase(chatBox.chatString.end()-1);
                 }
+                if(event.text.unicode == 13)
+                {
+                    network::chatting = false;
+                    std::string firstLetter;
+                    firstLetter.append(chatBox.chatString,0,1);
+                    std::cout << "(" << firstLetter << ")\n";
+                    if(firstLetter == "/")
+                    {
+                        chatCommand(chatBox.chatString);
+                        chatBox.chatString.clear();
+
+                    }
+
+                }
+
                 if(event.text.unicode == 13 && network::client == true)
                 {
                     network::chatting = false;
+                    if(chatBox.chatString.empty())
+                        continue;
+
                     sf::UdpSocket socket;
                     sf::Packet ToSend;
                     std::string SendText;
@@ -247,7 +265,7 @@ void handleEvents()
 
                         sf::Packet sendpacket;
 
-                        sendpacket << ident::textMessage << SendText;
+                        sendpacket << sf::Uint8(ident::textMessage) << SendText;
 
                         // Send an answer to the server
                         if(serverSocket.send(sendpacket) != sf::Socket::Done)
@@ -262,38 +280,25 @@ void handleEvents()
 
                 if(event.text.unicode == 13 && network::server == true)
                 {
+
                     network::chatting = false;
+                    if(chatBox.chatString.empty())
+                        continue;
+
                     sf::Packet ToSend;
                     std::string SendText;
                     SendText.append("*Server*");
                     SendText.append(": ");
                     SendText.append(chatBox.chatString);
 
-                    ToSend << ident::textMessage << SendText;
+                    ToSend << sf::Uint8(ident::textMessage) << SendText;
                     if(ToSend.getDataSize() != 0)
                     {
-
+                        chatBox.addChat(SendText);
                         sendToAllClients(ToSend);
+
                         chatBox.chatString.clear();
                     }
-                }
-                if(event.text.unicode == 13)
-                {
-                    network::chatting = false;
-                    std::string firstLetter;
-                    firstLetter.append(chatBox.chatString,0,1);
-                    std::cout << "(" << firstLetter << ")\n";
-                    if(firstLetter == "/")
-                        chatCommand(chatBox.chatString);
-                    else if(firstLetter != "/" && network::connectedServer != "")
-                    {
-                        sf::Packet pack;
-                        pack << ident::textMessage << myProfile.name + ": " + chatBox.chatString;
-                        serverSocket.send(pack);
-                    }
-                    else
-                        chatBox.addChat(chatBox.chatString,sf::Color::White);
-                    chatBox.chatString.clear();
                 }
 
             }
@@ -364,7 +369,7 @@ int main()
 
         if(inputState.key[Key::RShift].time == 1)
             simulationInitialization();
-        if(inputState.key[Key::Return].time == 1)
+        if(inputState.key[Key::Equal].time == 1)
             simulationManager.createSimulation();
 
         double newTime = fpsKeeper.startTime.getElapsedTime().asSeconds();

@@ -282,7 +282,7 @@ bool chatCommand(std::string input)
 
     if(elements[0] == "/name" || elements[0] == "/setname" || elements[0] == "/nick")
     {
-        chatBox.addChat("Server: " + network::name + " has changed their name to " + elements[1], goodColor);
+        chatBox.addChat("Server: " + myProfile.name + " has changed their name to " + elements[1], goodColor);
         myProfile.name = elements[1];
         if(elements[1] == "Lithi" || elements[1] == "Biocava" || elements[1] == "Sneaky" || elements[1] == "SneakySnake")
             chatBox.addChat("Server: Ooo, Ooo, I like you!", warmColor);
@@ -403,6 +403,13 @@ void clientPacketManager::handlePackets()
         packet >> type;
         //std::cout << "P: " << int(type) << std::endl;
 
+
+        if(type == sf::Uint8(ident::textMessage))
+        {
+            std::string chatLine;
+            packet >> chatLine;
+            chatBox.addChat(chatLine);
+        }
 
         if(type == sf::Uint8(ident::message))
         {
@@ -596,7 +603,19 @@ void serverPacketManager::handlePackets()
         sf::Uint8 type;
         packet >> type;
 
-        if(type == sf::Uint8(ident::message))
+
+        if(type == sf::Uint8(ident::textMessage))
+        {
+            std::string chatLine;
+            packet >> chatLine;
+            chatBox.addChat(chatLine);
+
+            sf::Packet returnPacket;
+            returnPacket << sf::Uint8(ident::textMessage)
+            << chatLine;
+            sendToAllClients(returnPacket);
+        }
+        else if(type == sf::Uint8(ident::message))
         {
             std::string in;
             packet >> in;
@@ -855,7 +874,6 @@ void drawChat()
     {
         int yOffset = 0;
 
-        std::cout << "ChatSize: " << chatBox.chatStorage.size() << std::endl;
 
         //std::cout << "ChatSize: " << std::max(chatBox.chatStorage.size()-10,0) << std::endl;
 
@@ -863,7 +881,6 @@ void drawChat()
         for(int i = chatBox.chatStorage.size()-1; i >= chatBox.chatStorage.size()-10; i--)
         {
 
-            std::cout << "Running on " << i << std::endl;
             sfe::RichText chatText(gvars::defaultFont);
 
             chatText.setPosition(xDraw,(yDraw-15)-(15*yOffset));
