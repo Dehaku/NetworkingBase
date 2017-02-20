@@ -22,6 +22,8 @@ TODO: Add proper client-side connection shutdown
 Profile::Profile()
 {
     name = "Guest";
+    credits = 0;
+    pix = 0;
 }
 Profile myProfile;
 

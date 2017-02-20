@@ -3,6 +3,7 @@
 #include <memory>
 
 #include <SFML/Graphics.hpp>
+
 #include "Text.h"
 #include "globalvars.h"
 #include "defs.h"
@@ -17,6 +18,7 @@
 #include "Game.h"
 
 #include "Camera.h"
+#include "SaveLoad.h"
 
 sf::RenderWindow window(sf::VideoMode(960, 720), randomWindowName());
 
@@ -137,6 +139,8 @@ void mousePosTracker()
     gvars::mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window), gvars::view1);
 }
 
+
+
 void handleEvents()
 {
     mousePosTracker();
@@ -149,6 +153,7 @@ void handleEvents()
         if (event.type == sf::Event::Closed)
         {
             deactivateServer();
+            saveProfile("Sopheroph");
             window.close();
         }
         if (event.type == sf::Event::MouseWheelMoved)
@@ -321,7 +326,7 @@ int main()
 {
     // Initial
     setup();
-
+    loadProfile("Sopheroph");
 
 
     // Delta Timestep

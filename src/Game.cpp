@@ -1044,6 +1044,11 @@ void drawSubMain()
     if(stateTracker.currentState == stateTracker.profile)
     {
         shapes.createText(500,150,20,sf::Color::Cyan,"Profile",&gvars::hudView);
+
+        shapes.createText(300,200,12,sf::Color::Cyan,"Name: " + myProfile.name,&gvars::hudView);
+        shapes.createText(300,215,10,sf::Color::Cyan,"You can change your name while playing by pressing Enter, then /setname yourname",&gvars::hudView);
+        shapes.createText(300,230,12,sf::Color::Cyan,"Credits: " + std::to_string(myProfile.credits),&gvars::hudView);
+        shapes.createText(300,245,12,sf::Color::Cyan,"Pix: " + std::to_string(myProfile.pix),&gvars::hudView);
     }
     if(stateTracker.currentState == stateTracker.options)
     {
