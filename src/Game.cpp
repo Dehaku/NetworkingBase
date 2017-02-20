@@ -1048,6 +1048,72 @@ void drawSubMain()
     if(stateTracker.currentState == stateTracker.options)
     {
         shapes.createText(500,150,20,sf::Color::Cyan,"Options",&gvars::hudView);
+
+        sf::Vector2f textPos(500,200);
+        sf::Vector2f buttonPos;
+
+
+        buttonPos = textPos;
+        shapes.createText(textPos,10,sf::Color::White,"Resolution: "
+                            + std::to_string(resolution.resolutions[resolution.currentRes].width)
+                            +"/"+std::to_string(resolution.resolutions[resolution.currentRes].height)
+                            +": "+std::to_string(resolution.resolutions[resolution.currentRes].bitsPerPixel)
+                            +"\n \n \nFullscreen: " + str(resolution.fullscreen)
+                            ,&gvars::hudView);
+        shapes.shapes.back().layer = 15075;
+
+        buttonPos.x += 90;
+        buttonPos.y += 20;
+        int decreaseResolution = shapes.createImageButton(buttonPos,texturemanager.getTexture("ArrowButton.png"),"",-90,&gvars::hudView);
+        shapes.shapes.back().layer = 15050;
+        buttonPos.x += 30;
+        int increaseResolution = shapes.createImageButton(buttonPos,texturemanager.getTexture("ArrowButton.png"),"",90,&gvars::hudView);
+        shapes.shapes.back().layer = 15050;
+        buttonPos.x += 30;
+        int applyResolution = shapes.createImageButton(buttonPos,texturemanager.getTexture("ArrowButton.png"),"",180,&gvars::hudView);
+        shapes.shapes.back().layer = 15050;
+
+        buttonPos.y += 20;
+        int toggleFullscreen = shapes.createImageButton(buttonPos,texturemanager.getTexture("ArrowButton.png"),"",180,&gvars::hudView);
+        shapes.shapes.back().layer = 15050;
+
+
+
+
+        // Warning, the increase and decrease resolution buttons are backwards, since the videomode put the highest res in first, and the smallest last.
+        if(shapes.shapeHovered(increaseResolution) && (inputState.lmbTime == 1))
+            if(resolution.currentRes > 0)
+                resolution.currentRes--;
+        if(shapes.shapeHovered(decreaseResolution) && (inputState.lmbTime == 1))
+            if(resolution.currentRes < resolution.resolutions.size()-1)
+                resolution.currentRes++;
+
+        if(shapes.shapeHovered(toggleFullscreen))
+        {
+            shapes.createText(gvars::mousePos,9,sf::Color::White,"  Toggle fullscreen");
+            shapes.shapes.back().layer = 15075;
+            if((inputState.lmbTime == 1))
+                toggle(resolution.fullscreen);
+        }
+
+
+        if(shapes.shapeHovered(applyResolution))
+        {
+            shapes.createText(gvars::mousePos,9,sf::Color::White,"  Apply the Resolution!",&gvars::hudView);
+            shapes.shapes.back().layer = 15075;
+
+            if(inputState.lmbTime == 1)
+            {
+                if(resolution.fullscreen)
+                    window.create(resolution.resolutions[resolution.currentRes], randomWindowName(),sf::Style::Fullscreen);
+                else
+                    window.create(resolution.resolutions[resolution.currentRes], randomWindowName());
+            }
+
+        }
+
+
+
     }
     if(stateTracker.currentState == stateTracker.credits)
     {

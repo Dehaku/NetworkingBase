@@ -132,9 +132,15 @@ void setup()
 
 
 
+void mousePosTracker()
+{
+    gvars::mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window), gvars::view1);
+}
 
 void handleEvents()
 {
+    mousePosTracker();
+
     sf::Event event;
     while (window.pollEvent(event))
     {
