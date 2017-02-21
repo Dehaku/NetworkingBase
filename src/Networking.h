@@ -20,6 +20,7 @@ public:
     sf::Uint8 ID;
     sf::Uint32 credits;
     sf::Uint32 pix;
+
     Profile();
 };
 extern Profile myProfile;

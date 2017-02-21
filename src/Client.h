@@ -20,6 +20,6 @@ void clientSendingPing();
 
 void clientListen();
 
-void activateClient();
+bool activateClient(sf::IpAddress servIP = "127.0.0.1", unsigned short servPort = 23636);
 
 #endif // CLIENT_H_INCLUDED

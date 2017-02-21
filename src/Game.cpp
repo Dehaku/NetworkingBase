@@ -288,13 +288,6 @@ bool chatCommand(std::string input)
         return true;
     }
 
-    else if(elements[0] == "/setname")
-    {
-
-    }
-
-    /*
-
     if(elements[0] == "/connect")
     {
         std::cout << "Connect chat command detected. \n";
@@ -303,7 +296,7 @@ bool chatCommand(std::string input)
             chatBox.addChat("Server: Error, You're already connected to " + network::connectedServer, errorColor);
             return false;
         }
-        if(network::name == "")
+        if(myProfile.name == "Guest")
         {
             chatBox.addChat("Server: Error, please give yourself a name with /setname before attempting to connect.", errorColor);
             return false;
@@ -318,30 +311,24 @@ bool chatCommand(std::string input)
             return false;
         }
 
-        if (cliSocket.connect(elements[1], std::stoi(elements[2])) == sf::Socket::Done)
+        bool connectionBool = activateClient(elements[1], std::stoi(elements[2]));
+        if(connectionBool)
         {
             std::cout << "Connected to server " << elements[1] << std::endl;
-            network::connectedServer = elements[1];
-            sf::Packet packet;
-
-            packet << ident.connection << network::name;
-            cliSocket.send(packet);
-            packet.clear();
-            packet << ident.clientMouse << network::name << gvars::mousePos.x << gvars::mousePos.y;
-            cliSocket.send(packet);
-            packet.clear();
-            packet << ident.textMessage << network::name + randomWindowName();
-            cliSocket.send(packet);
-
+            network::client = true;
             chatBox.addChat("Server: Connected to " + elements[1] + "(" + elements[2] + ")", goodColor);
-
             return true;
         }
-        chatBox.addChat("Server: Something went wrong...", goodColor);
-        return false;
-
-
+        else
+        {
+            std::cout << "Failed to connect to " << elements[1] << std::endl;
+            chatBox.addChat("Server: FAILED to connect to " + elements[1] + "(" + elements[2] + ")", goodColor);
+            return false;
+        }
     }
+    /*
+
+
     else if(elements[0] == "/setname")
     {
         chatBox.addChat("Server: " + network::name + " has changed their name to " + elements[1], goodColor);
@@ -972,6 +959,7 @@ void drawMainMenu()
     }
     if(shapes.shapeClicked(exitButt))
     {
+        saveProfile("Sopheroph");
         window.close();
     }
 
@@ -1132,6 +1120,12 @@ void drawSubMain()
 
 void renderGame()
 {
+    if(inputState.key[Key::Space].time == 1)
+    {
+        gvars::currentx = 20;
+        gvars::currenty = 20;
+    }
+
     if(stateTracker.currentState == stateTracker.mainMenu)
     {
         drawMainMenu();
@@ -1217,7 +1211,7 @@ void runServerStuffs()
     if(inputState.key[Key::End].time == 1)
     {
         network::client = true;
-        activateClient();
+        activateClient("127.0.0.1",23636);
     }
 
     if(network::server && !network::listening)

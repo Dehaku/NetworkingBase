@@ -65,21 +65,26 @@ void clientListen()
     network::listening = false;
 }
 
-void activateClient()
+bool activateClient(sf::IpAddress servIP, unsigned short servPort)
 {
-    IPAddress = "127.0.0.1";
-    serverPort = 23636;
+    IPAddress = servIP;
+    serverPort = servPort;
     sf::Socket::Status status = serverSocket.connect(IPAddress, serverPort);
     if (status != sf::Socket::Done)
+    {
         std::cout << "Failed to connect to... \n" << IPAddress << ":" << serverPort << std::endl;
+        return false;
+    }
+
     if (status == sf::Socket::Done)
     {
         std::cout << "Probably connected!";
+
         // socket.setBlocking(false);
     }
 
     sendServerMyInfo();
 
     serverHolder.add(serverSocket);
-
+    return true;
 }
