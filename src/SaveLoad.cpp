@@ -38,7 +38,13 @@ void loadProfile(std::string profileName)
     { // Loading generic/misc data.
         std::ifstream input("data/saves/" + profileName + "/save.profile");
         if (!input.is_open())
+        {
+            std::cout << "No Profile Detected. \n";
+            Profile newProfile;
+            myProfile = newProfile;
             return;
+        }
+
 
         while (input.good())
         {

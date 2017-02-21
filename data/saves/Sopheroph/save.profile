@@ -1,1 +1,1 @@
-[name:Dehaku][credits:636][pix:23]
+[name:Guest][credits:0][pix:0]
