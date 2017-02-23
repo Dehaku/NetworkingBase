@@ -291,6 +291,13 @@ bool chatCommand(std::string input)
     if(elements[0] == "/connect")
     {
         std::cout << "Connect chat command detected. \n";
+
+        if(elements.size() != 3)
+        {
+            std::cout << "Incorrect argument count, We have " << std::to_string(elements.size()) << " instead. \n";
+            chatBox.addChat("Command: /connect [IP Address] [Port], Spaces, No colons.", errorColor);
+            return false;
+        }
         if(network::connectedServer != "")
         {
             chatBox.addChat("Server: Error, You're already connected to " + network::connectedServer, errorColor);
@@ -303,10 +310,12 @@ bool chatCommand(std::string input)
         }
         try
         {
-            int test = std::stoi(elements[2]);
+            std::string tryString = elements[2];
+            int test = std::stoi(tryString);
         }
         catch (std::exception &e)
         {
+            std::cout << "Command: /connect [IP Address] [Port]" << std::endl;
             chatBox.addChat("Command: /connect [IP Address] [Port]", errorColor);
             return false;
         }
