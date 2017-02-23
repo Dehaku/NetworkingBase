@@ -277,6 +277,35 @@ bool chatCommand(std::string input)
         std::cout << "elements: " << i << std::endl;
     }
 
+    if(elements[0] == "/me")
+    {
+        if(elements.size() < 2)
+        {
+            chatBox.addChat("Command: /me [action text]", errorColor);
+            return false;
+        }
+
+        std::string sendText;
+        sendText.append("* ");
+        sendText.append(myProfile.name);
+        sendText.append(" ");
+
+        for(int i = 1; i != elements.size(); i++)
+        {
+            sendText.append(elements[i]);
+            sendText.append(" ");
+        }
+        std::cout << "Final String: " << sendText << std::endl;
+
+
+
+        sf::Packet sendPacket;
+        sendPacket << sf::Uint8(ident::textMessage)
+            << sendText;
+        serverSocket.send(sendPacket);
+
+    }
+
     if(elements[0] == "/name" || elements[0] == "/setname" || elements[0] == "/nick")
     {
         chatBox.addChat("Server: " + myProfile.name + " has changed their name to " + elements[1], goodColor);
