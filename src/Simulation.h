@@ -43,6 +43,7 @@ public:
     std::list<Simulation> simulations;
     Simulation* createSimulation();
     Simulation* getSimulation(int id);
+    Simulation* getCurrentSimulation();
 
     SimulationManager();
 

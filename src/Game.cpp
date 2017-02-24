@@ -1239,6 +1239,71 @@ void chatStuffs()
 
 }
 
+void drawSelectedOrganismInfo()
+{
+    if(generalTracker.selectedOrganism.lock())
+    {
+        Organism& critter = *generalTracker.selectedOrganism.lock().get();
+
+        sf::Vector2f drawPos(critter.pos.x+50,critter.pos.y-25);
+        sfe::RichText richText;
+        richText.setCharacterSize(12);
+        richText.setFont(gvars::defaultFont);
+        richText.setPosition(drawPos);
+
+
+        richText << sf::Text::Bold << critter.name << "\n"
+        << sf::Text::Regular
+        << "Age: " << std::to_string(critter.age) << "/" << std::to_string(critter.ageMax) << " \n"
+        << "Speed: " << std::to_string(critter.getSpeed()) << " \n"
+        << "Size: " << std::to_string(critter.size) << " \n"
+        << "Health: " << std::to_string(critter.health) << "/" << std::to_string(critter.getHealthMax()) << " \n"
+        << "Hunger: " << std::to_string(critter.nutrition) << "/" << std::to_string(critter.getNutritionMax()) << " \n"
+        << "Hydration: " << std::to_string(critter.hydration) << "/" << std::to_string(critter.getHydrationMax()) << " \n"
+        << "Gestation: " << std::to_string(critter.gestationTime) << "/" << std::to_string(critter.gestationPeriod) << " \n";
+
+        sf::Vector2f drawPosEnd(drawPos.x + richText.getGlobalBounds().width, drawPos.y + richText.getGlobalBounds().height);
+
+        shapes.createLine(drawPos.x,drawPos.y,critter.pos.x,critter.pos.y,2,sf::Color::Cyan);
+        shapes.createLine(drawPos.x,drawPosEnd.y,critter.pos.x,critter.pos.y,2,sf::Color::Cyan);
+
+        shapes.createSquare(drawPos.x,drawPos.y,drawPosEnd.x,drawPosEnd.y, sf::Color(0,0,0,150),2,sf::Color::Cyan);
+        shapes.createRichText(richText);
+
+
+        std::cout << "Critter: " << critter.size << critter.getSpeed()
+        << std::endl
+        << critter.pos.x << "/" << critter.pos.y << std::endl;
+    }
+}
+
+void selectOrganism()
+{
+    if(inputState.lmbTime == 1)
+    {
+        Simulation* sim = simulationManager.getCurrentSimulation();
+
+        if(sim != nullptr)
+        {
+            bool foundCritter = false;
+            for(auto &critter : sim->organisms)
+            {
+                Organism &crit = *critter.get();
+                int distance = math::distance(gvars::mousePos,crit.pos);
+                if(distance < crit.size)
+                {
+                    generalTracker.selectedOrganism = critter;
+                    foundCritter = true;
+                }
+            }
+            if(!foundCritter)
+                generalTracker.selectedOrganism.reset();
+        }
+    }
+
+    drawSelectedOrganismInfo();
+}
+
 void renderGame()
 {
     chatStuffs();
@@ -1277,6 +1342,8 @@ void renderGame()
     {
         drawSubMain();
     }
+
+    selectOrganism();
 
 }
 

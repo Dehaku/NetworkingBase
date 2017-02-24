@@ -2,21 +2,21 @@
 
 #include "util.h"
 
-int math::closeish(sf::Vector2f ori, sf::Vector2f tar)
+int math::distance(sf::Vector2f ori, sf::Vector2f tar)
 {
     return sqrt(pow((tar.x - ori.x), 2) + pow((tar.y - ori.y), 2));
 }
 
-int math::closeish(int orix, int oriy, int tarx, int tary)
+int math::distance(int orix, int oriy, int tarx, int tary)
 {
     return sqrt(pow((tarx - orix), 2) + pow((tary - oriy), 2));
 }
 
-double math::distance(Vec3 Ori, Vec3 Tar)
+double math::distance3d(Vec3 Ori, Vec3 Tar)
 {
     return sqrt(pow(Tar.x - Ori.x, 2) + pow(Tar.y - Ori.y, 2) + pow(Tar.z - Ori.z, 2));;
 }
-double math::distance(Vec3f Ori, Vec3f Tar)
+double math::distance3d(Vec3f Ori, Vec3f Tar)
 {
     return sqrt(pow(Tar.x - Ori.x, 2) + pow(Tar.y - Ori.y, 2) + pow(Tar.z - Ori.z, 2));;
 }

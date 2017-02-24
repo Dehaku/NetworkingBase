@@ -158,3 +158,18 @@ Simulation* SimulationManager::getSimulation(int id)
 
     return nullptr;
 }
+
+Simulation* SimulationManager::getCurrentSimulation()
+{
+    int i = 0;
+    for(auto &sim : simulationManager.simulations)
+    {
+        if(i == simulationManager.drawSimNumber)
+        {
+            return &sim;
+        }
+        i++;
+    }
+    return nullptr;
+}
+

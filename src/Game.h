@@ -20,6 +20,7 @@
 #include "Textures.h"
 #include "Camera.h"
 #include "SaveLoad.h"
+#include "Profile.h"
 
 class StateTracker
 {
