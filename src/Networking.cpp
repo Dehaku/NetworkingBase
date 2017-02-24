@@ -24,6 +24,7 @@ Profile::Profile()
     name = "Guest";
     credits = 0;
     pix = 0;
+    enteredStringAimer = 0;
 }
 Profile myProfile;
 

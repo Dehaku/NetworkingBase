@@ -1187,8 +1187,62 @@ void drawSubMain()
 
 }
 
+void chatStuffs()
+{
+    { // Old Entered Text Cycle for Chatbox.
+        if(!network::chatting)
+            myProfile.enteredStringAimer = myProfile.enteredStrings.size();
+        else
+        {
+            if(myProfile.enteredStrings.empty())
+                return;
+            if(!network::chatting)
+                return;
+
+
+            bool arrowPressed = false;
+            if(inputState.key[Key::Up].time == 1)
+            {
+                arrowPressed = true;
+                    if(myProfile.enteredStringAimer == myProfile.enteredStrings.size())
+                        myProfile.enteredStringAimer--;
+                    else if(myProfile.enteredStringAimer != 0)
+                    {
+                        myProfile.enteredStringAimer--;
+                    }
+            }
+
+            if(inputState.key[Key::Down].time == 1)
+            {
+                arrowPressed = true;
+                if(chatBox.chatString == "")
+                    arrowPressed = false;
+
+
+                    if(myProfile.enteredStringAimer == myProfile.enteredStrings.size()-1)
+                    {
+                        chatBox.chatString = "";
+                        arrowPressed = false;
+                        myProfile.enteredStringAimer = myProfile.enteredStrings.size();
+                    }
+                    else if(myProfile.enteredStringAimer < myProfile.enteredStrings.size()-1)
+                    {
+                        myProfile.enteredStringAimer++;
+                    }
+            }
+
+            if(arrowPressed)
+                chatBox.chatString = myProfile.enteredStrings[myProfile.enteredStringAimer];
+        }
+
+    }
+
+}
+
 void renderGame()
 {
+    chatStuffs();
+
     if(inputState.key[Key::Space].time == 1)
     {
         gvars::currentx = 20;

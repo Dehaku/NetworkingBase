@@ -228,7 +228,7 @@ void handleEvents()
         }
         if (event.type == sf::Event::TextEntered)
         {
-
+            // std::cout << "Pressed: " << event.text.unicode << std::endl;
 
             if (event.text.unicode < 128 && network::chatting == true) //
             {
@@ -242,8 +242,10 @@ void handleEvents()
                 {
                     chatBox.chatString.erase(chatBox.chatString.end()-1);
                 }
-                if(event.text.unicode == 13)
+                if(event.text.unicode == 13 && chatBox.chatString != "")
                 {
+                    myProfile.enteredStrings.push_back(chatBox.chatString);
+
                     network::chatting = false;
                     std::string firstLetter;
                     firstLetter.append(chatBox.chatString,0,1);
