@@ -310,3 +310,38 @@ void loadProfile(std::string profileName)
     chatBox.addChat("Profile Loaded Successfully!");
     //chatBox.addChat(" Game's loaded, You're good to go recollect some bounties",sf::Color::White);
 }
+
+void saveConnectAddress(std::string enteredAddress, std::string enteredPort)
+{
+    std::string line("data/");
+
+    galaxy_mkdir(line);
+    line.append("lastAddress");
+    line.append(".la");
+
+    std::ofstream outputFile(line.c_str());
+    outputFile << "[Address:" << enteredAddress << "]"
+    << "[Port:" << enteredPort << "]";
+
+}
+
+AddressContainer loadConnectAddress()
+{
+    AddressContainer addCon;
+    std::ifstream input("data/lastAddress.la");
+    while (input.good())
+    {
+        std::string line;
+        getline(input, line);
+
+        // Load the variables!
+        addCon.address = stringFindString(line,"Address:");
+        addCon.port = stringFindString(line,"Port:");
+        std::cout << "Last Address: " << addCon.address << std::endl
+            << "Last Port: " << addCon.port << std::endl;
+        return addCon;
+    }
+    addCon.address = "";
+    return addCon;
+}
+

@@ -58,3 +58,4 @@ gmon.out
 *.pdn
 data/saves/Sopheroph/save.profile
 data/saves/Sopheroph/save.profile
+*.la

@@ -277,7 +277,7 @@ bool chatCommand(std::string input)
         std::cout << "elements: " << i << std::endl;
     }
 
-    if(elements[0] == "/me")
+    if(elements[0] == "/me"|| elements[0] == "/emote")
     {
         if(elements.size() < 2)
         {
@@ -321,6 +321,35 @@ bool chatCommand(std::string input)
     {
         std::cout << "Connect chat command detected. \n";
 
+        if(elements.size() == 1)
+        {
+            AddressContainer addCon;
+            addCon = loadConnectAddress();
+            if(addCon.address == "")
+            {
+                chatBox.addChat("The last entered address(if any) wasn't valid. ", errorColor);
+                return false;
+            }
+
+
+
+            bool connectionBool = activateClient(addCon.address, std::stoi(addCon.port));
+            if(connectionBool)
+            {
+                std::cout << "Connected to server " << addCon.address << std::endl;
+                network::client = true;
+                chatBox.addChat("Server: Connected to " + addCon.address + "(" + addCon.port + ")", goodColor);
+                return true;
+            }
+            else
+            {
+                std::cout << "Failed to connect to " << addCon.address << std::endl;
+                chatBox.addChat("Server: FAILED to connect to " + addCon.address + "(" + addCon.port + ")", goodColor);
+                return false;
+            }
+        }
+
+
         if(elements.size() != 3)
         {
             std::cout << "Incorrect argument count, We have " << std::to_string(elements.size()) << " instead. \n";
@@ -352,6 +381,8 @@ bool chatCommand(std::string input)
         bool connectionBool = activateClient(elements[1], std::stoi(elements[2]));
         if(connectionBool)
         {
+            saveConnectAddress(elements[1],elements[2]);
+
             std::cout << "Connected to server " << elements[1] << std::endl;
             network::client = true;
             chatBox.addChat("Server: Connected to " + elements[1] + "(" + elements[2] + ")", goodColor);

@@ -72,7 +72,7 @@ void serverListen()
                 std::cout << "New Client! Adding to list...";
                 {
                     client.id = ++clientIDCounter;
-                    // sf::Lock lock(network::clientHandling);
+                    sf::Lock lock(network::clientHandling);
                     clients.push_back(client);
                 }
 
@@ -91,7 +91,7 @@ void serverListen()
         }
         else
         {
-            // sf::Lock lock(network::clientHandling);
+            sf::Lock lock(network::clientHandling);
             for(auto &client : clients)
             {
                 if(selector.isReady(*client.socket))
@@ -129,7 +129,11 @@ void serverListen()
         }
     }
     if(sPM.packets.empty()) // To avoid possible nullptr references when a client vanishes.
+    {
+        sf::Lock lock(network::clientHandling);
         AnyDeletes(clients);
+    }
+
     network::listening = false;
 }
 
