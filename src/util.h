@@ -149,4 +149,6 @@ float percentIs(float value, float percentage);
 std::string generateName(int minLength = 2, int maxLength = 10);
 bool toggle(bool &boolean);
 
+std::string GetClipboardText();
+
 #endif // __UTIL_H_INCLUDED__

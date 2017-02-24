@@ -232,6 +232,12 @@ void handleEvents()
 
             if (event.text.unicode < 128 && network::chatting == true) //
             {
+                if(event.text.unicode == 22)
+                {
+                    chatBox.chatString.append(GetClipboardText());
+                    continue;
+                }
+
                 if(event.text.unicode != 8 && event.text.unicode != 13) // 8 = backspace 13 = enter, Thanks to http://www.fileformat.info
                 {
                     std::string TempStr;
