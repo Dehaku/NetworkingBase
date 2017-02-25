@@ -26,6 +26,52 @@ Organism::Organism()
     hydration = getHealthMax();
 }
 
+void Organism::runHealth()
+{
+    health = std::min(health+0.01f,getHealthMax());
+}
+
+void Organism::runHunger()
+{
+    // Nutrition lost should be based on size, strength, and speed. (As well as special traits)
+
+    nutrition--;
+    if(nutrition < 0)
+    {
+        nutrition = 0;
+        health--;
+    }
+}
+
+void Organism::runHydration()
+{
+    hydration--;
+    if(hydration < 0)
+    {
+        hydration = 0;
+        health--;
+    }
+}
+
+void Organism::runGestation()
+{
+    if(gestationTime > 0) // Getting pregnant or whatever will set this timer to 1, kicking this off.
+        gestationTime++;
+
+    if(gestationTime >= gestationPeriod)
+    {
+        gestationTime = 0;
+        giveBirth();
+    }
+}
+
+void Organism::giveBirth()
+{
+    // Check traits for mitosis/egg/sudden desire for parasite injection/ect.
+
+
+}
+
 
 float Organism::getHealthMax()
 {
@@ -78,6 +124,36 @@ void runBrains(std::list<std::shared_ptr<Organism>>& organismList)
 {
     for(auto &crit : organismList)
         runBrain(*crit.get());
+}
+
+void runBody(Organism &crit)
+{
+    crit.age++;
+
+    crit.runHealth();
+    crit.runHunger();
+    crit.runHydration();
+    crit.runGestation();
+}
+
+void runCreatures(std::list<std::shared_ptr<Organism>>& organismList)
+{
+    for(auto &crit : organismList)
+    {
+        runBody(*crit.get());
+
+        runBrain(*crit.get());
+    }
+
+}
+
+void runPlants(std::list<std::shared_ptr<Organism>>& organismList)
+{
+    for(auto &plant : organismList)
+    {
+        //runBrain(*crit.get());
+    }
+
 }
 
 void worldPopulationSetup()

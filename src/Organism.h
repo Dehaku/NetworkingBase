@@ -47,6 +47,14 @@ class Organism
     float getSpeed();
     float getNutritionMax();
     float getHydrationMax();
+
+    void runHealth();
+    void runHunger();
+    void runHydration();
+    void runGestation();
+    void giveBirth(); // The money maker, right here.
+
+
 };
 
 
@@ -55,6 +63,9 @@ extern std::list<Organism> organisms;
 extern std::list<Organism> flora;
 
 void runBrains(std::list<std::shared_ptr<Organism>>& organismList);
+void runCreatures(std::list<std::shared_ptr<Organism>>& organismList);
+void runPlants(std::list<std::shared_ptr<Organism>>& organismList);
+
 
 void worldPopulationSetup();
 

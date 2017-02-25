@@ -2,6 +2,13 @@
 
 SimulationManager simulationManager;
 
+void Simulation::runLife()
+{
+    runCreatures(organisms);
+    runPlants(flora);
+    //runBrains(organisms);
+}
+
 Simulation::Simulation()
 {
     worldTileSizeX = 1000;

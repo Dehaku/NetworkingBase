@@ -1533,7 +1533,7 @@ void runGame()
     }
 
     for(auto &sim : simulationManager.simulations)
-        runBrains(sim.organisms);
+        sim.runLife(); // runBrains(sim.organisms);
     //runBrains(organisms);
 
     if(inputState.key[Key::C].time == 1)

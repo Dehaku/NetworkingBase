@@ -24,6 +24,7 @@ public:
     sf::Color background;
     sf::Sprite circleCritter;
 
+    void runLife();
     Simulation();
 
 
