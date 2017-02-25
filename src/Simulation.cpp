@@ -413,6 +413,29 @@ void moveAngle(Organism &crit, float ang)
     crit.pos.y += sinf(ang) * crit.getSpeed();
 }
 
+float length(sf::Vector2f Vec){
+    return sqrt(Vec.x*Vec.x+Vec.y*Vec.y);
+ };
+
+void normalize(sf::Vector2f &Vec){
+     float len = length(Vec);
+     Vec.x /= len;
+     Vec.y /= len;
+};
+
+
+
+void moveVector(Organism &crit, sf::Vector2f vPos)
+{
+    sf::Vector2f diffVec(vPos-crit.pos);
+    normalize(diffVec);
+    diffVec *= crit.getSpeed();
+    crit.pos += diffVec;
+
+    //crit.pos.x += cosf(ang) * crit.getSpeed();
+    //crit.pos.y += sinf(ang) * crit.getSpeed();
+}
+
 void runBrain(Organism &crit)
 {
     if(crit.health < 1) // ded.
@@ -449,7 +472,7 @@ void runBrain(Organism &crit)
             {
                 for(auto &food : crit.sim->flora)
                 {
-                    if(food.get()->size < herbivore->vars[1]) // Vars[1] (The second variable) is how much plant is consumed.
+                    if(food.get()->size < herbivore->vars[1]+10) // Vars[1] (The second variable) is how much plant is consumed.
                         continue;
 
 
@@ -487,7 +510,14 @@ void runBrain(Organism &crit)
 
 
     //std::cout << "Critter" + crit.name + ": " + std::to_string(crit.getSpeed()) << std::endl;
-    moveAngle(crit,math::angleBetweenVectors(crit.pos,crit.brain.lock()->desiredPos));
+
+    if(math::distance(crit.pos,crit.brain.lock()->desiredPos) < crit.getSpeed()*2)
+    {
+        crit.pos = crit.brain.lock()->desiredPos;
+    }
+    else
+        moveVector(crit,crit.brain.lock()->desiredPos);
+        //moveAngle(crit,math::angleBetweenVectors(crit.pos,crit.brain.lock()->desiredPos));
 
 
 }

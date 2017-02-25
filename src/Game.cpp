@@ -1325,6 +1325,8 @@ void renderGame()
 {
     chatStuffs();
 
+
+
     if(inputState.key[Key::Space].time == 1)
     {
         gvars::currentx = 20;
@@ -1362,6 +1364,28 @@ void renderGame()
 
     selectOrganism();
 
+     if(inputState.key[Key::H])
+    {
+        {
+            Simulation* sim = simulationManager.getCurrentSimulation();
+
+            if(sim != nullptr)
+            {
+                for(auto &critter : sim->organisms)
+                {
+                    Organism &crit = *critter.get();
+
+                    for(auto &trait : crit.traits)
+                    {
+                        if(trait.type == TraitID::Herbivore)
+                        {
+                            shapes.createLine(crit.pos.x,crit.pos.y,gvars::mousePos.x,gvars::mousePos.y,3,sf::Color::Cyan);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 sf::Thread serverListenThread(&serverListen);
