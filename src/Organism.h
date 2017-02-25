@@ -9,6 +9,26 @@
 #include "util.h"
 #include "Networking.h"
 
+namespace TraitID
+{
+    enum
+    {
+        Nothing,
+        Detritivore,
+        Herbivore,
+        Carnivore
+    };
+}
+
+class Trait
+{
+public:
+    int type;
+    std::vector<float> vars;
+};
+
+
+
 class Organism;
 
 class Brain
@@ -22,7 +42,6 @@ class Brain
 
 class Organism
 {
-    public:
     public:
     sf::Vector2f pos;
     float health;
@@ -38,12 +57,14 @@ class Organism
     std::weak_ptr<Brain> brain;
     sf::Color colorPrime;
     sf::Color colorSecondary;
+    std::vector<Trait> traits;
 
 
     float ageMax;
     float age;
     float gestationPeriod;
     float gestationTime;
+
     Organism();
     float getHealthMax();
     float getSpeed();

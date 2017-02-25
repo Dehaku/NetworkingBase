@@ -14,6 +14,11 @@ Brain::Brain()
 
 Organism::Organism()
 {
+    age = 0;
+    ageMax = 30000;
+    gestationTime = 0;
+    gestationPeriod = 5000;
+
     size = random(1,100) * 0.1;
     baseSpeed = random(1,10);
 
@@ -27,6 +32,39 @@ Organism::Organism()
 
     nutrition = getNutritionMax();
     hydration = getHydrationMax();
+
+    // Initial Traits
+    {
+
+
+        Trait dirtEater;
+        dirtEater.type = TraitID::Detritivore;
+        dirtEater.vars.push_back(0.05f);
+        traits.push_back(dirtEater);
+
+        int ran = random(1,10);
+
+        if(ran == 2)
+        {
+            Trait carnivore;
+
+            carnivore.type = TraitID::Carnivore;
+            carnivore.vars.push_back(1.f);
+            carnivore.vars.push_back(10.f);
+            traits.push_back(carnivore);
+        }
+        else if(ran == 1)
+        {
+            Trait herbivore;
+            herbivore.type = TraitID::Herbivore;
+            herbivore.vars.push_back(1.f);
+            herbivore.vars.push_back(10.f);
+            traits.push_back(herbivore);
+        }
+
+
+
+    }
 }
 
 float Organism::getHungerRate()
@@ -35,8 +73,14 @@ float Organism::getHungerRate()
 
     hungerRate += 0.01*size;
     //hungerRate += 0.01*strength;
+
+
+
     hungerRate += 0.01*baseSpeed;
 
+    // If pregnant/making baby, double hunger.
+    if(gestationTime > 0)
+        hungerRate = hungerRate*2;
 
     return hungerRate;
 }
@@ -59,9 +103,24 @@ void Organism::runHealth()
 
 void Organism::runHunger()
 {
-    // Nutrition lost should be based on size, strength, and speed. (As well as special traits)
 
+
+
+    // Nutrition lost should be based on size, strength, and speed. (As well as special traits)
     nutrition -= getHungerRate();
+
+    // Traits
+    for(auto &trait : traits)
+    {
+        if(trait.type == TraitID::Detritivore)
+        {
+            if(inputState.key[Key::I])
+                nutrition = std::min(nutrition+trait.vars[0]*50,getNutritionMax());
+            else
+                nutrition = std::min(nutrition+trait.vars[0],getNutritionMax());
+        }
+    }
+
     if(nutrition < 0)
     {
         nutrition = 0;
@@ -71,7 +130,7 @@ void Organism::runHunger()
 
 void Organism::runHydration()
 {
-    hydration -= getThirstRate();
+    // hydration -= getThirstRate();
     if(hydration < 0)
     {
         hydration = 0;
@@ -81,6 +140,19 @@ void Organism::runHydration()
 
 void Organism::runGestation()
 {
+    // Placeholder until breeding is trait based.
+    {
+        // Alot of these will be modified by traits, like fed well, and healthy, ect.
+        bool notGrowing = (gestationTime == 0); // If not already pregnant. (This is to make sure gestationTime doesn't keep getting set to 1)
+        bool oldEnough = (age > ageMax*0.33); // Sexual maturity occurs at a third of it's lifespan.
+        bool fedWell = (nutrition > getNutritionMax()*0.8); // Needs healthy diet
+        bool healthy = (health > getHealthMax() * 0.75); // Needs to be in decent health.
+        if(notGrowing && oldEnough && fedWell && healthy)
+            gestationTime = 1;
+    }
+
+
+
     if(gestationTime > 0) // Getting pregnant or whatever will set this timer to 1, kicking this off.
         gestationTime++;
 
@@ -130,7 +202,8 @@ void moveAngle(Organism &crit, float ang)
 
 void runBrain(Organism &crit)
 {
-
+    if(crit.health < 1) // ded.
+        return;
 
     if(!network::client)
         if(random(1,600) == 1 || inputState.key[Key::Space].time == 1)
@@ -175,7 +248,10 @@ void runPlants(std::list<std::shared_ptr<Organism>>& organismList)
 {
     for(auto &plant : organismList)
     {
-        //runBrain(*crit.get());
+        plant.get()->size += 0.001;
+
+
+        // runBrain(*crit.get());
     }
 
 }

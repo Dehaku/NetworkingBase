@@ -43,7 +43,7 @@ void Simulation::worldPopulationSetup()
     {
         //Organism Critter;
         std::shared_ptr<Organism> Critter(new Organism());
-        Critter->name = std::to_string(i); // Temporary
+        Critter->name = generateName(1,3);
         Critter->pos = sf::Vector2f(random(10,1000),random(10,1000));
         organisms.push_back(Critter);
 

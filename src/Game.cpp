@@ -1262,6 +1262,27 @@ void drawSelectedOrganismInfo()
         << "Hydration: " << std::to_string(critter.hydration) << "/" << std::to_string(critter.getHydrationMax()) << " \n"
         << "Gestation: " << std::to_string(critter.gestationTime) << "/" << std::to_string(critter.gestationPeriod) << " \n";
 
+        // Traits
+        {
+            richText << sf::Color::Yellow <<sf::Text::Bold << " \n *Traits* \n" << sf::Text::Regular;
+            for(auto &trait : critter.traits)
+            {
+                std::string nameThing;
+                if(trait.type == TraitID::Detritivore)
+                    nameThing = "Detritivore";
+                else if(trait.type == TraitID::Herbivore)
+                    nameThing = "Herbivore";
+                else if(trait.type == TraitID::Carnivore)
+                    nameThing = "Carnivore";
+                richText << nameThing << "";
+                for(auto &variable : trait.vars)
+                {
+                    richText << " : " << std::to_string(variable);
+                }
+                richText << "\n";
+            }
+        }
+
         sf::Vector2f drawPosEnd(drawPos.x + richText.getGlobalBounds().width, drawPos.y + richText.getGlobalBounds().height);
 
         shapes.createLine(drawPos.x,drawPos.y,critter.pos.x,critter.pos.y,2,sf::Color::Cyan);
@@ -1270,10 +1291,6 @@ void drawSelectedOrganismInfo()
         shapes.createSquare(drawPos.x,drawPos.y,drawPosEnd.x,drawPosEnd.y, sf::Color(0,0,0,150),2,sf::Color::Cyan);
         shapes.createRichText(richText);
 
-
-        std::cout << "Critter: " << critter.size << critter.getSpeed()
-        << std::endl
-        << critter.pos.x << "/" << critter.pos.y << std::endl;
     }
 }
 
