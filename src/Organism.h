@@ -29,7 +29,9 @@ class Organism
     float baseSpeed;
     float size;
     float nutrition;
+    float nutritionMax;
     float hydration;
+    float hydrationMax;
 
     // Identity
     std::string name;
@@ -46,7 +48,9 @@ class Organism
     float getHealthMax();
     float getSpeed();
     float getNutritionMax();
+    float getHungerRate();
     float getHydrationMax();
+    float getThirstRate();
 
     void runHealth();
     void runHunger();

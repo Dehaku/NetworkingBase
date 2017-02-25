@@ -22,8 +22,34 @@ Organism::Organism()
     colorSecondary = sf::Color(random(0,255),random(0,255),random(0,255));
 
     health = getHealthMax();
+    nutritionMax = random(50,100);
+    hydrationMax = random(50,200);
+
     nutrition = getNutritionMax();
-    hydration = getHealthMax();
+    hydration = getHydrationMax();
+}
+
+float Organism::getHungerRate()
+{
+    float hungerRate = 0.01;
+
+    hungerRate += 0.01*size;
+    //hungerRate += 0.01*strength;
+    hungerRate += 0.01*baseSpeed;
+
+
+    return hungerRate;
+}
+
+float Organism::getThirstRate()
+{
+    float thirstRate = 0.01;
+
+    thirstRate += 0.01*size;
+    //thirstRate += 0.01*strength;
+    thirstRate += 0.01*baseSpeed;
+
+    return thirstRate;
 }
 
 void Organism::runHealth()
@@ -35,7 +61,7 @@ void Organism::runHunger()
 {
     // Nutrition lost should be based on size, strength, and speed. (As well as special traits)
 
-    nutrition--;
+    nutrition -= getHungerRate();
     if(nutrition < 0)
     {
         nutrition = 0;
@@ -45,7 +71,7 @@ void Organism::runHunger()
 
 void Organism::runHydration()
 {
-    hydration--;
+    hydration -= getThirstRate();
     if(hydration < 0)
     {
         hydration = 0;
@@ -85,14 +111,12 @@ float Organism::getSpeed()
 
 float Organism::getNutritionMax()
 {
-    return std::max(size / 2,1.f);
+    return std::max(float(nutritionMax*size),1.f);
 }
-
-
 
 float Organism::getHydrationMax()
 {
-    return std::max(size,1.f);
+    return std::max(float(hydrationMax*size),1.f);
 }
 
 
