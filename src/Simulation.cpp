@@ -207,6 +207,7 @@ Organism::Organism()
     gestationTime = 0;
     gestationPeriod = 5000;
 
+    size = random(10,100) * 0.1;
     baseSpeed = random(1,10);
 
     //* brain = nullptr;
@@ -244,8 +245,8 @@ Organism::Organism()
         {
             Trait herbivore;
             herbivore.type = TraitID::Herbivore;
-            herbivore.vars.push_back(1.f);
-            herbivore.vars.push_back(10.f);
+            herbivore.vars.push_back(10.f); // Var 0, How much nutrition is gained per nom.
+            herbivore.vars.push_back(0.1f); // Var 1, How much plant size is consumed per nom.
             traits.push_back(herbivore);
         }
 
@@ -360,15 +361,23 @@ void Organism::giveBirth()
         std::shared_ptr<Organism> Critter(new Organism());
 
         *(Critter.get()) = *this; // Give it all the same information.
-        Critter->name = name+generateName(1,1); // Enhance name slightly.
         sim->organisms.push_back(Critter);
-        // sim->organisms.back().get() = this;
 
         std::shared_ptr<Brain> creatureBrain(new Brain());
         sim->brainStorage.push_back(creatureBrain);
 
         sim->organisms.back().get()->brain = sim->brainStorage.back();
         sim->brainStorage.back().get()->owner = sim->organisms.back();
+
+        Organism& critter = *(sim->organisms.back().get());
+
+        critter.age = 0;
+        critter.name.append(generateName(1,1));
+        critter.nutrition = critter.getNutritionMax();
+        critter.hydration = critter.getHydrationMax();
+        critter.health = critter.getHealthMax();
+
+
     }
 
 
@@ -409,9 +418,72 @@ void runBrain(Organism &crit)
     if(crit.health < 1) // ded.
         return;
 
-    if(!network::client)
+    if(!network::client) // Server-side Logic
+    {
         if(random(1,600) == 1 || inputState.key[Key::Space].time == 1)
             crit.brain.lock()->desiredPos = sf::Vector2f(random(10,990),random(10,990));
+
+
+        if(crit.nutrition < crit.getNutritionMax()*0.5)
+        {
+            Trait* herbivore = nullptr;
+            Trait* carnivore = nullptr;
+            for(auto &trait : crit.traits)
+            {
+                if(trait.type == TraitID::Herbivore)
+                    herbivore = &trait;
+                if(trait.type == TraitID::Carnivore)
+                    carnivore = &trait;
+
+
+
+
+
+
+            }
+
+            Organism* nearestFood = nullptr;
+            float nearestFoodDistance = 99999999;
+
+            if(herbivore != nullptr)
+            {
+                for(auto &food : crit.sim->flora)
+                {
+                    if(food.get()->size < herbivore->vars[1]) // Vars[1] (The second variable) is how much plant is consumed.
+                        continue;
+
+
+                    float ourDistance = math::distance(crit.pos,food.get()->pos);
+                    if(ourDistance < nearestFoodDistance)
+                    {
+                        nearestFoodDistance = ourDistance;
+                        nearestFood = food.get();
+                    }
+                }
+            }
+
+            if(nearestFood != nullptr)
+            {
+                crit.brain.lock()->desiredPos = nearestFood->pos;
+            }
+            if(nearestFoodDistance <= crit.size)
+            {
+                std::cout << crit.name << " is nomming on a plant! \n";
+                nearestFood->size = std::min(nearestFood->size-herbivore->vars[1],1.f); // Vars[1] (The second variable) is how much plant is consumed.
+
+                crit.nutrition += herbivore->vars[0]; // Vars[0] is how much nutrition is gained from the amount of plant consumed.
+
+            }
+
+
+
+
+
+        }
+
+
+    }
+
 
 
     //std::cout << "Critter" + crit.name + ": " + std::to_string(crit.getSpeed()) << std::endl;
