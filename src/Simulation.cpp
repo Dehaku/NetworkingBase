@@ -567,7 +567,8 @@ void runCreatures(std::list<std::shared_ptr<Organism>>& organismList)
     {
         runBody(*crit.get());
 
-        runBrain(*crit.get());
+        if(!crit.get()->isDead())
+            runBrain(*crit.get());
     }
 
 }
