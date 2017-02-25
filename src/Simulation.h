@@ -125,6 +125,7 @@ class Organism
     float getHydrationMax();
     float getThirstRate();
 
+    bool isDead();
     void runHealth();
     void runHunger();
     void runHydration();

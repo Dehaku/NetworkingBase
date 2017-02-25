@@ -284,6 +284,19 @@ float Organism::getThirstRate()
     return thirstRate;
 }
 
+bool Organism::isDead()
+{
+    bool amIDead = false;
+    if(health <= 0)
+        return true;
+
+    if(age > ageMax)
+        return true;
+
+
+    return amIDead;
+}
+
 void Organism::runHealth()
 {
     health = std::min(health+0.01f,getHealthMax());
@@ -533,10 +546,19 @@ void runBody(Organism &crit)
 {
     crit.age++;
 
-    crit.runHealth();
-    crit.runHunger();
-    crit.runHydration();
-    crit.runGestation();
+
+    if(!crit.isDead())
+    {
+        crit.runHealth();
+        crit.runHunger();
+        crit.runHydration();
+        crit.runGestation();
+    }
+    else
+    {
+
+    }
+
 }
 
 void runCreatures(std::list<std::shared_ptr<Organism>>& organismList)
