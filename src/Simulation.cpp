@@ -18,6 +18,12 @@ void runDeadColors()
                 crit.colorSecondary.r = std::min(crit.colorSecondary.r+1,255);
                 crit.colorSecondary.g = std::min(crit.colorSecondary.g+1,255);
                 crit.colorSecondary.b = std::min(crit.colorSecondary.b+1,255);
+
+                if(crit.age > crit.ageMax*2.75)
+                {
+                    crit.colorPrime.a = std::max(crit.colorPrime.a-1,0);
+                    crit.colorSecondary.a = std::max(crit.colorSecondary.a-1,0);
+                }
             }
         }
 }
