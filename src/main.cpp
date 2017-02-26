@@ -405,6 +405,7 @@ int main()
             if(fpsKeeper.framesPerSecond <= 1)
                 dt = 0.01; // A nice little failsafe to help the player.
             fpsKeeper.updatesPassed++;
+            fpsKeeper.updatesPassedTotal++;
             runAmount++;
             accumulator -= dt;
             t += dt;

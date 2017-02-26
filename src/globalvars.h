@@ -13,9 +13,11 @@ void assignSlotPos();
 class fpsTracker
 {
 public:
+    unsigned int framesPassedTotal;
     int framesPassed;
     float framesPerSecond;
     int highestFrameTimePerSecond;
+    unsigned int updatesPassedTotal;
     int updatesPassed;
     float updatesPerSecond;
 

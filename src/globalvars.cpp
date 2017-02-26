@@ -9,9 +9,11 @@ fpsTracker fpsKeeper;
 fpsTracker::fpsTracker()
 {
     startTime.restart();
+    framesPassedTotal = 0;
     framesPassed = 0;
     framesPerSecond = 0;
     framesPassedTime = fpsTimer.restart();
+    updatesPassedTotal = 0;
     updatesPassed = 0;
     updatesPerSecond = 0;
 }
@@ -24,6 +26,7 @@ void fpsTracker::calcFPS()
         highestFrameTimePerSecond = timeBetweenFrames;
 
     framesPassed++;
+    framesPassedTotal++;
 
     float estimatedFPS = -1;
     if(fpsTimerLive.getElapsedTime().asMilliseconds() != 0)

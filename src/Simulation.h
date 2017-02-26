@@ -47,6 +47,9 @@ public:
     int maxSimulationsAllowed;
     int drawSimNumber;
     std::list<Simulation> simulations;
+
+    void runSimulations();
+
     Simulation* createSimulation();
     Simulation* getSimulation(int id);
     Simulation* getCurrentSimulation();

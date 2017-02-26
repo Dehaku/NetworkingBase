@@ -1442,33 +1442,9 @@ void sendLifeUpdate()
     sendToAllClients(packet);
 }
 
-void runDeadColors()
-{
-    for(auto &sim : simulationManager.simulations)
-        for(auto &critter : sim.organisms)
-    {
-        Organism& crit = *critter.get();
-        if(crit.isDead())
-        {
-            crit.colorPrime.r = std::min(crit.colorPrime.r+1,255);
-            crit.colorPrime.g = std::min(crit.colorPrime.g+1,255);
-            crit.colorPrime.b = std::min(crit.colorPrime.b+1,255);
-
-            crit.colorSecondary.r = std::min(crit.colorSecondary.r+1,255);
-            crit.colorSecondary.g = std::min(crit.colorSecondary.g+1,255);
-            crit.colorSecondary.b = std::min(crit.colorSecondary.b+1,255);
-        }
-    }
-
-
-
-
-
-}
-
 void runOneSecond()
 {
-    runDeadColors();
+
 }
 
 void runTenSecond()
@@ -1627,8 +1603,10 @@ void runGame()
         }
     }
 
-    for(auto &sim : simulationManager.simulations)
-        sim.runLife(); // runBrains(sim.organisms);
+
+    simulationManager.runSimulations();
+    // for(auto &sim : simulationManager.simulations)
+     //   sim.runLife(); // runBrains(sim.organisms);
     //runBrains(organisms);
 
     if(inputState.key[Key::C].time == 1)

@@ -2,6 +2,27 @@
 
 SimulationManager simulationManager;
 
+
+void runDeadColors()
+{
+    for(auto &sim : simulationManager.simulations)
+        for(auto &critter : sim.organisms)
+        {
+            Organism& crit = *critter.get();
+            if(crit.isDead())
+            {
+                crit.colorPrime.r = std::min(crit.colorPrime.r+1,255);
+                crit.colorPrime.g = std::min(crit.colorPrime.g+1,255);
+                crit.colorPrime.b = std::min(crit.colorPrime.b+1,255);
+
+                crit.colorSecondary.r = std::min(crit.colorSecondary.r+1,255);
+                crit.colorSecondary.g = std::min(crit.colorSecondary.g+1,255);
+                crit.colorSecondary.b = std::min(crit.colorSecondary.b+1,255);
+            }
+        }
+}
+
+
 void Simulation::runLife()
 {
     runCreatures(organisms);
@@ -22,6 +43,7 @@ void Simulation::runLife()
 
     populationAlive = aliveCount;
     populationDead = deadCount;
+
 
 
     //runBrains(organisms);
@@ -162,6 +184,17 @@ SimulationManager::SimulationManager()
 {
     simulationID = 0;
     drawSimNumber = 0;
+}
+
+void SimulationManager::runSimulations()
+{
+    for(auto &sim : simulations)
+        sim.runLife();
+
+    if( (fpsKeeper.updatesPassedTotal % 10) == 0 )
+    {
+        runDeadColors();
+    }
 }
 
 Simulation* SimulationManager::createSimulation()
