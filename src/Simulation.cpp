@@ -220,6 +220,7 @@ Organism::Organism()
 
     nutrition = getNutritionMax();
     hydration = getHydrationMax();
+    isStillHungry = false;
 
     // Initial Traits
     {
@@ -295,6 +296,25 @@ bool Organism::isDead()
 
 
     return amIDead;
+}
+
+bool Organism::isHungry()
+{
+    bool returnStatus = false;
+
+    if(nutrition > getNutritionMax()*0.9)
+        isStillHungry = false;
+
+    if(nutrition < getNutritionMax()*0.5)
+    {
+        isStillHungry = true;
+        returnStatus = true;
+    }
+
+    if(isStillHungry)
+        returnStatus = true;
+
+    return returnStatus;
 }
 
 void Organism::runHealth()
@@ -428,13 +448,13 @@ void moveAngle(Organism &crit, float ang)
 
 float length(sf::Vector2f Vec){
     return sqrt(Vec.x*Vec.x+Vec.y*Vec.y);
- };
+ }
 
 void normalize(sf::Vector2f &Vec){
      float len = length(Vec);
      Vec.x /= len;
      Vec.y /= len;
-};
+}
 
 
 
@@ -451,7 +471,7 @@ void moveVector(Organism &crit, sf::Vector2f vPos)
 
 void runBrain(Organism &crit)
 {
-    if(crit.health < 1) // ded.
+    if(crit.isDead()) // ded.
         return;
 
     if(!network::client) // Server-side Logic
@@ -460,7 +480,7 @@ void runBrain(Organism &crit)
             crit.brain.lock()->desiredPos = sf::Vector2f(random(10,990),random(10,990));
 
 
-        if(crit.nutrition < crit.getNutritionMax()*0.5)
+        if(crit.isHungry())
         {
             Trait* herbivore = nullptr;
             Trait* carnivore = nullptr;
