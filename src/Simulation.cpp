@@ -6,11 +6,33 @@ void Simulation::runLife()
 {
     runCreatures(organisms);
     runPlants(flora);
+
+    unsigned int aliveCount = 0;
+    unsigned int deadCount = 0;
+
+    for(auto &crit : organisms)
+    {
+
+        if(!crit.get()->isDead())
+            aliveCount++;
+        else
+            deadCount++;
+
+    }
+
+    populationAlive = aliveCount;
+    populationDead = deadCount;
+
+
     //runBrains(organisms);
 }
 
 Simulation::Simulation()
 {
+    populationAll = 0;
+    populationAlive = 0;
+    populationDead = 0;
+
     worldTileSizeX = 1000;
     worldTileSizeY = 1000;
 
@@ -51,6 +73,7 @@ void Simulation::worldPopulationSetup()
         //Brain creatureBrain;
         std::shared_ptr<Brain> creatureBrain(new Brain());
         brainStorage.push_back(creatureBrain);
+        populationAll++;
 
         organisms.back().get()->brain = brainStorage.back();
         brainStorage.back().get()->owner = organisms.back();
@@ -202,6 +225,8 @@ Brain::Brain()
 
 Organism::Organism()
 {
+    toDelete = false;
+
     age = 0;
     ageMax = 30000;
     gestationTime = 0;
@@ -395,6 +420,7 @@ void Organism::giveBirth()
 
         *(Critter.get()) = *this; // Give it all the same information.
         sim->organisms.push_back(Critter);
+        sim->populationAll++;
 
         std::shared_ptr<Brain> creatureBrain(new Brain());
         sim->brainStorage.push_back(creatureBrain);
@@ -555,7 +581,7 @@ void runBrain(Organism &crit)
 
 }
 
-//void runBrains(std::list<Organism>& organismList)
+
 void runBrains(std::list<std::shared_ptr<Organism>>& organismList)
 {
     for(auto &crit : organismList)
@@ -583,6 +609,7 @@ void runBody(Organism &crit)
 
 void runCreatures(std::list<std::shared_ptr<Organism>>& organismList)
 {
+
     for(auto &crit : organismList)
     {
         runBody(*crit.get());
@@ -590,6 +617,8 @@ void runCreatures(std::list<std::shared_ptr<Organism>>& organismList)
         if(!crit.get()->isDead())
             runBrain(*crit.get());
     }
+
+
 
 }
 

@@ -11,6 +11,9 @@ class Simulation
 {
 public:
     unsigned int simulationID;
+    unsigned int populationAll;
+    unsigned int populationAlive;
+    unsigned int populationDead;
 
     std::list<std::shared_ptr<Brain>> brainStorage;
     std::list<std::shared_ptr<Organism>> flora;
@@ -94,6 +97,7 @@ class Organism
 {
     public:
     Simulation* sim;
+    bool toDelete;
 
     sf::Vector2f pos;
     float health;

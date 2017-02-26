@@ -794,7 +794,18 @@ void HUDTabs()
 
     std::string simAddon = "";
     if(simulationManager.simulations.size() > 0)
+    {
         simAddon.append("("+std::to_string(simulationManager.drawSimNumber+1)+"/"+std::to_string(simulationManager.simulations.size())+")");
+        simAddon.append("\n");
+        Simulation* sim = simulationManager.getCurrentSimulation();
+        if(sim != nullptr)
+        {
+            simAddon.append("("+std::to_string(sim->populationAlive)+"/"+std::to_string(sim->populationDead)+"/"+std::to_string(sim->populationAll)+")");
+        }
+
+
+    }
+
 
     int simulationButt = shapes.createImageButton(sf::Vector2f(391,190),*hudButton,"",0,&gvars::hudView);
     shapes.createText(391-40,190-8,12,sf::Color::Black,"Simulation"+simAddon,&gvars::hudView);
