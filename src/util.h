@@ -81,6 +81,29 @@ template <typename T> void AnyDeletes(std::vector<T> &list)
     }
 }
 
+template <typename T> void AnyDeletesSmartPointer(std::list<T> &list)
+{
+    bool done = false;
+    while (done == false)
+    {
+        bool yet = false;
+        for (auto it = list.begin(); it != list.end(); ++it)
+        {
+            //std::cout << it->name << ",'s toDelete: " << it->toDelete << std::endl;
+            if (it->get()->toDelete)
+            {
+                list.erase(it);
+                yet = true;
+                break;
+            }
+        }
+        if (yet == false)
+        {
+            done = true;
+        }
+    }
+}
+
 template <typename T> T &listAt(std::list<T> &list, size_t index)
 {
     auto it = list.begin();

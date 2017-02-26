@@ -45,7 +45,7 @@ void Simulation::runLife()
     populationDead = deadCount;
 
 
-
+    AnyDeletesSmartPointer(organisms);
     //runBrains(organisms);
 }
 
@@ -347,6 +347,9 @@ float Organism::getThirstRate()
 
 bool Organism::isDead()
 {
+    if(age > ageMax*3) // Super Dead, Time to go byebye.
+        toDelete = true;
+
     bool amIDead = false;
     if(health <= 0)
         return true;
