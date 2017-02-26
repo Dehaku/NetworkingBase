@@ -1263,7 +1263,7 @@ void drawSelectedOrganismInfo()
         richText.setPosition(drawPos);
 
 
-        richText << sf::Text::Bold << critter.name << "\n"
+        richText << sf::Text::Bold << critter.name << "(" << std::to_string(critter.ID) << ")" << "\n"
         << sf::Text::Regular
         << "Age: " << std::to_string(critter.age) << "/" << std::to_string(critter.ageMax) << " \n"
         << "Speed: " << std::to_string(critter.getSpeed()) << " \n"

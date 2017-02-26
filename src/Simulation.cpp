@@ -29,6 +29,7 @@ void Simulation::runLife()
 
 Simulation::Simulation()
 {
+    populationID = 0;
     populationAll = 0;
     populationAlive = 0;
     populationDead = 0;
@@ -68,6 +69,7 @@ void Simulation::worldPopulationSetup()
         Critter->sim = this;
         Critter->name = generateName(1,3);
         Critter->pos = sf::Vector2f(random(10,1000),random(10,1000));
+        Critter->ID = populationID++;
         organisms.push_back(Critter);
 
         //Brain creatureBrain;
@@ -430,6 +432,7 @@ void Organism::giveBirth()
 
         Organism& critter = *(sim->organisms.back().get());
 
+        critter.ID = sim->populationID++;
         critter.age = 0;
         critter.name.append(generateName(1,1));
         critter.nutrition = critter.getNutritionMax();

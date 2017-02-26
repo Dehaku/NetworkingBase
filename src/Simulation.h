@@ -11,6 +11,7 @@ class Simulation
 {
 public:
     unsigned int simulationID;
+    unsigned int populationID;
     unsigned int populationAll;
     unsigned int populationAlive;
     unsigned int populationDead;
@@ -97,6 +98,7 @@ class Organism
 {
     public:
     Simulation* sim;
+    unsigned int ID;
     bool toDelete;
 
     sf::Vector2f pos;
