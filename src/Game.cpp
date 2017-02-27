@@ -26,15 +26,20 @@ sf::Packet& operator >>(sf::Packet& packet, Brain& brain)
 
 sf::Packet& operator <<(sf::Packet& packet, const Organism& critter)
 {
-    return packet
+
+    packet
+    << sf::Uint32(critter.ID)
     << critter.pos.x
     << critter.pos.y
 
     << critter.health
     << critter.baseSpeed
     << critter.size
+    << critter.nutritionMax
     << critter.nutrition
+    << critter.hydrationMax
     << critter.hydration
+    << critter.isStillHungry
 
     << critter.name
     << critter.colorPrime.r
@@ -49,22 +54,44 @@ sf::Packet& operator <<(sf::Packet& packet, const Organism& critter)
     << critter.ageMax
     << critter.age
     << critter.gestationPeriod
-
     << critter.gestationTime;
+
+
+
+
+    { // Traits
+        // Amount of traits
+        packet << sf::Uint32(critter.traits.size());
+        for(auto &trait : critter.traits)
+        {
+            packet << sf::Uint32(trait.type);
+            packet << sf::Uint32(trait.vars.size()); // Amount of Variables
+
+            for(auto variable : trait.vars)
+                packet << variable;
+        }
+    }
+
+
+    return packet;
 }
 
 sf::Packet& operator >>(sf::Packet& packet, Organism& critter)
 {
 
-    return packet
+    packet
+    >> critter.ID
     >> critter.pos.x
     >> critter.pos.y
 
     >> critter.health
     >> critter.baseSpeed
     >> critter.size
+    >> critter.nutritionMax
     >> critter.nutrition
+    >> critter.hydrationMax
     >> critter.hydration
+    >> critter.isStillHungry
 
     >> critter.name
     >> critter.colorPrime.r
@@ -79,8 +106,35 @@ sf::Packet& operator >>(sf::Packet& packet, Organism& critter)
     >> critter.ageMax
     >> critter.age
     >> critter.gestationPeriod
-
     >> critter.gestationTime;
+
+
+
+    { // Traits
+        critter.traits.clear();
+        // Amount of traits
+        int amountOfTraits;
+        packet >> amountOfTraits;
+
+        for(int i = 0; i != amountOfTraits; i++)
+        {
+            Trait trait;
+            packet >> trait.type;
+
+            int amountOfVars;
+            packet >> amountOfVars; // Amount of Variables
+            for(int t = 0; t != amountOfVars; t++)
+            {
+                float variable;
+                packet >> variable;
+                trait.vars.push_back(variable);
+            }
+
+            critter.traits.push_back(trait);
+        }
+    }
+
+    return packet;
 }
 
 struct CritterPositions
@@ -163,19 +217,29 @@ sf::Packet& operator <<(sf::Packet& packet, const Simulation& sim)
     // Runtime
 
     packet << sf::Uint32(sim.simulationID);
+    packet << sf::Uint32(sim.populationID);
+    packet << sf::Uint32(sim.populationAll);
 
     packet << sf::Uint32(sim.organisms.size());
-    for(auto critter : sim.organisms)
+
+    std::cout << "Population: " << sim.organisms.size() << std::endl;
+
+    int counter = 0;
+    std::cout << "Syncing Critters \n";
+    for(auto &critter : sim.organisms)
     {
+        counter++;
         packet << *(critter.get());
         packet << *(critter.get()->brain.lock());
     }
-
+    std::cout << "Critters Synced" << std::endl;
+    std::cout << "Syncing Plants \n";
     packet << sf::Uint32(sim.flora.size());
-    for(auto plant : sim.flora)
+    for(auto &plant : sim.flora)
     {
         packet << *(plant.get());
     }
+    std::cout << "Plants Synced \n";
 
     packet << sf::Uint32(sim.worldTiles.size());
     packet << sf::Uint32(sim.worldTiles[0].size()); // We only allow square worlds, so using 0 is just fine.
@@ -194,8 +258,13 @@ sf::Packet& operator <<(sf::Packet& packet, const Simulation& sim)
 sf::Packet& operator >>(sf::Packet& packet, Simulation& sim)
 {
     packet >> sim.simulationID;
+    packet >> sim.populationID;
+    packet >> sim.populationAll;
+
     int critterPop;
     packet >> critterPop;
+
+    std::cout << "Population: " << critterPop << std::endl;
 
     for(int i = 0; i != critterPop; i++)
     {

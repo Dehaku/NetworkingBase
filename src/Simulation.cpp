@@ -84,6 +84,7 @@ void Simulation::worldPopulationSetup()
         Plant->size = random(5,30);
         Plant->baseSpeed = 0;
         Plant->pos = sf::Vector2f(random(10,1000),random(10,1000));
+        Plant->ID = populationID++;
         Plant->colorPrime = sf::Color(0,200,0,150);
         Plant->colorSecondary = sf::Color(0,100,0,150);
 
@@ -595,7 +596,6 @@ void runBrain(Organism &crit)
             }
             if(nearestFoodDistance <= crit.size)
             {
-                std::cout << crit.name << " is nomming on a plant! \n";
                 nearestFood->size = std::min(nearestFood->size-herbivore->vars[1],1.f); // Vars[1] (The second variable) is how much plant is consumed.
 
                 crit.nutrition += herbivore->vars[0]; // Vars[0] is how much nutrition is gained from the amount of plant consumed.
