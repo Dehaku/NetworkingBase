@@ -318,6 +318,30 @@ sf::Packet& operator >>(sf::Packet& packet, Simulation& sim)
     return packet;
 }
 
+sf::Packet& critterStatsInsert(sf::Packet& packet, const Organism& critter)
+{
+    packet << critter.health
+    << critter.nutrition
+    << critter.hydration
+    << critter.size;
+
+    return packet;
+}
+
+
+sf::Packet& critterStatsExtract(sf::Packet& packet, Organism& critter)
+{
+    packet >> critter.health
+    >> critter.nutrition
+    >> critter.hydration
+    >> critter.size;
+
+    return packet;
+}
+
+
+
+
 void Simulation::syncOrganism(std::shared_ptr<Organism> critter)
 {
     if(!network::server)
@@ -588,6 +612,12 @@ void clientPacketManager::handlePackets()
             packet >> sim;
             std::cout << "Received Sim " << sim.simulationID;
             simulationManager.simulations.push_back(sim);
+
+            for(auto &critter : simulationManager.simulations.back().organisms)
+            {
+                critter.get()->sim = &simulationManager.simulations.back();
+            }
+
             std::cout << ", and inserted it. \n";
         }
 
@@ -619,6 +649,7 @@ void clientPacketManager::handlePackets()
 
                     CritterPositions cPos;
                     packet >> cPos;
+                    critterStatsExtract(packet,*critter.get());
 
                     // Update Position
                     critter.get()->pos = cPos.position;
@@ -643,6 +674,7 @@ void clientPacketManager::handlePackets()
 
                     CritterPositions cPos;
                     packet >> cPos;
+                    critterStatsExtract(packet,*plant.get());
 
                     // Update Position
                     plant.get()->pos = cPos.position;
@@ -679,6 +711,8 @@ void clientPacketManager::handlePackets()
                     // Link brains and bodies.
                     sim.organisms.back().get()->brain = sim.brainStorage.back();
                     sim.brainStorage.back().get()->owner = sim.organisms.back();
+
+                    Critter.get()->sim = &sim;
                     std::cout << "Received youngling: " << sim.organisms.back().get()->name << std::endl;
                     break;
                 }
@@ -1562,6 +1596,7 @@ void sendLifeUpdate()
         {
             CritterPositions CPos(*critter.get());
             packet << CPos;
+            critterStatsInsert(packet,*critter.get());
         }
 
         // Amount of Plants
@@ -1570,6 +1605,7 @@ void sendLifeUpdate()
         {
             CritterPositions CPos(*plant.get());
             packet << CPos;
+            critterStatsInsert(packet,*plant.get());
         }
 
     }

@@ -458,8 +458,12 @@ void Organism::runGestation()
 
 void Organism::giveBirth()
 {
+    if(network::client) // The server handles mutation and such.
+        return;
+
     // Check traits for mitosis/egg/sudden desire for parasite injection/ect.
 
+    std::cout << "Sim: " << sim->simulationID << std::endl;
     std::cout << sim->organisms.size() << std::endl;
     for(int i = 0; i != 1; i++)
     {
