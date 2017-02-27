@@ -57,6 +57,7 @@ namespace ident
         simulationRequest,
         simulationInitialization,
         simulationUpdate,
+        simulationCreateRequest,
         message,
         organismInitialization,
         clientID,

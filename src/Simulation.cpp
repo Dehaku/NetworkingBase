@@ -208,6 +208,17 @@ void SimulationManager::runSimulations()
 
 Simulation* SimulationManager::createSimulation()
 {
+    if(network::client)
+    {
+        sf::Packet packet;
+        packet << sf::Uint8(ident::simulationCreateRequest);
+
+        serverSocket.send(packet);
+        std::cout << "Requested new Simulation from Server. \n";
+
+        return nullptr;
+    }
+
     simulationID++;
     std::cout << "Creating Simulation " << simulationID << std::endl;
     Simulation simulation;
@@ -219,7 +230,6 @@ Simulation* SimulationManager::createSimulation()
     worldTilesSetup(simulations.back().worldTiles);
 
     std::cout << "Critters: " << simulations.back().organisms.size() << std::endl;
-
 
     return &simulations.back();
 }

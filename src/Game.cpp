@@ -857,6 +857,18 @@ void serverPacketManager::handlePackets()
             currentPacket.sender->socket->send(sendPacket);
         }
 
+        else if(type == sf::Uint8(ident::simulationCreateRequest))
+        {
+            Simulation* createdSim = simulationManager.createSimulation();
+
+            sf::Packet returnPacket;
+            returnPacket << sf::Uint8(ident::simulationInitialization);
+            returnPacket << *createdSim;
+            sendToAllClients(returnPacket);
+
+            std::cout << "Sent Simulation to All Clients. \n";
+        }
+
         else if(type == sf::Uint8(ident::simulationRequest))
         {
             std::cout << "Received request of simulation ";
@@ -1500,8 +1512,29 @@ void selectOrganism()
     drawSelectedOrganismInfo();
 }
 
+void generalFunctions()
+{
+     if(inputState.key[Key::Equal].time == 1)
+        {
+            Simulation* createdSim = simulationManager.createSimulation();
+
+            if(network::server)
+            {
+                sf::Packet returnPacket;
+                returnPacket << sf::Uint8(ident::simulationInitialization);
+                returnPacket << *createdSim;
+                sendToAllClients(returnPacket);
+
+                std::cout << "Sent Simulation to All Clients. \n";
+            }
+
+        }
+}
+
 void renderGame()
 {
+    generalFunctions();
+
     chatStuffs();
 
 
