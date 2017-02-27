@@ -318,6 +318,24 @@ sf::Packet& operator >>(sf::Packet& packet, Simulation& sim)
     return packet;
 }
 
+void Simulation::syncOrganism(std::shared_ptr<Organism> critter)
+{
+    if(!network::server)
+        return;
+
+    std::cout << "Syncing " << critter.get()->name << std::endl;
+
+
+    sf::Packet packet;
+    packet << sf::Uint8(ident::organismBorn)
+    << sf::Uint32(simulationID)
+    << *(critter.get())
+    << *(critter.get()->brain.lock()) ; // TODO: Don't forget to send the brain.
+
+    sendToAllClients(packet);
+
+    //organisms.push_back(critter);
+}
 
 bool chatCommand(std::string input)
 {
@@ -633,6 +651,47 @@ void clientPacketManager::handlePackets()
                 }
 
             }
+        }
+
+        else if(type == sf::Uint8(ident::organismBorn ))
+        {
+            int simID;
+            packet >> simID;
+
+            for(auto &sim : simulationManager.simulations)
+            {
+                if(sim.simulationID == simID)
+                {
+                    std::shared_ptr<Organism> Critter(new Organism());
+                    sim.organisms.push_back(Critter);
+                    sim.populationAll++;
+
+                    // Extract and Overwrite
+                    packet >> *(sim.organisms.back().get());
+
+                    // Create Brain
+                    std::shared_ptr<Brain> creatureBrain(new Brain());
+                    sim.brainStorage.push_back(creatureBrain);
+
+                    // Extract and Overwrite
+                    packet >> *(sim.brainStorage.back().get());
+
+                    // Link brains and bodies.
+                    sim.organisms.back().get()->brain = sim.brainStorage.back();
+                    sim.brainStorage.back().get()->owner = sim.organisms.back();
+                    std::cout << "Received youngling: " << sim.organisms.back().get()->name << std::endl;
+                    break;
+                }
+            }
+
+
+
+
+
+
+
+
+
         }
 
         else if(type == sf::Uint8(ident::organismUpdate ))
@@ -1324,6 +1383,12 @@ void drawSelectedOrganismInfo()
     if(generalTracker.selectedOrganism.lock())
     {
         Organism& critter = *generalTracker.selectedOrganism.lock().get();
+
+        if(inputState.key[Key::B].time == 1)
+        {
+            critter.gestationTime = 4500;
+        }
+
 
         sf::Vector2f drawPos(critter.pos.x+50,critter.pos.y-25);
         sfe::RichText richText;

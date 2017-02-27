@@ -75,6 +75,8 @@ Simulation::Simulation()
 
 }
 
+
+
 void Simulation::worldPopulationSetup()
 {
     for(int i = 0; i != 100; i++)
@@ -483,6 +485,8 @@ void Organism::giveBirth()
         critter.health = critter.getHealthMax();
 
 
+        if(network::server)
+            sim->syncOrganism(Critter);
     }
 
 

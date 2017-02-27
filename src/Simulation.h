@@ -19,6 +19,7 @@ public:
     std::list<std::shared_ptr<Brain>> brainStorage;
     std::list<std::shared_ptr<Organism>> flora;
     std::list<std::shared_ptr<Organism>> organisms;
+    void syncOrganism(std::shared_ptr<Organism> critter);
     std::vector<std::vector<WorldTile>> worldTiles;
     unsigned int worldTileSizeX;
     unsigned int worldTileSizeY;

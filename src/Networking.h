@@ -61,6 +61,7 @@ namespace ident
         organismInitialization,
         clientID,
         organismUpdate,
+        organismBorn,
         floraInitialization,
         floraUpdate,
         disconnecting
