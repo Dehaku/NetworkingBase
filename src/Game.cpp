@@ -628,6 +628,15 @@ void clientPacketManager::handlePackets()
             std::cout << ", and inserted it. \n";
         }
 
+        else if(type == sf::Uint8(ident::simulationStopRequest))
+        {
+            unsigned int simID;
+            packet >> simID;
+            for(auto &sim : simulationManager.simulations)
+                if(sim.simulationID == simID)
+                    sim.toDelete = true;
+        }
+
         else if(type == sf::Uint8(ident::simulationUpdate ))
         {
             int simCount;
@@ -874,6 +883,23 @@ void serverPacketManager::handlePackets()
             sendToAllClients(returnPacket);
 
             std::cout << "Sent Simulation to All Clients. \n";
+        }
+
+        else if(type == sf::Uint8(ident::simulationStopRequest))
+        {
+            unsigned int simID;
+            packet >> simID;
+            for(auto &sim : simulationManager.simulations)
+                if(sim.simulationID == simID)
+                {
+                    sim.toDelete = true;
+
+                    sf::Packet returnPacket;
+                    returnPacket << sf::Uint8(ident::simulationStopRequest)
+                            << sf::Uint32(sim.simulationID);
+                    sendToAllClients(returnPacket);
+                }
+
         }
 
         else if(type == sf::Uint8(ident::simulationRequest))
@@ -1369,9 +1395,30 @@ void simulationMenu()
             std::string deleteIndicator;
             if(inputState.lmbTime == 1 && inputState.key[Key::LShift])
             {
-                sim.toDelete = true;
-                // TODO: Instead of deleting a simulation, move it to another container without creature loops.
-                // That way clients can 'withdraw' their blueprints at their leisure.
+                if(network::client)
+                {
+                    sf::Packet packet;
+                    packet << sf::Uint8(ident::simulationStopRequest)
+                        << sf::Uint32(sim.simulationID);
+                    serverSocket.send(packet);
+                }
+                else
+                {
+                    sim.toDelete = true;
+                    // TODO: Instead of deleting a simulation, move it to another container without creature loops.
+                    // That way clients can 'withdraw' their blueprints at their leisure.
+
+
+                    if(network::server)
+                    {
+                        sf::Packet packet;
+                        packet << sf::Uint8(ident::simulationStopRequest)
+                            << sf::Uint32(sim.simulationID);
+                        sendToAllClients(packet);
+                    }
+                }
+
+
             }
             shapes.createText(gvars::mousePos.x,gvars::mousePos.y,12,sf::Color::White,"\n   (Hold Left Shift) Delete Sim " + std::to_string(sim.simulationID) + deleteIndicator);
 
