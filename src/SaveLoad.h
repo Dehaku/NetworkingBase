@@ -10,6 +10,7 @@
 
 #include "Networking.h"
 #include "Text.h"
+#include "Simulation.h"
 
 void saveProfile(std::string profileName);
 void loadProfile(std::string profileName);
@@ -23,6 +24,9 @@ public:
 
 void saveConnectAddress(std::string enteredAddress, std::string enteredPort);
 AddressContainer loadConnectAddress();
+
+void saveCreatureBlueprint(Organism critter);
+Organism loadCreatureBlueprint(std::string blueprintName);
 
 // void saveGame(std::string profileName);
 // void loadGame(std::string profileName);

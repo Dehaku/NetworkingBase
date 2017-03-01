@@ -311,6 +311,127 @@ void loadProfile(std::string profileName)
     //chatBox.addChat(" Game's loaded, You're good to go recollect some bounties",sf::Color::White);
 }
 
+void saveCreatureBlueprint(Organism critter)
+{
+
+    // std::string line("data/saves/" + myProfile.name + "/blueprints");
+    std::string line("data/saves/Sopheroph/blueprints");
+
+    galaxy_mkdir(line);
+    line.append("/Critter" + critter.name);
+    line.append(".crit");
+
+
+
+    std::ofstream outputFile(line.c_str());
+
+    outputFile
+                << "[name:" << critter.name << "]"
+                << "[ageMax:" << critter.ageMax << "]"
+                << "[baseSpeed:" << critter.baseSpeed << "]"
+
+                << "[gestationPeriod:" << critter.gestationPeriod << "]"
+                << "[hydrationMax:" << critter.hydrationMax << "]"
+                << "[nutritionMax:" << critter.nutritionMax << "]"
+                << "[size:" << critter.size << "]"
+
+                << "[pC.r:" << int(critter.colorPrime.r) << "]"
+                << "[pC.g:" << int(critter.colorPrime.g) << "]"
+                << "[pC.b:" << int(critter.colorPrime.b) << "]"
+
+                << "[sC.r:" << int(critter.colorSecondary.r) << "]"
+                << "[sC.g:" << int(critter.colorSecondary.g) << "]"
+                << "[sC.b:" << int(critter.colorSecondary.b) << "]"
+                ;
+
+    for(auto &trait : critter.traits)
+    {
+        outputFile << "[Trait:" << trait.type;
+
+        for(auto &variable : trait.vars)
+        {
+            outputFile << ":" << variable;
+        }
+        outputFile << "]";
+    }
+
+    chatBox.addChat("Creature Blueprint Saved!");
+
+
+}
+
+Organism loadCreatureBlueprint(std::string blueprintName)
+{
+
+
+    Organism critter;
+
+     //std::cout << "Loading Game Profile: " + profileName + "!\n";
+
+    std::string line("data/saves/Sopheroph/blueprints");
+
+    { // Loading generic/misc data.
+        std::ifstream input("data/saves/Sopheroph/blueprints/Critter" + blueprintName + ".crit");
+        if (!input.is_open())
+        {
+            std::cout << "No Profile Detected. \n";
+            chatBox.addChat("Unabled to find creature ''" + blueprintName + "'' ");
+            critter.name = "Failed";
+            return critter;
+        }
+
+
+        while (input.good())
+        {
+            std::string line;
+            getline(input, line);
+
+            // Load the variables!
+            critter.name = stringFindString(line,"name:");
+            critter.ageMax = stringFindNumber(line,"ageMax:");
+            critter.baseSpeed = stringFindNumber(line,"baseSpeed:");
+
+            critter.gestationPeriod = stringFindNumber(line,"gestationPeriod:");
+            critter.hydrationMax = stringFindNumber(line,"hydrationMax:");
+            critter.nutritionMax = stringFindNumber(line,"nutritionMax:");
+            critter.size = stringFindNumber(line,"size:");
+
+            critter.colorPrime.r = stringFindNumber(line,"pC.r:");
+            critter.colorPrime.g = stringFindNumber(line,"pC.g:");
+            critter.colorPrime.b = stringFindNumber(line,"pC.b:");
+
+            critter.colorSecondary.r = stringFindNumber(line,"sC.r:");
+            critter.colorSecondary.g = stringFindNumber(line,"sC.g:");
+            critter.colorSecondary.b = stringFindNumber(line,"sC.b:");
+
+
+
+            critter.traits.clear();
+            std::vector<std::string> traits = stringFindVectorChaos(line,"[Trait:","]");
+            for(auto &traitLine : traits)
+            {
+                std::vector<std::string> traitBits = stringFindElements(traitLine);
+                Trait trait;
+                trait.type = std::stoi(traitBits[0]);
+                for(int i = 0; i != traitBits.size(); i++)
+                {
+                    if(i == 0)
+                        continue;
+
+                    trait.vars.push_back(std::stof(traitBits[i]));
+                }
+
+                critter.traits.push_back(trait);
+            }
+        }
+    }
+
+
+    chatBox.addChat("Blueprint Loaded Successfully!");
+
+    return critter;
+}
+
 void saveConnectAddress(std::string enteredAddress, std::string enteredPort)
 {
     std::string line("data/");

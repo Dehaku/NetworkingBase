@@ -435,6 +435,49 @@ bool chatCommand(std::string input)
         return true;
     }
 
+    if(elements[0] == "/loadCreature" || elements[0] == "/loadBlueprint" )
+    {
+        Simulation* sim = simulationManager.getCurrentSimulation();
+        if(sim == nullptr)
+        {
+            chatBox.addChat("You must have a simulation selected!");
+            return false;
+        }
+
+        Organism critter;
+        critter.name = "Failed";
+        critter = loadCreatureBlueprint(elements[1]);
+        if(critter.name == "Failed")
+        {
+            chatBox.addChat("Failed to find blueprint.");
+            return false;
+        }
+
+
+
+
+        std::shared_ptr<Organism> Critter(new Organism());
+        sim->organisms.push_back(Critter);
+
+        std::shared_ptr<Brain> creatureBrain(new Brain());
+        sim->brainStorage.push_back(creatureBrain);
+        sim->populationAll++;
+
+        *(Critter.get()) = critter;
+        Critter.get()->sim = sim;
+        Critter->ID = sim->populationID++;
+        Critter->pos = gvars::mousePos;
+
+        sim->organisms.back().get()->brain = sim->brainStorage.back();
+        sim->brainStorage.back().get()->owner = sim->organisms.back();
+
+
+
+
+
+
+    }
+
     if(elements[0] == "/connect")
     {
         std::cout << "Connect chat command detected. \n";
@@ -1750,6 +1793,16 @@ void generalFunctions()
             }
 
         }
+
+    if(inputState.key[Key::Y].time == 1)
+    {
+        if(generalTracker.selectedOrganism.lock())
+        {
+            Organism& critter = *generalTracker.selectedOrganism.lock().get();
+            saveCreatureBlueprint(critter);
+        }
+    }
+
 }
 
 void renderGame()
