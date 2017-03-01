@@ -25,9 +25,16 @@
 class StateTracker
 {
 public:
+    unsigned int lastState;
     unsigned int currentState;
     enum
     {
+        quests,
+        evolution,
+        simulation,
+        contest,
+        shops,
+        archive,
         mainLoop,
         mainMenu,
         multiplayer,

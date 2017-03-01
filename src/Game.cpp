@@ -2,6 +2,7 @@
 
 StateTracker::StateTracker()
 {
+    lastState = mainMenu;
     currentState = mainMenu;
 }
 StateTracker stateTracker;
@@ -320,7 +321,10 @@ sf::Packet& operator >>(sf::Packet& packet, Simulation& sim)
 
 sf::Packet& critterStatsInsert(sf::Packet& packet, const Organism& critter)
 {
-    packet << critter.health
+    packet
+    << critter.age
+    << critter.ageMax
+    << critter.health
     << critter.nutrition
     << critter.hydration
     << critter.size;
@@ -331,7 +335,10 @@ sf::Packet& critterStatsInsert(sf::Packet& packet, const Organism& critter)
 
 sf::Packet& critterStatsExtract(sf::Packet& packet, Organism& critter)
 {
-    packet >> critter.health
+    packet
+    >> critter.age
+    >> critter.ageMax
+    >> critter.health
     >> critter.nutrition
     >> critter.hydration
     >> critter.size;
@@ -994,19 +1001,40 @@ void HUDTabs()
     if(shapes.shapeClicked(workDudeButt))
     {
         std::cout << "Workdude clicked! \n";
-        sf::sleep(sf::seconds(2));
-    }
 
+        stateTracker.lastState = stateTracker.currentState;
+        stateTracker.currentState = stateTracker.quests;
+
+        //sf::sleep(sf::seconds(2));
+    }
+    if(shapes.shapeClicked(evolutionButt))
+    {
+        stateTracker.lastState = stateTracker.currentState;
+        stateTracker.currentState = stateTracker.evolution;
+    }
     if(shapes.shapeClicked(simulationButt))
     {
-        int simCount = simulationManager.simulations.size();
-        int &simDraw = simulationManager.drawSimNumber;
-        simDraw++;
-        if(simDraw >= simCount) // For when a simulation is ended, and yet we were viewing it.
-            simDraw = 0;
-
+        stateTracker.lastState = stateTracker.currentState;
+        stateTracker.currentState = stateTracker.simulation;
 
     }
+
+    if(shapes.shapeClicked(contestButt))
+    {
+        stateTracker.lastState = stateTracker.currentState;
+        stateTracker.currentState = stateTracker.contest;
+    }
+    if(shapes.shapeClicked(shopButt))
+    {
+        stateTracker.lastState = stateTracker.currentState;
+        stateTracker.currentState = stateTracker.shops;
+    }
+    if(shapes.shapeClicked(archiveButt))
+    {
+        stateTracker.lastState = stateTracker.currentState;
+        stateTracker.currentState = stateTracker.archive;
+    }
+
 
     if(shapes.shapeHovered(workDudeButt))
     {
@@ -1259,6 +1287,105 @@ void drawMainMenu()
 
 }
 
+void simulationMenu()
+{
+    sf::Texture* hudButton = &texturemanager.getTexture("HUDTab.png");
+    sf::Texture* arrowButton = &texturemanager.getTexture("ArrowButton.png");
+
+
+
+
+            static int xMod = 15;
+            static int yMod = 62;
+            std::cout << "X/Y Mod: " << xMod << "/" << yMod << std::endl;
+            if(inputState.key[Key::Up].time == 1 || inputState.key[Key::Up].time >= 15)
+                yMod--;
+            if(inputState.key[Key::Down].time == 1 || inputState.key[Key::Down].time >= 15)
+                yMod++;
+            if(inputState.key[Key::Left].time == 1 || inputState.key[Key::Left].time >= 15)
+                xMod--;
+            if(inputState.key[Key::Right].time == 1 || inputState.key[Key::Right].time >= 15)
+                xMod++;
+
+
+
+
+
+
+
+
+    sf::Vector2f createPos(-33,270);
+    int createButt = shapes.createImageButton(sf::Vector2f(createPos.x,createPos.y),*hudButton,"",0,&gvars::hudView);
+    shapes.createText(createPos.x-40,createPos.y-8,12,sf::Color::Black,"Create Simulation",&gvars::hudView);
+    if(shapes.shapeClicked(createButt))
+    {
+        simulationManager.createSimulation();
+        //stateTracker.currentState = stateTracker.lastState;
+    }
+
+
+    sf::Vector2f simListPos(191,291);
+    int yOffset = 0;
+    int simCounter = 0;
+    for(auto &sim : simulationManager.simulations)
+    {
+        shapes.createText(simListPos.x,simListPos.y+(12*yOffset),12,sf::Color::Cyan,"Simulation " + std::to_string(sim.simulationID),&gvars::hudView);
+        int mysteryButt = shapes.createImageButton(sf::Vector2f(15+simListPos.x-90,15+simListPos.y+(12*yOffset)),*arrowButton,"",0,&gvars::hudView);
+        int deleteButt = shapes.createImageButton(sf::Vector2f(15+simListPos.x-60,15+simListPos.y+(12*yOffset)),*arrowButton,"",0,&gvars::hudView);
+        int viewButt = shapes.createImageButton(sf::Vector2f(15+simListPos.x-30,15+simListPos.y+(12*yOffset)),*arrowButton,"",0,&gvars::hudView);
+
+
+
+        yOffset++;
+        std::string popString;
+        popString.append("Pop: ");
+        popString.append(std::to_string(sim.populationAlive) + "/");
+        popString.append(std::to_string(sim.populationDead) + "/");
+        popString.append(std::to_string(sim.populationAll));
+        shapes.createText(simListPos.x,simListPos.y+(12*yOffset),12,sf::Color::Cyan,popString,&gvars::hudView);
+
+
+
+
+
+        if(shapes.shapeHovered(mysteryButt))
+        {
+            shapes.createText(gvars::mousePos.x,gvars::mousePos.y,12,sf::Color::White,"\n   Mystery Sim " + std::to_string(sim.simulationID));
+        }
+        if(shapes.shapeHovered(deleteButt))
+        {
+            std::string deleteIndicator;
+            if(inputState.lmbTime == 1 && inputState.key[Key::LShift])
+            {
+                sim.toDelete = true;
+            }
+            shapes.createText(gvars::mousePos.x,gvars::mousePos.y,12,sf::Color::White,"\n   (Hold Left Shift) Delete Sim " + std::to_string(sim.simulationID) + deleteIndicator);
+
+        }
+        if(shapes.shapeHovered(viewButt))
+        {
+            shapes.createText(gvars::mousePos.x,gvars::mousePos.y,12,sf::Color::White,"\n   View Sim " + std::to_string(sim.simulationID));
+            if(inputState.lmbTime == 1)
+            {
+                int &simDraw = simulationManager.drawSimNumber;
+                simDraw = simCounter;
+                stateTracker.currentState = StateTracker::mainLoop;
+            }
+
+        }
+
+
+        yOffset++;
+        yOffset++;
+        simCounter++;
+    }
+
+
+
+
+
+}
+
 void drawSubMain()
 {
 
@@ -1266,10 +1393,10 @@ void drawSubMain()
 
 
     int mainButt = shapes.createImageButton(sf::Vector2f(-33,170),*hudButton,"",0,&gvars::hudView);
-    shapes.createText(-33-40,170-8,12,sf::Color::Black,"Main Menu",&gvars::hudView);
+    shapes.createText(-33-40,170-8,12,sf::Color::Black,"Back",&gvars::hudView);
     if(shapes.shapeClicked(mainButt))
     {
-        stateTracker.currentState = stateTracker.mainMenu;
+        stateTracker.currentState = stateTracker.lastState;
     }
     if(shapes.shapeHovered(mainButt))
     {
@@ -1366,6 +1493,39 @@ void drawSubMain()
     {
         shapes.createText(500,150,20,sf::Color::Cyan,"Credits",&gvars::hudView);
     }
+
+    if(stateTracker.currentState == stateTracker.quests)
+    {
+        drawHUD();
+        shapes.createText(500,210,20,sf::Color::Cyan,"Quests",&gvars::hudView);
+    }
+    if(stateTracker.currentState == stateTracker.evolution)
+    {
+        drawHUD();
+        shapes.createText(500,210,20,sf::Color::Cyan,"Evolution",&gvars::hudView);
+    }
+    if(stateTracker.currentState == stateTracker.simulation)
+    {
+        drawHUD();
+        shapes.createText(500,210,20,sf::Color::Cyan,"Simulation",&gvars::hudView);
+        simulationMenu();
+    }
+    if(stateTracker.currentState == stateTracker.contest)
+    {
+        drawHUD();
+        shapes.createText(500,210,20,sf::Color::Cyan,"Contests",&gvars::hudView);
+    }
+    if(stateTracker.currentState == stateTracker.shops)
+    {
+        drawHUD();
+        shapes.createText(500,210,20,sf::Color::Cyan,"Shops",&gvars::hudView);
+    }
+    if(stateTracker.currentState == stateTracker.archive)
+    {
+        drawHUD();
+        shapes.createText(500,210,20,sf::Color::Cyan,"Archives",&gvars::hudView);
+    }
+
 
 
 

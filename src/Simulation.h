@@ -10,6 +10,7 @@ class Organism;
 class Simulation
 {
 public:
+    bool toDelete;
     unsigned int simulationID;
     unsigned int populationID;
     unsigned int populationAll;

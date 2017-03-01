@@ -57,6 +57,7 @@ void Simulation::runLife()
 
 Simulation::Simulation()
 {
+    toDelete = false;
     populationID = 0;
     populationAll = 0;
     populationAlive = 0;
@@ -204,6 +205,8 @@ void SimulationManager::runSimulations()
     {
         runDeadColors();
     }
+
+    AnyDeletes(simulations);
 }
 
 Simulation* SimulationManager::createSimulation()
