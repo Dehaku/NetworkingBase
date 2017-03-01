@@ -395,6 +395,11 @@ bool chatCommand(std::string input)
         std::cout << "elements: " << i << std::endl;
     }
 
+    if(elements[0] == "/help" || elements[0] == "/info")
+    {
+        chatBox.addChat("Commands Available: /me, /setname, /loadCreature, /connect");
+    }
+
     if(elements[0] == "/me"|| elements[0] == "/emote")
     {
         if(elements.size() < 2)
