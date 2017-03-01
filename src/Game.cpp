@@ -1317,10 +1317,22 @@ void simulationMenu()
     sf::Vector2f createPos(-33,270);
     int createButt = shapes.createImageButton(sf::Vector2f(createPos.x,createPos.y),*hudButton,"",0,&gvars::hudView);
     shapes.createText(createPos.x-40,createPos.y-8,12,sf::Color::Black,"Create Simulation",&gvars::hudView);
-    if(shapes.shapeClicked(createButt))
+    if(shapes.shapeHovered(createButt))
     {
-        simulationManager.createSimulation();
-        //stateTracker.currentState = stateTracker.lastState;
+        if(inputState.lmbTime == 1)
+        {
+            Simulation* createdSim = simulationManager.createSimulation();
+
+            if(network::server)
+            {
+                sf::Packet returnPacket;
+                returnPacket << sf::Uint8(ident::simulationInitialization);
+                returnPacket << *createdSim;
+                sendToAllClients(returnPacket);
+
+                std::cout << "Sent Simulation to All Clients. \n";
+            }
+        }
     }
 
 
@@ -1358,6 +1370,8 @@ void simulationMenu()
             if(inputState.lmbTime == 1 && inputState.key[Key::LShift])
             {
                 sim.toDelete = true;
+                // TODO: Instead of deleting a simulation, move it to another container without creature loops.
+                // That way clients can 'withdraw' their blueprints at their leisure.
             }
             shapes.createText(gvars::mousePos.x,gvars::mousePos.y,12,sf::Color::White,"\n   (Hold Left Shift) Delete Sim " + std::to_string(sim.simulationID) + deleteIndicator);
 
