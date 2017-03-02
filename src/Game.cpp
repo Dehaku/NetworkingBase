@@ -398,6 +398,8 @@ bool chatCommand(std::string input)
     if(elements[0] == "/help" || elements[0] == "/info")
     {
         chatBox.addChat("Commands Available: /me, /setname, /loadCreature, /connect");
+
+        // TODO: Add checks for each command after the /help command, I.E. /help /connect, and print info and what's required for it.
     }
 
     if(elements[0] == "/me"|| elements[0] == "/emote")

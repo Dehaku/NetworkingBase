@@ -286,11 +286,13 @@ Organism::Organism()
 
     age = 0;
     ageMax = 30000;
-    gestationTime = 0;
-    gestationPeriod = 5000;
+
 
     size = random(10,100) * 0.1;
     baseSpeed = random(1,10);
+
+    gestationTime = 0;
+    gestationPeriod = 500*size; // TODO: Turn this into a getGestationPeriod() function, and let the base be modified without the size multiple being affected.
 
     //* brain = nullptr;
     colorPrime = sf::Color(random(0,255),random(0,255),random(0,255));
@@ -336,6 +338,52 @@ Organism::Organism()
 
 
     }
+}
+
+void Organism::mutate(Organism* secondParent = nullptr)
+{
+    /*
+    This function is what was first dreamed for this game.
+
+    By default, We're a 100% copy of the one that birthed us.
+    If there's a second parent(I.E. We weren't created by mitosis), then we'll 50/50 chance which parent to inherit from /per/ attribute/trait.
+    Then, there will be a chance of mutation on the attribute/trait.
+    Then, there will be a chance of mutating a new trait.
+
+    */
+    Organism& sP = *this; // sP = Second Parent. Either the same individual via Mitosis, or another from a mating.
+    if(secondParent != nullptr)
+        sP = *secondParent;
+
+
+    float mutationChance = 1;
+    float mutationPotency = 0.1; // May not use this one.
+    if(sim != nullptr)
+    {
+        // Get the simulations set variables for Mutation Chance/Potency here.
+    }
+
+    /*  Original idea. Since we are already a 100% copy, no need to worry about setting it as itself.
+    if(random(1,2) == 1)
+        ageMax = ageMax;
+    else
+        ageMax = sP.ageMax;
+    */
+
+    if(random(1,2) == 2)
+        ageMax = sP.ageMax;
+    if(random(1,100) <= mutationChance)
+    {
+        if(ageMax < 10)
+            ageMax = randomBell(ageMax, std::max(ageMax*0.1f,1.f));
+        else
+            ageMax = randomBell(ageMax, std::max(ageMax*0.01f,1.f));
+    }
+
+
+
+
+
 }
 
 float Organism::getHungerRate()

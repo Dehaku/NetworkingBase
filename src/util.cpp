@@ -214,6 +214,14 @@ int random(int minValue, int maxValue)
 
 }
 
+float randomBell(float mean, float curve)
+{
+    static std::default_random_engine generator (random(1,10000));
+    std::normal_distribution<float> distribution(mean,curve);
+
+    return distribution(generator);
+}
+
 bool aabb(int pointx, int pointy, int left, int right, int up, int down)
 {
     if (pointx >= left && pointx <= right && pointy >= up && pointy <= down)

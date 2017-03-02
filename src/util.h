@@ -140,6 +140,7 @@ bool booleanize(int num);
 bool inbetween(float first, float second, float number);
 int randz(int minValue, int maxValue);
 int random(int minValue, int maxValue);
+float randomBell(float mean, float curve);
 bool aabb(int pointx, int pointy, int left, int right, int up, int down);
 bool aabb(sf::Vector2f point, int left, int right, int up, int down);
 bool aabb(sf::Vector2i point, int left, int right, int up, int down);

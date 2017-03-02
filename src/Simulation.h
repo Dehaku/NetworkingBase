@@ -129,6 +129,7 @@ class Organism
     float gestationTime;
 
     Organism();
+    void mutate(Organism* secondParent);
     float getHealthMax();
     float getSpeed();
     float getNutritionMax();
