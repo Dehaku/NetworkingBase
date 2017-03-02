@@ -63,6 +63,8 @@ Simulation::Simulation()
     populationAlive = 0;
     populationDead = 0;
 
+    paused = false;
+
     worldTileSizeX = 1000;
     worldTileSizeY = 1000;
 
@@ -199,7 +201,11 @@ SimulationManager::SimulationManager()
 void SimulationManager::runSimulations()
 {
     for(auto &sim : simulations)
-        sim.runLife();
+    {
+        if(!sim.paused)
+            sim.runLife();
+    }
+
 
     if( (fpsKeeper.updatesPassedTotal % 10) == 0 )
     {

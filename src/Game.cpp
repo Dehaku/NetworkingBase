@@ -1785,6 +1785,21 @@ void selectOrganism()
 
 void generalFunctions()
 {
+    if(inputState.key[Key::Pause].time == 1)
+    {
+        if(network::client)
+        {
+            // TODO: Request server pause.
+        }
+        else
+        {
+            Simulation* sim = simulationManager.getCurrentSimulation();
+            if(sim != nullptr)
+                toggle(sim->paused);
+        }
+
+    }
+
      if(inputState.key[Key::Equal].time == 1)
         {
             Simulation* createdSim = simulationManager.createSimulation();

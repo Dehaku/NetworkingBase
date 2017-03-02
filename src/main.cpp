@@ -380,6 +380,9 @@ int main()
         if(inputState.key[Key::Down].time == 1 || inputState.key[Key::Up].time == 1 )
             dt = 0.01;
 
+        //if(inputState.key[Key::Pause].time == 1)
+            //dt = 2000000;
+
         //std::cout << "DT: " << dt << std::endl;
 
 

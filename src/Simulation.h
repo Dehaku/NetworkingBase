@@ -25,6 +25,8 @@ public:
     unsigned int worldTileSizeX;
     unsigned int worldTileSizeY;
 
+    bool paused;
+
     bool draw;
     bool drawSquareInstead;
     bool drawTextureInstead;
