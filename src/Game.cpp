@@ -33,6 +33,7 @@ sf::Packet& operator <<(sf::Packet& packet, const Organism& critter)
     << critter.pos.x
     << critter.pos.y
 
+    << critter.healthMax
     << critter.health
     << critter.baseSpeed
     << critter.size
@@ -85,6 +86,7 @@ sf::Packet& operator >>(sf::Packet& packet, Organism& critter)
     >> critter.pos.x
     >> critter.pos.y
 
+    >> critter.healthMax
     >> critter.health
     >> critter.baseSpeed
     >> critter.size
@@ -1371,21 +1373,6 @@ void simulationMenu()
 
 
 
-            static int xMod = 15;
-            static int yMod = 62;
-            std::cout << "X/Y Mod: " << xMod << "/" << yMod << std::endl;
-            if(inputState.key[Key::Up].time == 1 || inputState.key[Key::Up].time >= 15)
-                yMod--;
-            if(inputState.key[Key::Down].time == 1 || inputState.key[Key::Down].time >= 15)
-                yMod++;
-            if(inputState.key[Key::Left].time == 1 || inputState.key[Key::Left].time >= 15)
-                xMod--;
-            if(inputState.key[Key::Right].time == 1 || inputState.key[Key::Right].time >= 15)
-                xMod++;
-
-
-
-
 
 
 
@@ -1797,6 +1784,18 @@ void generalFunctions()
             if(sim != nullptr)
                 toggle(sim->paused);
         }
+
+    }
+
+     if(inputState.key[Key::LControl].time == 1 && inputState.key[Key::O])
+    {
+        Simulation* sim = simulationManager.getCurrentSimulation();
+        if(sim != nullptr)
+        {
+            for(auto &critter : sim->organisms)
+                critter->health = -1;
+        }
+
 
     }
 

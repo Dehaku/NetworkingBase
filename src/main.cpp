@@ -79,16 +79,19 @@ void GameInfo::moveSquare()
 
 
 
-
-void setup()
+void chatPrepper()
 {
-
-
     for(int i = 0; i != 10; i++)
     {
         sf::Color color(100+random(1,100),100+random(1,100),100+random(1,100));
         chatBox.addChat(" ",color);
     }
+}
+
+void setup()
+{
+
+    chatPrepper();
 
     // Font
     if (!gvars::defaultFont.loadFromFile("data/fonts/Xolonium-Regular.otf"))

@@ -273,6 +273,10 @@ Simulation* SimulationManager::getCurrentSimulation()
 // ==================== Old Organism.cpp File below ====================
 
 
+Trait::Trait()
+{
+    toDelete = false;
+}
 
 std::list<Brain> brainStorage;
 std::list<Organism> flora;
@@ -304,6 +308,7 @@ Organism::Organism()
     colorPrime = sf::Color(random(0,255),random(0,255),random(0,255));
     colorSecondary = sf::Color(random(0,255),random(0,255),random(0,255));
 
+    healthMax = random(10,50);
     health = getHealthMax();
     nutritionMax = random(50,100);
     hydrationMax = random(50,200);
@@ -337,13 +342,87 @@ Organism::Organism()
             Trait herbivore;
             herbivore.type = TraitID::Herbivore;
             herbivore.vars.push_back(10.f); // Var 0, How much nutrition is gained per nom.
-            herbivore.vars.push_back(0.1f); // Var 1, How much plant size is consumed per nom.
+            herbivore.vars.push_back(1.f); // Var 1, How much plant size is consumed per nom.
             traits.push_back(herbivore);
         }
 
 
 
     }
+}
+
+void traitCompare(Organism* firstParent, Organism* secondParent)
+{
+    if(firstParent == nullptr)
+        return;
+    if(secondParent == nullptr)
+        return;
+
+    Organism& fP = *firstParent;
+    Organism& sP = *secondParent;
+
+    std::vector<Trait> sharedTraits;
+    std::vector<Trait> oddTraits;
+
+
+    /*
+
+    So this is a little confusing.
+    Here's the run down.
+    We first run through first parent's traits, comparing to every second parent's traits for matches.
+    If we find a match, a shared trait, we randomly choose one and stick it in our shared traits.
+    If no match, then it's tossed in oddTraits.
+    We then run through the second parent's traits, comparing them to the shared traits storage we just filled up.
+    Any that match, we ignore. It's already been chosen or ignored.
+    Any that don't match, are also tossed into oddTraits.
+    Then, we iterate through each odd Trait, and 50/50 whether we keep it or not.
+    Then we overwrite the creatures traits with what we have.
+
+    */
+    for(auto &trait : fP.traits)
+    {
+        bool traitShared = false;
+        for(auto &sPTrait : sP.traits)
+        {
+            if(trait.type == sPTrait.type)
+            {
+                traitShared = true;
+                if(random(1,2) == 2) // Taking second parent's version
+                    sharedTraits.push_back(sPTrait);
+                else // Taking first parent's version.
+                    sharedTraits.push_back(trait);
+
+                continue;
+            }
+        }
+
+        if(!traitShared)
+            oddTraits.push_back(trait);
+    }
+
+    for(auto &trait : sP.traits)
+    {
+        bool traitShared = false;
+        for(auto &sPTrait : sharedTraits)
+        {
+            if(trait.type == sPTrait.type)
+            {
+                continue;
+            }
+        }
+
+        if(!traitShared)
+            oddTraits.push_back(trait);
+    }
+
+    fP.traits = sharedTraits;
+    for(auto &oddTrait : oddTraits)
+    {
+        if(random(1,2) == 2)
+            fP.traits.push_back(oddTrait);
+    }
+
+
 }
 
 void Organism::mutate(Organism* secondParent = nullptr)
@@ -362,7 +441,7 @@ void Organism::mutate(Organism* secondParent = nullptr)
         sP = *secondParent;
 
 
-    float mutationChance = 1;
+    float mutationChance = 50;
     float mutationPotency = 0.1; // May not use this one.
     if(sim != nullptr)
     {
@@ -376,19 +455,172 @@ void Organism::mutate(Organism* secondParent = nullptr)
         ageMax = sP.ageMax;
     */
 
-    if(random(1,2) == 2)
-        ageMax = sP.ageMax;
-    if(random(1,100) <= mutationChance)
-    {
-        if(ageMax < 10)
-            ageMax = randomBell(ageMax, std::max(ageMax*0.1f,1.f));
-        else
-            ageMax = randomBell(ageMax, std::max(ageMax*0.01f,1.f));
+    { // ageMax
+        float& gene = ageMax;
+        if(random(1,2) == 2)
+            gene = sP.ageMax;
+        if(random(1,100) <= mutationChance)
+        {
+            if(gene < 10)
+                gene = std::max(randomBell(gene, gene*0.1f),1.f);
+            else
+                gene = std::max(randomBell(gene, gene*0.01f),1.f);
+        }
     }
 
+    { // Size
+        float& gene = size;
+        if(random(1,2) == 2)
+            gene = sP.size;
+        if(random(1,100) <= mutationChance)
+        {
+            if(gene < 10)
+                gene = std::max(randomBell(gene, gene*0.1f),1.f);
+            else
+                gene = std::max(randomBell(gene, gene*0.01f),1.f);
+        }
+    }
+
+    { // Speed
+        float& gene = baseSpeed;
+        if(random(1,2) == 2)
+            gene = sP.baseSpeed;
+        if(random(1,100) <= mutationChance)
+        {
+            if(gene < 10)
+                gene = std::max(randomBell(gene, gene*0.1f),1.f);
+            else
+                gene = std::max(randomBell(gene, gene*0.01f),1.f);
+        }
+    }
+
+    { // Gestation Period
+        float& gene = gestationPeriodBase;
+        if(random(1,2) == 2)
+            gene = sP.gestationPeriodBase;
+        if(random(1,100) <= mutationChance)
+        {
+            if(gene < 10)
+                gene = std::max(randomBell(gene, gene*0.1f),1.f);
+            else
+                gene = std::max(randomBell(gene, gene*0.01f),1.f);
+
+        }
+    }
+
+    { // Health
+        float& gene = healthMax;
+        if(random(1,2) == 2)
+            gene = sP.healthMax;
+        if(random(1,100) <= mutationChance)
+        {
+            if(gene < 10)
+                gene = std::max(randomBell(gene, gene*0.1f),1.f);
+            else
+                gene = std::max(randomBell(gene, gene*0.01f),1.f);
+        }
+    }
+
+    { // NutritionMax
+        float& gene = nutritionMax;
+        if(random(1,2) == 2)
+            gene = sP.nutritionMax;
+        if(random(1,100) <= mutationChance)
+        {
+            if(gene < 10)
+                gene = std::max(randomBell(gene, gene*0.1f),1.f);
+            else
+                gene = std::max(randomBell(gene, gene*0.01f),1.f);
+        }
+    }
+
+    { // Hydrationmax
+        float& gene = hydrationMax;
+        if(random(1,2) == 2)
+            gene = sP.hydrationMax;
+        if(random(1,100) <= mutationChance)
+        {
+            if(gene < 10)
+                gene = std::max(randomBell(gene, gene*0.1f),1.f);
+            else
+                gene = std::max(randomBell(gene, gene*0.01f),1.f);
+        }
+    }
+
+    { // Traits
+        // First we compare traits between parents
+        // Then we mutate them afterwards.
+
+
+        if(secondParent != nullptr)
+            traitCompare(this,secondParent);
+
+        for(auto &trait : traits)
+        {
+
+
+            if(trait.type == TraitID::Detritivore)
+            {
+
+                {// Nutrition Gained
+                    float& gene = trait.vars[0];
+                    if(random(1,100) <= mutationChance)
+                        gene = std::max(randomBell(gene, gene*0.1f),0.001f);
+                }
+
+            }
 
 
 
+
+
+            if(trait.type == TraitID::Herbivore)
+            {
+
+                {// Nutrition Gained
+                    float& gene = trait.vars[0];
+                    if(random(1,100) <= mutationChance)
+                        gene = std::max(randomBell(gene, gene*0.1f),0.01f);
+                }
+
+                {// Amount of Plant Eaten
+                    float& gene = trait.vars[1];
+                    if(random(1,100) <= mutationChance)
+                        gene = std::max(randomBell(gene, gene*0.1f),0.01f);
+                }
+
+            }
+
+            if(trait.type == TraitID::Carnivore)
+            {
+
+                {// Nutrition Gained
+                    float& gene = trait.vars[0];
+                    if(random(1,100) <= mutationChance)
+                        gene = std::max(randomBell(gene, gene*0.1f),0.01f);
+                }
+
+                {// Amount of Plant Eaten
+                    float& gene = trait.vars[1];
+                    if(random(1,100) <= mutationChance)
+                        gene = std::max(randomBell(gene, gene*0.1f),0.01f);
+                }
+
+            }
+
+
+
+
+
+
+
+
+
+
+        }
+
+
+    }
 
 }
 
@@ -530,8 +762,7 @@ void Organism::giveBirth()
 
     // Check traits for mitosis/egg/sudden desire for parasite injection/ect.
 
-    std::cout << "Sim: " << sim->simulationID << std::endl;
-    std::cout << sim->organisms.size() << std::endl;
+
     for(int i = 0; i != 1; i++)
     {
         std::shared_ptr<Organism> Critter(new Organism());
@@ -550,6 +781,9 @@ void Organism::giveBirth()
 
         critter.ID = sim->populationID++;
         critter.age = 0;
+
+        critter.mutate(); // Mitosis currently, so no second parent.
+
         critter.name.append(generateName(1,1));
         critter.nutrition = critter.getNutritionMax();
         critter.hydration = critter.getHydrationMax();
@@ -566,7 +800,7 @@ void Organism::giveBirth()
 
 float Organism::getHealthMax()
 {
-    return std::max(size * 2,1.f);
+    return std::max(healthMax*size,1.f);
 }
 
 float Organism::getSpeed()
@@ -586,7 +820,7 @@ float Organism::getHydrationMax()
 
 float Organism::getGestationPeriod()
 {
-    return gestationPeriodBase*size;
+    return std::max(gestationPeriodBase*size,1.f);
 }
 
 void moveAngle(Organism &crit, float ang)
@@ -674,7 +908,7 @@ void runBrain(Organism &crit)
             }
             if(nearestFoodDistance <= crit.size)
             {
-                nearestFood->size = std::min(nearestFood->size-herbivore->vars[1],1.f); // Vars[1] (The second variable) is how much plant is consumed.
+                nearestFood->size = (float) std::max(nearestFood->size-herbivore->vars[1],1.f); // Vars[1] (The second variable) is how much plant is consumed.
 
                 crit.nutrition += herbivore->vars[0]; // Vars[0] is how much nutrition is gained from the amount of plant consumed.
 

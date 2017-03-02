@@ -86,6 +86,8 @@ class Trait
 public:
     int type;
     std::vector<float> vars;
+    bool toDelete;
+    Trait();
 };
 
 
@@ -103,6 +105,15 @@ class Brain
 
 class Organism
 {
+
+    /*
+
+    *Sync Checklist*
+    Organism Packet
+    Mutation
+    Blueprint
+
+    */
     public:
     Simulation* sim;
     unsigned int ID;
@@ -110,6 +121,7 @@ class Organism
 
     sf::Vector2f pos;
     float health;
+    float healthMax;
     float baseSpeed;
     float size;
     float nutrition;
