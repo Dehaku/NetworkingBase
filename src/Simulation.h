@@ -125,7 +125,7 @@ class Organism
 
     float ageMax;
     float age;
-    float gestationPeriod;
+    float gestationPeriodBase;
     float gestationTime;
 
     Organism();
@@ -136,6 +136,7 @@ class Organism
     float getHungerRate();
     float getHydrationMax();
     float getThirstRate();
+    float getGestationPeriod();
 
     bool isDead();
     bool isHungry();

@@ -54,7 +54,7 @@ sf::Packet& operator <<(sf::Packet& packet, const Organism& critter)
 
     << critter.ageMax
     << critter.age
-    << critter.gestationPeriod
+    << critter.gestationPeriodBase
     << critter.gestationTime;
 
 
@@ -106,7 +106,7 @@ sf::Packet& operator >>(sf::Packet& packet, Organism& critter)
 
     >> critter.ageMax
     >> critter.age
-    >> critter.gestationPeriod
+    >> critter.gestationPeriodBase
     >> critter.gestationTime;
 
 
@@ -1722,7 +1722,7 @@ void drawSelectedOrganismInfo()
         << "Health: " << std::to_string(critter.health) << "/" << std::to_string(critter.getHealthMax()) << " \n"
         << "Hunger: " << std::to_string(critter.nutrition) << "/" << std::to_string(critter.getNutritionMax()) << " \n"
         << "Hydration: " << std::to_string(critter.hydration) << "/" << std::to_string(critter.getHydrationMax()) << " \n"
-        << "Gestation: " << std::to_string(critter.gestationTime) << "/" << std::to_string(critter.gestationPeriod) << " \n";
+        << "Gestation: " << std::to_string(critter.gestationTime) << "/" << std::to_string(critter.getGestationPeriod() ) << " \n";
 
         // Traits
         {

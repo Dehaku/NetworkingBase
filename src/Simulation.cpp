@@ -292,7 +292,7 @@ Organism::Organism()
     baseSpeed = random(1,10);
 
     gestationTime = 0;
-    gestationPeriod = 500*size; // TODO: Turn this into a getGestationPeriod() function, and let the base be modified without the size multiple being affected.
+    gestationPeriodBase = 500; // TODO: Turn this into a getGestationPeriod() function, and let the base be modified without the size multiple being affected.
 
     //* brain = nullptr;
     colorPrime = sf::Color(random(0,255),random(0,255),random(0,255));
@@ -510,7 +510,7 @@ void Organism::runGestation()
     if(gestationTime > 0) // Getting pregnant or whatever will set this timer to 1, kicking this off.
         gestationTime++;
 
-    if(gestationTime >= gestationPeriod)
+    if(gestationTime >= getGestationPeriod())
     {
         gestationTime = 0;
         giveBirth();
@@ -578,7 +578,10 @@ float Organism::getHydrationMax()
     return std::max(float(hydrationMax*size),1.f);
 }
 
-
+float Organism::getGestationPeriod()
+{
+    return gestationPeriodBase*size;
+}
 
 void moveAngle(Organism &crit, float ang)
 {

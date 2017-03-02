@@ -330,7 +330,7 @@ void saveCreatureBlueprint(Organism critter)
                 << "[ageMax:" << critter.ageMax << "]"
                 << "[baseSpeed:" << critter.baseSpeed << "]"
 
-                << "[gestationPeriod:" << critter.gestationPeriod << "]"
+                << "[gestationPeriod:" << critter.gestationPeriodBase << "]"
                 << "[hydrationMax:" << critter.hydrationMax << "]"
                 << "[nutritionMax:" << critter.nutritionMax << "]"
                 << "[size:" << critter.size << "]"
@@ -391,7 +391,7 @@ Organism loadCreatureBlueprint(std::string blueprintName)
             critter.ageMax = stringFindNumber(line,"ageMax:");
             critter.baseSpeed = stringFindNumber(line,"baseSpeed:");
 
-            critter.gestationPeriod = stringFindNumber(line,"gestationPeriod:");
+            critter.gestationPeriodBase = stringFindNumber(line,"gestationPeriod:");
             critter.hydrationMax = stringFindNumber(line,"hydrationMax:");
             critter.nutritionMax = stringFindNumber(line,"nutritionMax:");
             critter.size = stringFindNumber(line,"size:");
