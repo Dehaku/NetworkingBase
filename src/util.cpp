@@ -243,6 +243,46 @@ bool aabb(sf::Vector2i point, int left, int right, int up, int down)
     return false;
 }
 
+bool onScreen(sf::Vector2f vPos)
+{
+    int lowcapX = (gvars::view1.getCenter().x - (gvars::view1.getSize().x/2));
+    int lowcapY = (gvars::view1.getCenter().y - (gvars::view1.getSize().y/2));
+    int highcapX = ((gvars::view1.getCenter().x + (gvars::view1.getSize().x/2)));
+    int highcapY = ((gvars::view1.getCenter().y + (gvars::view1.getSize().y/2)));
+    // TODO: Set these variables only once per frame.
+
+
+    if(aabb(vPos,lowcapX,highcapX,lowcapY,highcapY))
+        return true;
+
+    return false;
+}
+
+void screenShake(float intensity)
+{
+    gvars::screenShake += intensity;
+}
+
+void renderScreenShake()
+{
+    sf::Vector2f screenPos = gvars::view1.getCenter();
+
+
+    if(randz(0,1) == 0)
+        screenPos.x += randz(gvars::screenShake/2,gvars::screenShake);
+    else
+        screenPos.x -= randz(gvars::screenShake/2,gvars::screenShake);
+
+    if(randz(0,1) == 0)
+        screenPos.y += randz(gvars::screenShake/2,gvars::screenShake);
+    else
+        screenPos.y -= randz(gvars::screenShake/2,gvars::screenShake);
+
+    gvars::view1.setCenter(screenPos);
+
+    gvars::screenShake = math::clamp(gvars::screenShake - 0.5,0,100);
+}
+
 float percentPos(float position, float lowerPos, float higherPos)
 {
     float difference = higherPos - lowerPos;

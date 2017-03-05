@@ -31,6 +31,35 @@ void runDeadColors()
 
 void Simulation::runLife()
 {
+
+    if(!inputState.key[Key::K])
+    { // Storing pointers for Quadtree usage.
+
+        organismsQT.clear();
+        floraQT.clear();
+
+        Data<std::shared_ptr<Organism>> data;
+        for(auto &crit : organisms)
+        {
+            data.load = &crit;
+            data.pos = crit->pos;
+
+            bool insertedQT = organismsQT.insert(data);
+            // if(!insertedQT)
+            //    std::cout << "Insertion of Organism QT failed. \n";
+        }
+
+        for(auto &crit : flora)
+        {
+            data.load = &crit;
+            data.pos = crit->pos;
+
+            floraQT.insert(data);
+        }
+
+    }
+
+
     runCreatures(organisms);
     runPlants(flora);
 
@@ -67,6 +96,17 @@ Simulation::Simulation()
 
     worldTileSizeX = 1000;
     worldTileSizeY = 1000;
+
+    AABB bounds;
+    sf::Vector2f pointy(5000,5000);
+    bounds.centre = pointy;
+    bounds.halfSize = pointy;
+
+    organismsQT.boundary = bounds;
+    floraQT.boundary = bounds;
+
+    //Quadtree<std::shared_ptr<Organism>> organismsQT(bounds);
+    //Quadtree<std::shared_ptr<Organism>> floraQT(bounds);
 
     simulationID = 0;
     draw = true;
@@ -126,6 +166,7 @@ void Simulation::drawWorld()
         for(int t = 0; t != worldTiles[i].size(); t++)
         {
             shapes.createSquare(i*worldTileSizeX,t*worldTileSizeY,i*worldTileSizeX+worldTileSizeX,t*worldTileSizeY+worldTileSizeY,worldTiles[i][t].color);
+            shapes.shapes.back().offscreenRender = true;
             xOffset++;
         }
         yOffset++;
@@ -885,21 +926,56 @@ void runBrain(Organism &crit)
             Organism* nearestFood = nullptr;
             float nearestFoodDistance = 99999999;
 
+            static AABB herbRange;
+
+
+
+
+
             if(herbivore != nullptr)
             {
-                for(auto &food : crit.sim->flora)
+
+                if(!inputState.key[Key::J])
                 {
-                    if(food.get()->size < herbivore->vars[1]+10) // Vars[1] (The second variable) is how much plant is consumed.
-                        continue;
 
+                    herbRange.centre = crit.pos;
+                    herbRange.halfSize = sf::Vector2f(100,100);
 
-                    float ourDistance = math::distance(crit.pos,food.get()->pos);
-                    if(ourDistance < nearestFoodDistance)
+                    std::vector<Data<std::shared_ptr<Organism>>> closeOnes = crit.sim->floraQT.queryRange(herbRange);
+
+                    for(auto &nearCrit : closeOnes)
                     {
-                        nearestFoodDistance = ourDistance;
-                        nearestFood = food.get();
+                        std::shared_ptr<Organism>& plants = *nearCrit.load;
+
+                        float ourDistance = math::distance(crit.pos,plants->pos);
+                        if(ourDistance < nearestFoodDistance)
+                        {
+                            nearestFoodDistance = ourDistance;
+                            nearestFood = plants.get();
+                        }
+                    }
+
+
+
+                }
+                else
+                {
+                    for(auto &food : crit.sim->flora)
+                    {
+                        if(food.get()->size < herbivore->vars[1]+10) // Vars[1] (The second variable) is how much plant is consumed.
+                            continue;
+
+
+                        float ourDistance = math::distance(crit.pos,food.get()->pos);
+                        if(ourDistance < nearestFoodDistance)
+                        {
+                            nearestFoodDistance = ourDistance;
+                            nearestFood = food.get();
+                        }
                     }
                 }
+
+
             }
 
             if(nearestFood != nullptr)

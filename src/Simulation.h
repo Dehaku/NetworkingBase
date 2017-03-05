@@ -1,6 +1,7 @@
 #ifndef SIMULATION_H_INCLUDED
 #define SIMULATION_H_INCLUDED
 
+#include "Quadtree.h"
 #include "Organism.h"
 #include "Tiles.h"
 
@@ -20,6 +21,12 @@ public:
     std::list<std::shared_ptr<Brain>> brainStorage;
     std::list<std::shared_ptr<Organism>> flora;
     std::list<std::shared_ptr<Organism>> organisms;
+
+    // AABB bounds;
+
+    Quadtree<std::shared_ptr<Organism>> floraQT;
+    Quadtree<std::shared_ptr<Organism>> organismsQT;
+
     void syncOrganism(std::shared_ptr<Organism> critter);
     std::vector<std::vector<WorldTile>> worldTiles;
     unsigned int worldTileSizeX;

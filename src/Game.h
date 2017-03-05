@@ -6,6 +6,8 @@
 #include <list>
 #include <memory>
 
+#include "Quadtree.h"
+
 #include "Text.h"
 
 #include "Shapes.h"

@@ -1770,8 +1770,73 @@ void selectOrganism()
     drawSelectedOrganismInfo();
 }
 
+
+void QuadtreeTest()
+{
+    std::cout << "\n ---Running Quadtree Test! \n";
+
+    AABB bounds;
+    sf::Vector2f pointy(0,0);
+    bounds.centre = pointy;
+    bounds.halfSize = pointy;
+
+    Quadtree<std::shared_ptr<Organism>> qT;
+    qT.boundary.centre = sf::Vector2f(500,500);
+    qT.boundary.halfSize = sf::Vector2f(500,500);
+    //std::list<Organism> animals;
+    std::list<std::shared_ptr<Organism>> animals;
+    for(int i = 0; i != 10; i++)
+    {
+        std::shared_ptr<Organism> crit(new Organism());
+        //Organism crit;
+        int rando = random(1,3);
+        if(rando == 1)
+            crit->name = "Horse";
+        if(rando == 2)
+            crit->name = "Fish";
+        if(rando == 3)
+            crit->name = "Cat";
+
+        crit->pos.x = random(0,1000);
+        crit->pos.y = random(0,1000);
+        animals.push_back(crit);
+    }
+
+    for(auto &critter : animals)
+    {
+        Data<std::shared_ptr<Organism>> data;
+        data.load = &critter;
+        data.pos = critter->pos;
+
+        qT.insert(data);
+    }
+    AABB getPos = AABB(sf::Vector2f(510,510),sf::Vector2f(100,100));
+    std::vector<Data<std::shared_ptr<Organism>>> closeOnes = qT.queryRange(getPos);
+
+
+
+    std::cout << "Close Ones: " << closeOnes.size() << std::endl;
+    for(auto nearCrit : closeOnes)
+    {
+        std::shared_ptr<Organism>& critter = *nearCrit.load;
+        std::cout << "Critter: " << critter->name << ":" << critter->pos.x << "/" << critter->pos.y << std::endl;
+    }
+
+
+
+    std::cout << "\n ---Completed Quadtree Test! \n";
+}
+
 void generalFunctions()
 {
+
+
+
+    if(inputState.key[Key::Z].time == 1)
+    {
+        QuadtreeTest();
+    }
+
     if(inputState.key[Key::Pause].time == 1)
     {
         if(network::client)
@@ -1893,6 +1958,25 @@ void renderGame()
             }
         }
     }
+
+    if(inputState.key[Key::J])
+    {
+
+        shapes.createSquare(gvars::mousePos.x-100,gvars::mousePos.y-100,gvars::mousePos.x+100,gvars::mousePos.y+100,sf::Color::Transparent,1,sf::Color::Cyan);
+
+        AABB getPos = AABB(gvars::mousePos,sf::Vector2f(100,100));
+        std::vector<Data<std::shared_ptr<Organism>>> closeOnes = simulationManager.getCurrentSimulation()->organismsQT.queryRange(getPos);
+
+        for(auto nearCrit : closeOnes)
+        {
+            std::shared_ptr<Organism>& crit = *nearCrit.load;
+
+            shapes.createLine(crit->pos.x,crit->pos.y,gvars::mousePos.x,gvars::mousePos.y,1,sf::Color::Cyan);
+        }
+
+
+    }
+
 }
 
 sf::Thread serverListenThread(&serverListen);

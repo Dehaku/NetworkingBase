@@ -506,8 +506,8 @@ void Shapes::drawShapes()
 
         if(!shape.offscreenRender && shape.drawView == &gvars::view1)
         {
-            //if(!onScreen(shape.startPos) && !onScreen(shape.endPos))
-                //continue;
+            if(!onScreen(shape.startPos) && !onScreen(shape.endPos))
+                continue;
         }
 
         if(shape.shape == shape.Square)

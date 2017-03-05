@@ -4,6 +4,8 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "Quadtree.h"
+
 #include "Text.h"
 #include "globalvars.h"
 #include "defs.h"

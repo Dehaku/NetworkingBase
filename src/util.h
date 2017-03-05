@@ -11,6 +11,9 @@
 
 #include <SFML/System.hpp>
 #include <SFML/Network.hpp>
+
+#include "globalvars.h"
+#include "math.h"
 class ClientPackage;
 
 class BoolPacket
@@ -144,6 +147,12 @@ float randomBell(float mean, float curve);
 bool aabb(int pointx, int pointy, int left, int right, int up, int down);
 bool aabb(sf::Vector2f point, int left, int right, int up, int down);
 bool aabb(sf::Vector2i point, int left, int right, int up, int down);
+
+
+bool onScreen(sf::Vector2f vPos);
+void screenShake(float intensity);
+void renderScreenShake();
+
 
 /// Get the absolute of a numeric value,
 /// converted to size_t, suitable for indexing
