@@ -8,6 +8,7 @@
 
 // Source: http://codereview.stackexchange.com/questions/84374/quadtree-implementation
 
+const int CAPACITY = 4;
 
 struct AABB
 {
@@ -16,7 +17,7 @@ struct AABB
 
     AABB(sf::Vector2f centre = sf::Vector2f(), sf::Vector2f halfSize = sf::Vector2f()): centre(centre), halfSize(halfSize){};
 
-    bool contains(sf::Vector2f a)
+    bool contains(sf::Vector2f& a)
     {
         if(a.x < centre.x + halfSize.x && a.x > centre.x - halfSize.x)
         {
@@ -67,7 +68,7 @@ class Quadtree
 
         std::vector< Data<T> > objects;
 
-        int CAPACITY;
+
     public:
         AABB boundary; // Modified
 
@@ -83,26 +84,24 @@ class Quadtree
 };
 
 template <class T>
-Quadtree<T>::Quadtree()
+Quadtree<T>::Quadtree():
+    nw{nullptr},
+    ne{nullptr},
+    sw{nullptr},
+    se{nullptr}
 {
-    CAPACITY = 4;
-    nw = nullptr;
-    ne = nullptr;
-    sw = nullptr;
-    se = nullptr;
     boundary = AABB();
     objects = std::vector< Data<T> >();
 }
 
 template <class T>
-Quadtree<T>::Quadtree(AABB boundary)
+Quadtree<T>::Quadtree(AABB boundary):
+    nw{nullptr},
+    ne{nullptr},
+    sw{nullptr},
+    se{nullptr}
 {
     objects = std::vector< Data<T> >();
-    CAPACITY = 4;
-    nw = nullptr;
-    ne = nullptr;
-    sw = nullptr;
-    se = nullptr;
     this->boundary = boundary;
 }
 

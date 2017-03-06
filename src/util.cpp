@@ -245,10 +245,15 @@ bool aabb(sf::Vector2i point, int left, int right, int up, int down)
 
 bool onScreen(sf::Vector2f vPos)
 {
-    int lowcapX = (gvars::view1.getCenter().x - (gvars::view1.getSize().x/2));
-    int lowcapY = (gvars::view1.getCenter().y - (gvars::view1.getSize().y/2));
-    int highcapX = ((gvars::view1.getCenter().x + (gvars::view1.getSize().x/2)));
-    int highcapY = ((gvars::view1.getCenter().y + (gvars::view1.getSize().y/2)));
+    static int lowcapX;
+    static int lowcapY;
+    static int highcapX;
+    static int highcapY;
+
+    lowcapX = (gvars::view1.getCenter().x - (gvars::view1.getSize().x/2));
+    lowcapY = (gvars::view1.getCenter().y - (gvars::view1.getSize().y/2));
+    highcapX = ((gvars::view1.getCenter().x + (gvars::view1.getSize().x/2)));
+    highcapY = ((gvars::view1.getCenter().y + (gvars::view1.getSize().y/2)));
     // TODO: Set these variables only once per frame.
 
 

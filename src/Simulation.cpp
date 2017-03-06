@@ -36,7 +36,7 @@ void Simulation::runLife()
     { // Storing pointers for Quadtree usage.
 
         organismsQT.clear();
-        floraQT.clear();
+        //floraQT.clear();
 
         Data<std::shared_ptr<Organism>> data;
         for(auto &crit : organisms)
@@ -49,6 +49,8 @@ void Simulation::runLife()
             //    std::cout << "Insertion of Organism QT failed. \n";
         }
 
+        /*
+
         for(auto &crit : flora)
         {
             data.load = &crit;
@@ -56,6 +58,8 @@ void Simulation::runLife()
 
             floraQT.insert(data);
         }
+
+        */
 
     }
 
@@ -122,19 +126,33 @@ Simulation::Simulation()
 
 void Simulation::worldPopulationSetup()
 {
-    for(int i = 0; i != 100; i++)
+    for(int i = 0; i != 1000; i++)
     {
         //Organism Plant;
         std::shared_ptr<Organism> Plant(new Organism());
         Plant->size = random(5,30);
         Plant->baseSpeed = 0;
-        Plant->pos = sf::Vector2f(random(10,1000),random(10,1000));
+        Plant->pos = sf::Vector2f(random(10,10000),random(10,10000));
         Plant->ID = populationID++;
         Plant->colorPrime = sf::Color(0,200,0,150);
         Plant->colorSecondary = sf::Color(0,100,0,150);
 
         flora.push_back(Plant);
+
+
+
     }
+
+    Data<std::shared_ptr<Organism>> data;
+
+    for(auto &crit : flora)
+        {
+
+            data.load = &crit;
+            data.pos = crit->pos;
+
+            floraQT.insert(data);
+        }
 
     for(int i = 0; i != 100; i++)
     {
@@ -199,7 +217,9 @@ void Simulation::drawCritters()
     for(auto &planty : flora)
     {
         Organism &plant = *planty.get();
-        shapes.createCircle(plant.pos.x,plant.pos.y,plant.size,plant.colorPrime,plant.size/10,plant.colorSecondary);
+
+        if(onScreen(plant.pos))
+            shapes.createCircle(plant.pos.x,plant.pos.y,plant.size,plant.colorPrime,plant.size/10,plant.colorSecondary);
     }
 
     sf::Texture &circley = texturemanager.getTexture("Circle.png");
@@ -209,15 +229,20 @@ void Simulation::drawCritters()
     {
         Organism &crit = *critter.get();
 
-        if(drawSquareInstead)
-            shapes.createSquare(crit.pos.x-((crit.size)),crit.pos.y-((crit.size)),crit.pos.x+((crit.size)),crit.pos.y+((crit.size)),crit.colorPrime,crit.size/2,crit.colorSecondary);
-        else if(drawTextureInstead)
+        if(onScreen(crit.pos))
         {
-            shapes.createImageButton(crit.pos,circley);
-            //shapes.createImageButton(crit.pos,swirl,"",rotation);
+            if(drawSquareInstead)
+                shapes.createSquare(crit.pos.x-((crit.size)),crit.pos.y-((crit.size)),crit.pos.x+((crit.size)),crit.pos.y+((crit.size)),crit.colorPrime,crit.size/2,crit.colorSecondary);
+            else if(drawTextureInstead)
+            {
+                shapes.createImageButton(crit.pos,circley);
+                //shapes.createImageButton(crit.pos,swirl,"",rotation);
+            }
+            else
+                shapes.createCircle(crit.pos.x,crit.pos.y,crit.size,crit.colorPrime,crit.size/2,crit.colorSecondary);
         }
-        else
-            shapes.createCircle(crit.pos.x,crit.pos.y,crit.size,crit.colorPrime,crit.size/2,crit.colorSecondary);
+
+
     }
 
 
@@ -902,7 +927,7 @@ void runBrain(Organism &crit)
     if(!network::client) // Server-side Logic
     {
         if(random(1,600) == 1 || inputState.key[Key::Space].time == 1)
-            crit.brain.lock()->desiredPos = sf::Vector2f(random(10,990),random(10,990));
+            crit.brain.lock()->desiredPos = sf::Vector2f(random(10,9900),random(10,9900));
 
 
         if(crit.isHungry())
@@ -935,15 +960,24 @@ void runBrain(Organism &crit)
             if(herbivore != nullptr)
             {
 
-                if(!inputState.key[Key::J])
+                static bool quadOrNorm = false;
+
+                if(inputState.key[Key::J].time == 1)
+                {
+                    toggle(quadOrNorm);
+                    std::cout << "QuadOrNorm: " << quadOrNorm << std::endl;
+                }
+
+
+                if(!quadOrNorm)
                 {
 
                     herbRange.centre = crit.pos;
                     herbRange.halfSize = sf::Vector2f(100,100);
 
-                    std::vector<Data<std::shared_ptr<Organism>>> closeOnes = crit.sim->floraQT.queryRange(herbRange);
+                    //std::vector<Data<std::shared_ptr<Organism>>>* closeOnes = crit.sim->floraQT.queryRange(herbRange);
 
-                    for(auto &nearCrit : closeOnes)
+                    for(auto &nearCrit : crit.sim->floraQT.queryRange(herbRange))
                     {
                         std::shared_ptr<Organism>& plants = *nearCrit.load;
 

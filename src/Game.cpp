@@ -452,6 +452,11 @@ bool chatCommand(std::string input)
             chatBox.addChat("You must have a simulation selected!");
             return false;
         }
+        if(elements.size() < 2)
+        {
+            chatBox.addChat("Not enough arguments.");
+            return false;
+        }
 
         Organism critter;
         critter.name = "Failed";
@@ -465,20 +470,32 @@ bool chatCommand(std::string input)
 
 
 
-        std::shared_ptr<Organism> Critter(new Organism());
-        sim->organisms.push_back(Critter);
+        int spawnAmount;
+        if(elements.size() < 3)
+        {
+            spawnAmount = 1;
+        }
+        else
+            spawnAmount = std::stoi(elements[3]);
 
-        std::shared_ptr<Brain> creatureBrain(new Brain());
-        sim->brainStorage.push_back(creatureBrain);
-        sim->populationAll++;
+        for(int i = 0; i != spawnAmount; i++)
+        {
+            std::shared_ptr<Organism> Critter(new Organism());
+            sim->organisms.push_back(Critter);
 
-        *(Critter.get()) = critter;
-        Critter.get()->sim = sim;
-        Critter->ID = sim->populationID++;
-        Critter->pos = gvars::mousePos;
+            std::shared_ptr<Brain> creatureBrain(new Brain());
+            sim->brainStorage.push_back(creatureBrain);
+            sim->populationAll++;
 
-        sim->organisms.back().get()->brain = sim->brainStorage.back();
-        sim->brainStorage.back().get()->owner = sim->organisms.back();
+            *(Critter.get()) = critter;
+            Critter.get()->sim = sim;
+            Critter->ID = sim->populationID++;
+            Critter->pos = gvars::mousePos;
+
+            sim->organisms.back().get()->brain = sim->brainStorage.back();
+            sim->brainStorage.back().get()->owner = sim->organisms.back();
+        }
+
 
 
 
@@ -1959,6 +1976,8 @@ void renderGame()
         }
     }
 
+
+    /*
     if(inputState.key[Key::J])
     {
 
@@ -1972,6 +1991,47 @@ void renderGame()
             std::shared_ptr<Organism>& crit = *nearCrit.load;
 
             shapes.createLine(crit->pos.x,crit->pos.y,gvars::mousePos.x,gvars::mousePos.y,1,sf::Color::Cyan);
+        }
+
+
+    }
+    */
+
+    if(inputState.key[Key::J])
+    {
+
+        if(inputState.key[Key::LShift])
+            shapes.createSquare(gvars::mousePos.x-100,gvars::mousePos.y-100,gvars::mousePos.x+100,gvars::mousePos.y+100,sf::Color::Transparent,1,sf::Color::Cyan);
+
+        AABB getPos = AABB(gvars::mousePos,sf::Vector2f(1000,1000));
+        std::vector<Data<std::shared_ptr<Organism>>> closeOnes = simulationManager.getCurrentSimulation()->floraQT.queryRange(getPos);
+
+        for(auto nearCrit : closeOnes)
+        {
+            std::shared_ptr<Organism>& crit = *nearCrit.load;
+
+            if(inputState.key[Key::LShift])
+                shapes.createLine(crit->pos.x,crit->pos.y,gvars::mousePos.x,gvars::mousePos.y,1,sf::Color::Cyan);
+        }
+
+
+    }
+
+    if(inputState.key[Key::U])
+    {
+
+        if(inputState.key[Key::LShift])
+            shapes.createSquare(gvars::mousePos.x-100,gvars::mousePos.y-100,gvars::mousePos.x+100,gvars::mousePos.y+100,sf::Color::Transparent,1,sf::Color::Cyan);
+
+        AABB getPos = AABB(gvars::mousePos,sf::Vector2f(1000,1000));
+        //std::vector<Data<std::shared_ptr<Organism>>> closeOnes = ;
+
+        for(auto nearCrit : simulationManager.getCurrentSimulation()->floraQT.queryRange(getPos))
+        {
+            std::shared_ptr<Organism>& crit = *nearCrit.load;
+
+            if(inputState.key[Key::LShift])
+                shapes.createLine(crit->pos.x,crit->pos.y,gvars::mousePos.x,gvars::mousePos.y,1,sf::Color::Cyan);
         }
 
 
@@ -2173,17 +2233,6 @@ void runGame()
     static int globalCycle = 0;
     globalCycle++;
 
-    if(inputState.key[Key::L].time == 1)
-    {
-        for(auto &sim : simulationManager.simulations)
-        {
-            for(auto &plant : sim.flora)
-            {
-                plant.get()->pos.x = random(1,1000);
-                plant.get()->pos.y = random(1,1000);
-            }
-        }
-    }
 
 
     simulationManager.runSimulations();
@@ -2191,8 +2240,6 @@ void runGame()
      //   sim.runLife(); // runBrains(sim.organisms);
     //runBrains(organisms);
 
-    if(inputState.key[Key::C].time == 1)
-        addCreatures(100);
 
 
     if((globalCycle % 60) == 0)
