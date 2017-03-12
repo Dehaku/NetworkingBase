@@ -1844,6 +1844,32 @@ void QuadtreeTest()
     std::cout << "\n ---Completed Quadtree Test! \n";
 }
 
+void renderQT(Quadtree<std::shared_ptr<Organism>>& qT)
+{
+    int sx = qT.boundary.centre.x-qT.boundary.halfSize.x;
+    int sy = qT.boundary.centre.x+qT.boundary.halfSize.x;
+    int ex = qT.boundary.centre.y-qT.boundary.halfSize.y;
+    int ey = qT.boundary.centre.y+qT.boundary.halfSize.y;
+
+    if(qT.objects.size() > 0)
+    {
+        shapes.createSquare(sx,sy,ex,ey,sf::Color(0,100,255,10),1,sf::Color(0,100,255,10));
+        shapes.shapes.back().offscreenRender = true;
+    }
+
+
+    if(qT.ne != nullptr)
+        renderQT(*qT.ne);
+    if(qT.nw != nullptr)
+        renderQT(*qT.nw);
+    if(qT.sw != nullptr)
+        renderQT(*qT.sw);
+    if(qT.se != nullptr)
+        renderQT(*qT.se);
+
+
+}
+
 void generalFunctions()
 {
 
@@ -1906,6 +1932,56 @@ void generalFunctions()
         }
     }
 
+}
+
+void generalFunctionsPostRender()
+{
+    if(inputState.key[Key::M])
+    {
+        if(simulationManager.getCurrentSimulation() != nullptr)
+            renderQT(simulationManager.getCurrentSimulation()->floraQT);
+    }
+
+
+    if(simulationManager.getCurrentSimulation() != nullptr)
+    {
+        sf::Clock speedClock;
+        sf::Time speedTime;
+        speedClock.restart();
+
+        Simulation &sim = *simulationManager.getCurrentSimulation();
+        for(auto &planty : sim.flora)
+        {
+            Organism &plant = *planty.get();
+
+            static AABB plantRange;
+            plantRange.centre = plant.pos;
+            plantRange.halfSize = sf::Vector2f(100,100);
+
+            std::vector<Data<std::shared_ptr<Organism>>> closeOnes = sim.floraQT.queryRange(plantRange);
+
+            for(auto nearCrit : closeOnes)
+            {
+                std::shared_ptr<Organism>& crit = *nearCrit.load;
+
+                if(math::distance(plant.pos,crit->pos) <= 50)
+                {
+                    if(inputState.key[Key::Comma])
+                    {
+                        shapes.createLine(crit->pos.x,crit->pos.y,plant.pos.x,plant.pos.y,1,sf::Color::Cyan);
+                    }
+                }
+
+
+            }
+
+        }
+
+        speedTime = speedClock.restart();
+        std::cout << "Speed Time: " << speedTime.asMicroseconds() << std::endl;
+
+
+    }
 }
 
 void renderGame()
@@ -1997,7 +2073,7 @@ void renderGame()
     }
     */
 
-    if(inputState.key[Key::J])
+    if(simulationManager.getCurrentSimulation() != nullptr)//if(inputState.key[Key::J])
     {
 
         if(inputState.key[Key::LShift])
@@ -2036,6 +2112,8 @@ void renderGame()
 
 
     }
+
+    generalFunctionsPostRender();
 
 }
 

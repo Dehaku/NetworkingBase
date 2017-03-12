@@ -17,7 +17,7 @@ struct AABB
 
     AABB(sf::Vector2f centre = sf::Vector2f(), sf::Vector2f halfSize = sf::Vector2f()): centre(centre), halfSize(halfSize){};
 
-    bool contains(sf::Vector2f& a)
+    bool contains(sf::Vector2f a)
     {
         if(a.x < centre.x + halfSize.x && a.x > centre.x - halfSize.x)
         {
@@ -59,6 +59,11 @@ class Quadtree
 {
     private:
         //4 children
+
+
+
+    public:
+
         Quadtree* nw;
         Quadtree* ne;
         Quadtree* sw;
@@ -69,7 +74,6 @@ class Quadtree
         std::vector< Data<T> > objects;
 
 
-    public:
         AABB boundary; // Modified
 
         Quadtree<T>();
