@@ -8,7 +8,7 @@
 
 // Source: http://codereview.stackexchange.com/questions/84374/quadtree-implementation
 
-const int CAPACITY = 4;
+const int CAPACITY = 10;
 
 struct AABB
 {
@@ -17,7 +17,7 @@ struct AABB
 
     AABB(sf::Vector2f centre = sf::Vector2f(), sf::Vector2f halfSize = sf::Vector2f()): centre(centre), halfSize(halfSize){};
 
-    bool contains(sf::Vector2f a)
+    bool contains(const sf::Vector2f& a) const
     {
         if(a.x < centre.x + halfSize.x && a.x > centre.x - halfSize.x)
         {
@@ -29,7 +29,7 @@ struct AABB
         return false;
     }
 
-    bool intersects(AABB other)
+    bool intersects(const AABB& other) const
     {
         //this right > that left                                          this left <s that right
         if(centre.x + halfSize.x > other.centre.x - other.halfSize.x || centre.x - halfSize.x < other.centre.x + other.halfSize.x)
@@ -85,6 +85,7 @@ class Quadtree
         void subdivide();
         void clear();
         std::vector< Data<T> > queryRange(AABB range);
+        void queryRangeContainer(std::vector< Data<T> >& container, AABB range);
 };
 
 template <class T>
@@ -188,6 +189,109 @@ bool Quadtree<T>::insert(Data<T> d)
     return false;
 }
 
+
+
+template <class T>
+std::vector< Data<T> > Quadtree<T>::queryRange(AABB range)
+{
+    std::vector< Data<T> > pInRange = std::vector< Data<T> >();
+
+    if(!boundary.intersects(range))
+    {
+        return pInRange;
+    }
+
+    for(int i = 0; i < objects.size(); i++)
+    {
+        if(range.contains(objects[i].pos)) // Modified: From .at() to []
+        {
+            pInRange.push_back(objects[i]); // Modified: From .at() to []
+        }
+    }
+
+    if(nw == nullptr)
+    {
+        return pInRange;
+   }
+
+    { // x4 Modified: Stopped making a new vector for each, and referencing the functions vector instead.
+        const std::vector< Data<T> >& temp = nw->queryRange(range);
+        pInRange.insert(pInRange.end(), temp.begin(), temp.end());
+    }
+
+    {
+        const std::vector< Data<T> >& temp = ne->queryRange(range);
+        pInRange.insert(pInRange.end(), temp.begin(), temp.end());
+    }
+
+    {
+        const std::vector< Data<T> >& temp = sw->queryRange(range);
+        pInRange.insert(pInRange.end(), temp.begin(), temp.end());
+    }
+
+    {
+        const std::vector< Data<T> >& temp = se->queryRange(range);
+        pInRange.insert(pInRange.end(), temp.begin(), temp.end());
+    }
+
+    return pInRange;
+}
+
+template <class T>
+void Quadtree<T>::queryRangeContainer(std::vector< Data<T> >& container, AABB range)
+{
+    std::vector< Data<T> >& pInRange = container;
+
+    if(!boundary.intersects(range))
+    {
+        return;
+    }
+
+    for(int i = 0; i < objects.size(); i++)
+    {
+        if(range.contains(objects[i].pos)) // Modified: From .at() to []
+        {
+            pInRange.push_back(objects[i]); // Modified: From .at() to []
+        }
+    }
+
+    if(nw == nullptr)
+    {
+        return;
+    }
+
+    std::vector< Data<T> > temp;
+
+    { // x4 Modified: Stopped making a new vector for each, and referencing the functions vector instead.
+
+        nw->queryRangeContainer(temp, range);
+        pInRange.insert(pInRange.end(), temp.begin(), temp.end());
+    }
+
+    {
+        temp.clear();
+        ne->queryRangeContainer(temp, range);
+        pInRange.insert(pInRange.end(), temp.begin(), temp.end());
+    }
+
+    {
+        temp.clear();
+        sw->queryRangeContainer(temp, range);
+        pInRange.insert(pInRange.end(), temp.begin(), temp.end());
+    }
+
+    {
+        temp.clear();
+        se->queryRangeContainer(temp, range);
+        pInRange.insert(pInRange.end(), temp.begin(), temp.end());
+    }
+
+    return;
+}
+
+
+
+/*
 template <class T>
 std::vector< Data<T> > Quadtree<T>::queryRange(AABB range) // TODO: Make a second query range, with a min and max range. Used for when you need to search outwards continuously until something is found.
 {
@@ -225,6 +329,8 @@ std::vector< Data<T> > Quadtree<T>::queryRange(AABB range) // TODO: Make a secon
 
     return pInRange;
 }
+
+*/
 
 
 

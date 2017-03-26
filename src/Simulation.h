@@ -24,6 +24,8 @@ public:
 
     // AABB bounds;
 
+    std::vector<std::vector<std::vector<std::shared_ptr<Organism>>>> floraGrid;
+
     Quadtree<std::shared_ptr<Organism>> floraQT;
     Quadtree<std::shared_ptr<Organism>> organismsQT;
 

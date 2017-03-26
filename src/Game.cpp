@@ -1756,6 +1756,7 @@ void drawSelectedOrganismInfo()
 
         shapes.createSquare(drawPos.x,drawPos.y,drawPosEnd.x,drawPosEnd.y, sf::Color(0,0,0,150),2,sf::Color::Cyan);
         shapes.createRichText(richText);
+        shapes.shapes.back().offscreenRender = true;
 
     }
 }
@@ -1788,97 +1789,12 @@ void selectOrganism()
 }
 
 
-void QuadtreeTest()
-{
-    std::cout << "\n ---Running Quadtree Test! \n";
-
-    AABB bounds;
-    sf::Vector2f pointy(0,0);
-    bounds.centre = pointy;
-    bounds.halfSize = pointy;
-
-    Quadtree<std::shared_ptr<Organism>> qT;
-    qT.boundary.centre = sf::Vector2f(500,500);
-    qT.boundary.halfSize = sf::Vector2f(500,500);
-    //std::list<Organism> animals;
-    std::list<std::shared_ptr<Organism>> animals;
-    for(int i = 0; i != 10; i++)
-    {
-        std::shared_ptr<Organism> crit(new Organism());
-        //Organism crit;
-        int rando = random(1,3);
-        if(rando == 1)
-            crit->name = "Horse";
-        if(rando == 2)
-            crit->name = "Fish";
-        if(rando == 3)
-            crit->name = "Cat";
-
-        crit->pos.x = random(0,1000);
-        crit->pos.y = random(0,1000);
-        animals.push_back(crit);
-    }
-
-    for(auto &critter : animals)
-    {
-        Data<std::shared_ptr<Organism>> data;
-        data.load = &critter;
-        data.pos = critter->pos;
-
-        qT.insert(data);
-    }
-    AABB getPos = AABB(sf::Vector2f(510,510),sf::Vector2f(100,100));
-    std::vector<Data<std::shared_ptr<Organism>>> closeOnes = qT.queryRange(getPos);
-
-
-
-    std::cout << "Close Ones: " << closeOnes.size() << std::endl;
-    for(auto nearCrit : closeOnes)
-    {
-        std::shared_ptr<Organism>& critter = *nearCrit.load;
-        std::cout << "Critter: " << critter->name << ":" << critter->pos.x << "/" << critter->pos.y << std::endl;
-    }
-
-
-
-    std::cout << "\n ---Completed Quadtree Test! \n";
-}
-
-void renderQT(Quadtree<std::shared_ptr<Organism>>& qT)
-{
-    int sx = qT.boundary.centre.x-qT.boundary.halfSize.x;
-    int sy = qT.boundary.centre.x+qT.boundary.halfSize.x;
-    int ex = qT.boundary.centre.y-qT.boundary.halfSize.y;
-    int ey = qT.boundary.centre.y+qT.boundary.halfSize.y;
-
-    if(qT.objects.size() > 0)
-    {
-        shapes.createSquare(sx,sy,ex,ey,sf::Color(0,100,255,10),1,sf::Color(0,100,255,10));
-        shapes.shapes.back().offscreenRender = true;
-    }
-
-
-    if(qT.ne != nullptr)
-        renderQT(*qT.ne);
-    if(qT.nw != nullptr)
-        renderQT(*qT.nw);
-    if(qT.sw != nullptr)
-        renderQT(*qT.sw);
-    if(qT.se != nullptr)
-        renderQT(*qT.se);
-
-
-}
-
 void generalFunctions()
 {
+    // QTTreeToTree();
+    if(inputState.key[Key::PageUp])
+        sf::sleep(sf::seconds(1));
 
-
-
-    if(inputState.key[Key::Z].time == 1)
-    {
-        QuadtreeTest();
-    }
 
     if(inputState.key[Key::Pause].time == 1)
     {
@@ -1936,13 +1852,9 @@ void generalFunctions()
 
 void generalFunctionsPostRender()
 {
-    if(inputState.key[Key::M])
-    {
-        if(simulationManager.getCurrentSimulation() != nullptr)
-            renderQT(simulationManager.getCurrentSimulation()->floraQT);
-    }
 
 
+    /*
     if(simulationManager.getCurrentSimulation() != nullptr)
     {
         sf::Clock speedClock;
@@ -1982,6 +1894,7 @@ void generalFunctionsPostRender()
 
 
     }
+    */
 }
 
 void renderGame()

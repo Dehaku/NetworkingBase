@@ -109,6 +109,13 @@ Simulation::Simulation()
     organismsQT.boundary = bounds;
     floraQT.boundary = bounds;
 
+    floraGrid.resize(10);
+
+    for(int i = 0; i != 10; i++)
+    {
+        floraGrid[i].resize(10);
+    }
+
     //Quadtree<std::shared_ptr<Organism>> organismsQT(bounds);
     //Quadtree<std::shared_ptr<Organism>> floraQT(bounds);
 
@@ -146,13 +153,20 @@ void Simulation::worldPopulationSetup()
     Data<std::shared_ptr<Organism>> data;
 
     for(auto &crit : flora)
-        {
+    {
 
-            data.load = &crit;
-            data.pos = crit->pos;
+        data.load = &crit;
+        data.pos = crit->pos;
 
-            floraQT.insert(data);
-        }
+        floraQT.insert(data);
+
+
+        int xPos = crit->pos.x/1000;
+        int yPos = crit->pos.y/1000;
+        floraGrid[xPos][yPos].push_back(crit);
+
+
+    }
 
     for(int i = 0; i != 100; i++)
     {
@@ -871,7 +885,9 @@ float Organism::getHealthMax()
 
 float Organism::getSpeed()
 {
-    return baseSpeed / size;
+    float percentHealth = health/getHealthMax();
+
+    return baseSpeed*percentHealth; // / size;
 }
 
 float Organism::getNutritionMax()
