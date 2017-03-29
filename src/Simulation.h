@@ -86,7 +86,16 @@ namespace TraitID
         Nothing,
         Detritivore,
         Herbivore,
-        Carnivore
+        Carnivore,
+        Teeth,
+        Blades,
+        Spikes,
+        Claws,
+        Shell,
+        Scales,
+        Hide,
+        FireBreath,
+        PsychicCrush
     };
 }
 
@@ -100,6 +109,22 @@ public:
 };
 
 
+class Attack
+{
+public:
+    std::string name;
+    int traitType;
+    float range;
+    float angle;
+    float damage;
+    float cooldown;
+    float cooldownCap;
+    bool ignoresPhysicalArmor;
+
+    Attack();
+
+    bool canAttack();
+};
 
 class Organism;
 
@@ -144,6 +169,8 @@ class Organism
     sf::Color colorPrime;
     sf::Color colorSecondary;
     std::vector<Trait> traits;
+    Trait* hasTrait(int traitNum);
+    std::vector<Attack> attacks;
 
 
     float ageMax;
@@ -153,6 +180,7 @@ class Organism
 
     Organism();
     void mutate(Organism* secondParent);
+    void buildAttacks();
     float getHealthMax();
     float getSpeed();
     float getNutritionMax();

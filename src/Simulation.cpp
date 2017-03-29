@@ -163,7 +163,7 @@ void Simulation::worldPopulationSetup()
 
         int xPos = crit->pos.x/1000;
         int yPos = crit->pos.y/1000;
-        floraGrid[xPos][yPos].push_back(crit);
+        // floraGrid[xPos][yPos].push_back(crit);
 
 
     }
@@ -358,6 +358,22 @@ Trait::Trait()
     toDelete = false;
 }
 
+Attack::Attack()
+{
+    angle = 1;
+    ignoresPhysicalArmor = false;
+}
+
+bool Attack::canAttack()
+{
+    if(cooldown <= 0)
+    {
+        cooldown = cooldownCap;
+        return true;
+    }
+    return false;
+}
+
 std::list<Brain> brainStorage;
 std::list<Organism> flora;
 std::list<Organism> organisms;
@@ -426,6 +442,95 @@ Organism::Organism()
             traits.push_back(herbivore);
         }
 
+        ran = random(1,4);
+        if(ran == 1)
+        { // Attacks
+            int randomTrait = random(1,6);
+            if(randomTrait == 1)
+            {
+                Trait attackTrait;
+                attackTrait.type = TraitID::Teeth;
+                attackTrait.vars.push_back(10.f); // Var 0, Damage.
+                attackTrait.vars.push_back(1.f); // Var 1, Cooldown.
+                attackTrait.vars.push_back(1.f); // Var 2, Range. Not always used
+                traits.push_back(attackTrait);
+            }
+            if(randomTrait == 2)
+            {
+                Trait attackTrait;
+                attackTrait.type = TraitID::Blades;
+                attackTrait.vars.push_back(10.f); // Var 0, Damage.
+                attackTrait.vars.push_back(1.f); // Var 1, Cooldown.
+                attackTrait.vars.push_back(1.f); // Var 2, Range. Not always used
+                traits.push_back(attackTrait);
+            }
+            if(randomTrait == 3)
+            {
+                Trait attackTrait;
+                attackTrait.type = TraitID::Spikes;
+                attackTrait.vars.push_back(10.f); // Var 0, Damage.
+                attackTrait.vars.push_back(1.f); // Var 1, Cooldown.
+                attackTrait.vars.push_back(1.f); // Var 2, Range. Not always used
+                traits.push_back(attackTrait);
+            }
+            if(randomTrait == 4)
+            {
+                Trait attackTrait;
+                attackTrait.type = TraitID::Claws;
+                attackTrait.vars.push_back(10.f); // Var 0, Damage.
+                attackTrait.vars.push_back(1.f); // Var 1, Cooldown.
+                attackTrait.vars.push_back(1.f); // Var 2, Range. Not always used
+                traits.push_back(attackTrait);
+            }
+            if(randomTrait == 5)
+            {
+                Trait attackTrait;
+                attackTrait.type = TraitID::FireBreath;
+                attackTrait.vars.push_back(10.f); // Var 0, Damage.
+                attackTrait.vars.push_back(1.f); // Var 1, Cooldown.
+                attackTrait.vars.push_back(1.f); // Var 2, Range. Not always used
+                traits.push_back(attackTrait);
+            }
+            if(randomTrait == 6)
+            {
+                Trait attackTrait;
+                attackTrait.type = TraitID::PsychicCrush;
+                attackTrait.vars.push_back(10.f); // Var 0, Damage.
+                attackTrait.vars.push_back(1.f); // Var 1, Cooldown.
+                attackTrait.vars.push_back(1.f); // Var 2, Range. Not always used
+                traits.push_back(attackTrait);
+            }
+        }
+
+        ran = random(1,4);
+        if(ran == 1)
+        { // Armor
+            int randomTrait = random(1,3);
+            if(randomTrait == 1)
+            {
+                Trait attackTrait;
+                attackTrait.type = TraitID::Shell;
+                attackTrait.vars.push_back(10.f); // Var 0, Damage Reduction.
+                attackTrait.vars.push_back(1.f); // Var 1, Speed Penalty.
+                traits.push_back(attackTrait);
+            }
+            if(randomTrait == 2)
+            {
+                Trait attackTrait;
+                attackTrait.type = TraitID::Scales;
+                attackTrait.vars.push_back(10.f); // Var 0, Damage Reduction.
+                attackTrait.vars.push_back(1.f); // Var 1, Speed Penalty.
+                traits.push_back(attackTrait);
+            }
+            if(randomTrait == 3)
+            {
+                Trait attackTrait;
+                attackTrait.type = TraitID::Hide;
+                attackTrait.vars.push_back(10.f); // Var 0, Damage Reduction.
+                attackTrait.vars.push_back(1.f); // Var 1, Speed Penalty.
+                traits.push_back(attackTrait);
+            }
+        }
 
 
     }
@@ -503,6 +608,14 @@ void traitCompare(Organism* firstParent, Organism* secondParent)
     }
 
 
+}
+
+Trait* Organism::hasTrait(int traitNum)
+{
+    for(auto &trait : traits)
+        if(trait.type == traitNum)
+            return &trait;
+    return nullptr;
 }
 
 void Organism::mutate(Organism* secondParent = nullptr)
@@ -704,6 +817,98 @@ void Organism::mutate(Organism* secondParent = nullptr)
 
 }
 
+void Organism::buildAttacks()
+{
+    attacks.clear();
+
+    { // Free Slam Attack
+        Attack slam;
+        slam.traitType = -1;
+        slam.name = "Tackle";
+        slam.range = size;
+        slam.cooldownCap = (float) (100*size)-(10*baseSpeed);
+        Trait* spikeTrait = hasTrait(TraitID::Spikes);
+        if(spikeTrait != nullptr)
+            slam.damage = (5*size)*3;
+        else
+            slam.damage = 5*size;
+        attacks.push_back(slam);
+    }
+
+    for(auto &trait : traits)
+    {
+        if(trait.type == TraitID::Teeth)
+        {
+            Attack traitAttack;
+            traitAttack.traitType = trait.type;
+            traitAttack.name = "Bite";
+            traitAttack.range = size;
+            traitAttack.cooldownCap = (float) 200-(10*baseSpeed);
+            traitAttack.damage = size;
+            attacks.push_back(traitAttack);
+        }
+        if(trait.type == TraitID::Blades)
+        {
+            Attack traitAttack;
+            traitAttack.traitType = trait.type;
+            traitAttack.name = "Blade";
+            traitAttack.range = size*1.5;
+            traitAttack.cooldownCap = (float) 200-(10*baseSpeed);
+            traitAttack.damage = size;
+            attacks.push_back(traitAttack);
+        }
+        if(trait.type == TraitID::Spikes)
+        {
+            Attack traitAttack;
+            traitAttack.traitType = trait.type;
+            traitAttack.name = "Spikes";
+            traitAttack.range = size;
+            traitAttack.cooldownCap = (float) 200-(10*baseSpeed);
+            traitAttack.damage = size;
+            attacks.push_back(traitAttack);
+        }
+        if(trait.type == TraitID::Claws)
+        {
+            Attack traitAttack;
+            traitAttack.traitType = trait.type;
+            traitAttack.name = "Claw Swipe";
+            traitAttack.range = size*2;
+            traitAttack.angle = 180;
+            traitAttack.cooldownCap = (float) 200-(10*baseSpeed);
+            traitAttack.damage = size;
+            attacks.push_back(traitAttack);
+        }
+
+        if(trait.type == TraitID::FireBreath)
+        {
+            Attack traitAttack;
+            traitAttack.traitType = trait.type;
+            traitAttack.name = "Fire Breath";
+            traitAttack.range = size*5;
+            traitAttack.angle = 90;
+            traitAttack.cooldownCap = (float) 1000;
+            traitAttack.damage = size*10;
+            attacks.push_back(traitAttack);
+        }
+        if(trait.type == TraitID::PsychicCrush)
+        {
+            Attack traitAttack;
+            traitAttack.traitType = trait.type;
+            traitAttack.name = "Psychic Crush";
+            traitAttack.range = size*10;
+            traitAttack.cooldownCap = (float) 500;
+            traitAttack.damage = 10+size;
+            attacks.push_back(traitAttack);
+        }
+
+    }
+
+
+
+
+
+}
+
 float Organism::getHungerRate()
 {
     float hungerRate = 0.01;
@@ -863,6 +1068,7 @@ void Organism::giveBirth()
         critter.age = 0;
 
         critter.mutate(); // Mitosis currently, so no second parent.
+        critter.buildAttacks();
 
         critter.name.append(generateName(1,1));
         critter.nutrition = critter.getNutritionMax();
@@ -935,6 +1141,91 @@ void moveVector(Organism &crit, sf::Vector2f vPos)
     //crit.pos.y += sinf(ang) * crit.getSpeed();
 }
 
+void runBrainHungerTarget(Organism &crit)
+{
+    if(crit.isHungry())
+    {
+        Trait* herbivore = nullptr;
+        Trait* carnivore = nullptr;
+        for(auto &trait : crit.traits)
+        {
+            if(trait.type == TraitID::Herbivore)
+                herbivore = &trait;
+            if(trait.type == TraitID::Carnivore)
+                carnivore = &trait;
+
+
+
+        }
+
+        Organism* nearestFood = nullptr;
+        float nearestFoodDistance = 99999999;
+
+        static AABB herbRange;
+
+
+        if(herbivore != nullptr)
+        {
+            for(auto &food : crit.sim->flora)
+            {
+                if(food.get()->size < herbivore->vars[1]+10) // Vars[1] (The second variable) is how much plant is consumed.
+                    continue;
+
+                float ourDistance = math::distance(crit.pos,food.get()->pos);
+                if(ourDistance < nearestFoodDistance)
+                {
+                    nearestFoodDistance = ourDistance;
+                    nearestFood = food.get();
+                }
+            }
+        }
+
+        if(carnivore != nullptr)
+        {
+            for(auto &food : crit.sim->organisms)
+            {
+                if(food->ID == crit.ID) // Don't eat yourself.
+                    continue;
+
+                if(food.get()->health < -10) // Make sure they've got something on them.
+                    continue;
+
+                float ourDistance = math::distance(crit.pos,food.get()->pos);
+                if(ourDistance < nearestFoodDistance)
+                {
+                    nearestFoodDistance = ourDistance;
+                    nearestFood = food.get();
+                }
+            }
+        }
+
+        if(nearestFood == nullptr)
+            return;
+
+        // Chase after food!
+        crit.brain.lock()->desiredPos = nearestFood->pos;
+
+        if(carnivore != nullptr)
+            shapes.createLine(crit.pos.x,crit.pos.y,nearestFood->pos.x,nearestFood->pos.y,1,sf::Color::Red);
+
+        if(nearestFoodDistance <= crit.size)
+        {
+
+            if(herbivore != nullptr && !nearestFood->brain.lock())
+            {
+                nearestFood->size = (float) std::max(nearestFood->size-herbivore->vars[1],1.f); // Vars[1] (The second variable) is how much plant is consumed.
+                crit.nutrition += herbivore->vars[0]; // Vars[0] is how much nutrition is gained from the amount of plant consumed.
+            }
+            else if(carnivore != nullptr && nearestFood->brain.lock())
+            {
+                // std::cout << "Attacking! \n";
+                nearestFood->health = nearestFood->health - carnivore->vars[1]; // Vars[1] (The second variable) is how much plant is consumed.
+                crit.nutrition += carnivore->vars[0]; // Vars[0] is how much nutrition is gained from the amount of plant consumed.
+            }
+        }
+    }
+}
+
 void runBrain(Organism &crit)
 {
     if(crit.isDead()) // ded.
@@ -946,107 +1237,7 @@ void runBrain(Organism &crit)
             crit.brain.lock()->desiredPos = sf::Vector2f(random(10,9900),random(10,9900));
 
 
-        if(crit.isHungry())
-        {
-            Trait* herbivore = nullptr;
-            Trait* carnivore = nullptr;
-            for(auto &trait : crit.traits)
-            {
-                if(trait.type == TraitID::Herbivore)
-                    herbivore = &trait;
-                if(trait.type == TraitID::Carnivore)
-                    carnivore = &trait;
-
-
-
-
-
-
-            }
-
-            Organism* nearestFood = nullptr;
-            float nearestFoodDistance = 99999999;
-
-            static AABB herbRange;
-
-
-
-
-
-            if(herbivore != nullptr)
-            {
-
-                static bool quadOrNorm = false;
-
-                if(inputState.key[Key::J].time == 1)
-                {
-                    toggle(quadOrNorm);
-                    std::cout << "QuadOrNorm: " << quadOrNorm << std::endl;
-                }
-
-
-                if(!quadOrNorm)
-                {
-
-                    herbRange.centre = crit.pos;
-                    herbRange.halfSize = sf::Vector2f(100,100);
-
-                    //std::vector<Data<std::shared_ptr<Organism>>>* closeOnes = crit.sim->floraQT.queryRange(herbRange);
-
-                    for(auto &nearCrit : crit.sim->floraQT.queryRange(herbRange))
-                    {
-                        std::shared_ptr<Organism>& plants = *nearCrit.load;
-
-                        float ourDistance = math::distance(crit.pos,plants->pos);
-                        if(ourDistance < nearestFoodDistance)
-                        {
-                            nearestFoodDistance = ourDistance;
-                            nearestFood = plants.get();
-                        }
-                    }
-
-
-
-                }
-                else
-                {
-                    for(auto &food : crit.sim->flora)
-                    {
-                        if(food.get()->size < herbivore->vars[1]+10) // Vars[1] (The second variable) is how much plant is consumed.
-                            continue;
-
-
-                        float ourDistance = math::distance(crit.pos,food.get()->pos);
-                        if(ourDistance < nearestFoodDistance)
-                        {
-                            nearestFoodDistance = ourDistance;
-                            nearestFood = food.get();
-                        }
-                    }
-                }
-
-
-            }
-
-            if(nearestFood != nullptr)
-            {
-                crit.brain.lock()->desiredPos = nearestFood->pos;
-            }
-            if(nearestFoodDistance <= crit.size)
-            {
-                nearestFood->size = (float) std::max(nearestFood->size-herbivore->vars[1],1.f); // Vars[1] (The second variable) is how much plant is consumed.
-
-                crit.nutrition += herbivore->vars[0]; // Vars[0] is how much nutrition is gained from the amount of plant consumed.
-
-            }
-
-
-
-
-
-        }
-
-
+        runBrainHungerTarget(crit);
     }
 
 

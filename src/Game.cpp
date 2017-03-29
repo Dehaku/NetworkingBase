@@ -1734,12 +1734,30 @@ void drawSelectedOrganismInfo()
             for(auto &trait : critter.traits)
             {
                 std::string nameThing;
-                if(trait.type == TraitID::Detritivore)
+                if(trait.type == TraitID::Detritivore) // TODO: Make these into a function.
                     nameThing = "Detritivore";
                 else if(trait.type == TraitID::Herbivore)
                     nameThing = "Herbivore";
                 else if(trait.type == TraitID::Carnivore)
                     nameThing = "Carnivore";
+                else if(trait.type == TraitID::Teeth)
+                    nameThing = "Teeth";
+                else if(trait.type == TraitID::Blades)
+                    nameThing = "Blades";
+                else if(trait.type == TraitID::Spikes)
+                    nameThing = "Spikes";
+                else if(trait.type == TraitID::Claws)
+                    nameThing = "Claws";
+                else if(trait.type == TraitID::Shell)
+                    nameThing = "Shell";
+                else if(trait.type == TraitID::Scales)
+                    nameThing = "Scales";
+                else if(trait.type == TraitID::Hide)
+                    nameThing = "Hide";
+                else if(trait.type == TraitID::FireBreath)
+                    nameThing = "FireBreath";
+                else if(trait.type == TraitID::PsychicCrush)
+                    nameThing = "PsychicCrush";
                 richText << nameThing << "";
                 for(auto &variable : trait.vars)
                 {
@@ -1955,7 +1973,7 @@ void renderGame()
 
                     for(auto &trait : crit.traits)
                     {
-                        if(trait.type == TraitID::Herbivore)
+                        if(trait.type == TraitID::Carnivore)
                         {
                             shapes.createLine(crit.pos.x,crit.pos.y,gvars::mousePos.x,gvars::mousePos.y,3,sf::Color::Cyan);
                         }
