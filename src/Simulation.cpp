@@ -35,6 +35,8 @@ void Simulation::runLife()
     if(!inputState.key[Key::K])
     { // Storing pointers for Quadtree usage.
 
+
+        /*
         organismsQT.clear();
         //floraQT.clear();
 
@@ -48,6 +50,7 @@ void Simulation::runLife()
             // if(!insertedQT)
             //    std::cout << "Insertion of Organism QT failed. \n";
         }
+        */
 
         /*
 
@@ -149,7 +152,7 @@ void Simulation::worldPopulationSetup()
 
 
     }
-
+    /*
     Data<std::shared_ptr<Organism>> data;
 
     for(auto &crit : flora)
@@ -167,6 +170,7 @@ void Simulation::worldPopulationSetup()
 
 
     }
+    */
 
     for(int i = 0; i != 100; i++)
     {
@@ -1161,8 +1165,6 @@ void runBrainHungerTarget(Organism &crit)
         Organism* nearestFood = nullptr;
         float nearestFoodDistance = 99999999;
 
-        static AABB herbRange;
-
 
         if(herbivore != nullptr)
         {
@@ -1176,6 +1178,7 @@ void runBrainHungerTarget(Organism &crit)
                 {
                     nearestFoodDistance = ourDistance;
                     nearestFood = food.get();
+                    crit.brain.lock()->desiredFood = food;
                 }
             }
         }
@@ -1195,6 +1198,7 @@ void runBrainHungerTarget(Organism &crit)
                 {
                     nearestFoodDistance = ourDistance;
                     nearestFood = food.get();
+                    crit.brain.lock()->desiredFood = food;
                 }
             }
         }
@@ -1202,28 +1206,65 @@ void runBrainHungerTarget(Organism &crit)
         if(nearestFood == nullptr)
             return;
 
-        // Chase after food!
-        crit.brain.lock()->desiredPos = nearestFood->pos;
 
-        if(carnivore != nullptr)
-            shapes.createLine(crit.pos.x,crit.pos.y,nearestFood->pos.x,nearestFood->pos.y,1,sf::Color::Red);
+    }
+}
 
-        if(nearestFoodDistance <= crit.size)
+void runBrainChaseFood(Organism &crit)
+{
+    if(!crit.brain.lock())
+        return;
+    if(!crit.brain.lock()->desiredFood.lock())
+        return;
+
+    Organism* nearestFood = nullptr;
+    nearestFood = &*crit.brain.lock()->desiredFood.lock();
+    float nearestFoodDistance = math::distance(crit.pos,nearestFood->pos);
+
+
+    Trait* herbivore = nullptr;
+    Trait* carnivore = nullptr;
+    for(auto &trait : crit.traits)
+    {
+        if(trait.type == TraitID::Herbivore)
+            herbivore = &trait;
+        if(trait.type == TraitID::Carnivore)
+            carnivore = &trait;
+
+
+
+    }
+
+
+
+    // Chase after food!
+    crit.brain.lock()->desiredPos = nearestFood->pos;
+
+
+    if(nearestFoodDistance <= crit.size)
+    {
+
+        if(herbivore != nullptr && !nearestFood->brain.lock())
         {
+            nearestFood->size = (float) std::max(nearestFood->size-herbivore->vars[1],1.f); // Vars[1] (The second variable) is how much plant is consumed.
+            crit.nutrition += herbivore->vars[0]; // Vars[0] is how much nutrition is gained from the amount of plant consumed.
 
-            if(herbivore != nullptr && !nearestFood->brain.lock())
-            {
-                nearestFood->size = (float) std::max(nearestFood->size-herbivore->vars[1],1.f); // Vars[1] (The second variable) is how much plant is consumed.
-                crit.nutrition += herbivore->vars[0]; // Vars[0] is how much nutrition is gained from the amount of plant consumed.
-            }
-            else if(carnivore != nullptr && nearestFood->brain.lock())
-            {
-                // std::cout << "Attacking! \n";
-                nearestFood->health = nearestFood->health - carnivore->vars[1]; // Vars[1] (The second variable) is how much plant is consumed.
-                crit.nutrition += carnivore->vars[0]; // Vars[0] is how much nutrition is gained from the amount of plant consumed.
-            }
+            if(nearestFood->size <= herbivore->vars[1]+10)
+                crit.brain.lock()->desiredFood.reset();
+        }
+        else if(carnivore != nullptr && nearestFood->brain.lock())
+        {
+            // std::cout << "Attacking! \n";
+            nearestFood->health = nearestFood->health - carnivore->vars[1]; // Vars[1] (The second variable) is how much plant is consumed.
+            crit.nutrition += carnivore->vars[0]; // Vars[0] is how much nutrition is gained from the amount of plant consumed.
+
+            if(nearestFood->health < -10)
+                crit.brain.lock()->desiredFood.reset();
         }
     }
+
+    if(!crit.isHungry())
+        crit.brain.lock()->desiredFood.reset();
 }
 
 void runBrain(Organism &crit)
@@ -1233,11 +1274,17 @@ void runBrain(Organism &crit)
 
     if(!network::client) // Server-side Logic
     {
-        if(random(1,600) == 1 || inputState.key[Key::Space].time == 1)
-            crit.brain.lock()->desiredPos = sf::Vector2f(random(10,9900),random(10,9900));
 
 
-        runBrainHungerTarget(crit);
+        if(random(1,50) == 1)
+        {
+            if(random(1,10) == 1 || inputState.key[Key::Space].time == 1)
+                crit.brain.lock()->desiredPos = sf::Vector2f(random(10,9900),random(10,9900));
+
+            runBrainHungerTarget(crit);
+        }
+        runBrainChaseFood(crit);
+
     }
 
 

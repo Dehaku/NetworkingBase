@@ -133,6 +133,7 @@ class Brain
     public:
     std::weak_ptr<Organism> owner;
     sf::Vector2f desiredPos;
+    std::weak_ptr<Organism> desiredFood;
     bool desiresMate;
     Brain();
 };

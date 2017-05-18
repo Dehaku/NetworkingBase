@@ -2007,6 +2007,8 @@ void renderGame()
     if(simulationManager.getCurrentSimulation() != nullptr)//if(inputState.key[Key::J])
     {
 
+
+        /*
         if(inputState.key[Key::LShift])
             shapes.createSquare(gvars::mousePos.x-100,gvars::mousePos.y-100,gvars::mousePos.x+100,gvars::mousePos.y+100,sf::Color::Transparent,1,sf::Color::Cyan);
 
@@ -2020,6 +2022,7 @@ void renderGame()
             if(inputState.key[Key::LShift])
                 shapes.createLine(crit->pos.x,crit->pos.y,gvars::mousePos.x,gvars::mousePos.y,1,sf::Color::Cyan);
         }
+        */
 
 
     }
